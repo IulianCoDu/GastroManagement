@@ -36,7 +36,7 @@ import { ActivatedRoute, Router, RouterLink } from ""@angular/router"";
 import { ApiResponseComponent, BlockUiService, ConfirmPopupComponent, ErrorListComponent, ToastService } from ""@core"";
 import { ConfirmationService } from ""primeng/api"";
 import { ButtonModule } from ""primeng/button"";
-import { CalendarModule } from ""primeng/calendar"";
+import { DatePickerModule } from ""primeng/datepicker"";
 import { CardModule } from ""primeng/card"";
 import { CheckboxModule } from ""primeng/checkbox"";
 import { InputNumberModule } from ""primeng/inputnumber"";
@@ -117,7 +117,7 @@ import { Update");
     ApiResponseComponent,
     ConfirmPopupComponent,
     RouterLink,
-    CalendarModule,
+    DatePickerModule,
     ButtonModule,
     InputTextModule,
     InputNumberModule,
@@ -419,8 +419,14 @@ export class EditComponent implements OnInit {
             
             #line default
             #line hidden
-            this.Write(@"Service
-      .updateTestEntity(this.id(), request)
+            this.Write("Service\r\n      .update");
+            
+            #line 103 "C:\Users\edkai\source\repos\SharpLogic\LightNap\src\Scaffolding\LightNap.Scaffolding\Templates\Front-End\Area\Components\Pages\Edit\EditCode.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(Parameters.PascalName));
+            
+            #line default
+            #line hidden
+            this.Write(@"(this.id(), request)
       .pipe(finalize(() => this.#blockUi.hide()))
       .subscribe({
         next: () => this.#toast.success(""Updated successfully""),

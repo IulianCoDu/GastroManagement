@@ -45,21 +45,14 @@ namespace LightNap.Scaffolding.Templates
             this.Write(".Data;\r\nusing ");
             
             #line 9 "C:\Users\edkai\source\repos\SharpLogic\LightNap\src\Scaffolding\LightNap.Scaffolding\Templates\Back-End\LightNap.Core\Area\Services\Service.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(Parameters.CoreNamespace));
+            this.Write(this.ToStringHelper.ToStringWithCulture(Parameters.EntityNamespace));
             
             #line default
             #line hidden
-            this.Write(".Data.Entities;\r\nusing ");
+            this.Write(";\r\nusing ");
             
             #line 10 "C:\Users\edkai\source\repos\SharpLogic\LightNap\src\Scaffolding\LightNap.Scaffolding\Templates\Back-End\LightNap.Core\Area\Services\Service.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Parameters.CoreNamespace));
-            
-            #line default
-            #line hidden
-            this.Write(".");
-            
-            #line 10 "C:\Users\edkai\source\repos\SharpLogic\LightNap\src\Scaffolding\LightNap.Scaffolding\Templates\Back-End\LightNap.Core\Area\Services\Service.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(Parameters.NameForNamespace));
             
             #line default
             #line hidden
@@ -91,7 +84,7 @@ namespace LightNap.Scaffolding.Templates
             
             #line default
             #line hidden
-            this.Write(".Request.Dto;\r\nusing ");
+            this.Write(".Dto.Request;\r\nusing ");
             
             #line 13 "C:\Users\edkai\source\repos\SharpLogic\LightNap\src\Scaffolding\LightNap.Scaffolding\Templates\Back-End\LightNap.Core\Area\Services\Service.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Parameters.CoreNamespace));
@@ -105,7 +98,7 @@ namespace LightNap.Scaffolding.Templates
             
             #line default
             #line hidden
-            this.Write(".Response.Dto;\r\nusing Microsoft.EntityFrameworkCore;\r\n\r\nnamespace ");
+            this.Write(".Dto.Response;\r\nusing Microsoft.EntityFrameworkCore;\r\n\r\nnamespace ");
             
             #line 16 "C:\Users\edkai\source\repos\SharpLogic\LightNap\src\Scaffolding\LightNap.Scaffolding\Templates\Back-End\LightNap.Core\Area\Services\Service.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Parameters.CoreNamespace));
@@ -176,7 +169,7 @@ namespace LightNap.Scaffolding.Templates
             #line default
             #line hidden
             this.Write(");\r\n            return item?.ToDto();\r\n        }\r\n\r\n        public async Task<Pag" +
-                    "edResponse<");
+                    "edResponseDto<");
             
             #line 26 "C:\Users\edkai\source\repos\SharpLogic\LightNap\src\Scaffolding\LightNap.Scaffolding\Templates\Back-End\LightNap.Core\Area\Services\Service.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Parameters.PascalName));
@@ -257,7 +250,7 @@ namespace LightNap.Scaffolding.Templates
 
             var items = await query.Take(dto.PageSize).Select(item => item.ToDto()).ToListAsync();
 
-            return new PagedResponse<");
+            return new PagedResponseDto<");
             
             #line 50 "C:\Users\edkai\source\repos\SharpLogic\LightNap\src\Scaffolding\LightNap.Scaffolding\Templates\Back-End\LightNap.Core\Area\Services\Service.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Parameters.PascalName));

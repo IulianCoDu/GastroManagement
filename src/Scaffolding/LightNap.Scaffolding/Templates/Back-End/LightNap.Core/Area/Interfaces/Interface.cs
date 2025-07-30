@@ -49,7 +49,7 @@ namespace LightNap.Scaffolding.Templates
             
             #line default
             #line hidden
-            this.Write(".Request.Dto;\r\nusing ");
+            this.Write(".Dto.Request;\r\nusing ");
             
             #line 9 "C:\Users\edkai\source\repos\SharpLogic\LightNap\src\Scaffolding\LightNap.Scaffolding\Templates\Back-End\LightNap.Core\Area\Interfaces\Interface.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Parameters.CoreNamespace));
@@ -63,7 +63,7 @@ namespace LightNap.Scaffolding.Templates
             
             #line default
             #line hidden
-            this.Write(".Response.Dto;\r\n\r\nnamespace ");
+            this.Write(".Dto.Response;\r\n\r\nnamespace ");
             
             #line 11 "C:\Users\edkai\source\repos\SharpLogic\LightNap\src\Scaffolding\LightNap.Scaffolding\Templates\Back-End\LightNap.Core\Area\Interfaces\Interface.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Parameters.CoreNamespace));
@@ -112,7 +112,7 @@ namespace LightNap.Scaffolding.Templates
             
             #line default
             #line hidden
-            this.Write(");\r\n        Task<PagedResponse<");
+            this.Write(");\r\n        Task<PagedResponseDto<");
             
             #line 16 "C:\Users\edkai\source\repos\SharpLogic\LightNap\src\Scaffolding\LightNap.Scaffolding\Templates\Back-End\LightNap.Core\Area\Interfaces\Interface.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Parameters.PascalName));

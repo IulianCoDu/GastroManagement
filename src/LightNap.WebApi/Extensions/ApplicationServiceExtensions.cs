@@ -1,6 +1,4 @@
-﻿using LightNap.Core.Administrator.Interfaces;
-using LightNap.Core.Administrator.Services;
-using LightNap.Core.Data;
+﻿using LightNap.Core.Data;
 using LightNap.Core.Data.Entities;
 using LightNap.Core.Email.Interfaces;
 using LightNap.Core.Email.Services;
@@ -15,12 +13,14 @@ using LightNap.Core.Profile.Services;
 using LightNap.Core.Public.Interfaces;
 using LightNap.Core.Public.Services;
 using LightNap.Core.Services;
-using LightNap.Core.User.Interfaces;
-using LightNap.Core.User.Services;
+using LightNap.Core.Users.Interfaces;
+using LightNap.Core.Users.Services;
 using LightNap.DataProviders.Sqlite.Extensions;
 using LightNap.DataProviders.SqlServer.Extensions;
+using LightNap.WebApi.Authorization;
 using LightNap.WebApi.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -41,15 +41,17 @@ namespace LightNap.WebApi.Extensions
         {
             services.AddCors();
             services.AddHttpContextAccessor();
+            services.AddSingleton<IAuthorizationHandler, ClaimAuthorizationHandler>();
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IUserContext, WebUserContext>();
             services.AddScoped<ICookieManager, WebCookieManager>();
             services.AddScoped<INotificationService, NotificationService>();
             services.AddScoped<IIdentityService, IdentityService>();
-            services.AddScoped<IAdministratorService, AdministratorService>();
+            services.AddScoped<IUsersService, UsersService>();
             services.AddScoped<IProfileService, ProfileService>();
             services.AddScoped<IPublicService, PublicService>();
-            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IClaimsService, ClaimsService>();
+            services.AddScoped<IRolesService, RolesService>();
 
             return services;
         }
@@ -139,6 +141,11 @@ namespace LightNap.WebApi.Extensions
                     ValidAudience = configuration.GetRequiredSetting("Jwt:Audience"),
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration.GetRequiredSetting("Jwt:Key")))
                 };
+            });
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy(nameof(ClaimAuthorizationRequirement), policy => policy.Requirements.Add(new ClaimAuthorizationRequirement()));
             });
 
             return services;

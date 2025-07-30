@@ -70,15 +70,15 @@ namespace LightNap.Scaffolding.Templates
             
             #line default
             #line hidden
-            this.Write(".Request.Dto\r\n{\r\n    public class Search");
+            this.Write(".Dto.Request\r\n{\r\n    public class Search");
             
             #line 14 "C:\Users\edkai\source\repos\SharpLogic\LightNap\src\Scaffolding\LightNap.Scaffolding\Templates\Back-End\LightNap.Core\Area\Dto\Request\SearchDto.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Parameters.PascalNamePlural));
             
             #line default
             #line hidden
-            this.Write("Dto : PaginationRequestDtoBase\r\n    {\r\n        // TODO: Update to reflect which f" +
-                    "ields to include for searches.\r\n");
+            this.Write("Dto : PagedRequestDtoBase\r\n    {\r\n        // TODO: Update to reflect which fields" +
+                    " to include for searches.\r\n");
             
             #line 17 "C:\Users\edkai\source\repos\SharpLogic\LightNap\src\Scaffolding\LightNap.Scaffolding\Templates\Back-End\LightNap.Core\Area\Dto\Request\SearchDto.tt"
  foreach (var property in Parameters.GetProperties) { 
