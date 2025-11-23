@@ -1,27 +1,34 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable, inject } from "@angular/core";
-import { API_URL_ROOT } from "@core/helpers";
 import {
-    AdminSearchUsersRequestDto,
-    AdminUpdateUserRequestDto,
-    AdminUserDto,
-    ClaimDto,
-    PagedResponseDto,
-    RoleDto,
-    SearchClaimsRequestDto,
-    SearchUserClaimsRequestDto,
-    UserClaimDto,
+  AdminSearchUsersRequestDto,
+  AdminUpdateUserRequestDto,
+  AdminUserDto,
+  ClaimDto,
+  PagedResponseDto,
+  RoleDto,
+  SearchClaimsRequestDto,
+  SearchUserClaimsRequestDto,
+  SetUserSettingRequestDto,
+  UserClaimDto,
+  UserSettingDto,
 } from "../dtos";
+import { tap } from "rxjs";
+import { UserSettingHelper } from "../helpers/user-setting.helper";
 
 @Injectable({
   providedIn: "root",
 })
 export class UsersDataService {
   #http = inject(HttpClient);
-  #apiUrlRoot = `${inject(API_URL_ROOT)}users/`;
+  #apiUrlRoot = "/api/users/";
 
   getUser(userId: string) {
     return this.#http.get<AdminUserDto>(`${this.#apiUrlRoot}${userId}`);
+  }
+
+  getUserByUserName(userName: string) {
+    return this.#http.get<AdminUserDto>(`${this.#apiUrlRoot}user-name/${userName}`);
   }
 
   getUsersById(userIds: Array<string>) {
@@ -64,6 +71,10 @@ export class UsersDataService {
     return this.#http.post<PagedResponseDto<ClaimDto>>(`${this.#apiUrlRoot}claims/search`, searchClaimsRequestDto);
   }
 
+  getUsersWithClaim(claimDto: ClaimDto) {
+    return this.#http.post<PagedResponseDto<string>>(`${this.#apiUrlRoot}claim-users`, claimDto);
+  }
+
   searchUserClaims(searchUserClaimsRequestDto: SearchUserClaimsRequestDto) {
     return this.#http.post<PagedResponseDto<UserClaimDto>>(`${this.#apiUrlRoot}user-claims/search`, searchUserClaimsRequestDto);
   }
@@ -82,5 +93,15 @@ export class UsersDataService {
 
   unlockUserAccount(userId: string) {
     return this.#http.post<boolean>(`${this.#apiUrlRoot}${userId}/unlock`, null);
+  }
+
+  getSettings(userId: string) {
+    return this.#http
+      .get<Array<UserSettingDto>>(`${this.#apiUrlRoot}${userId}/settings`)
+      .pipe(tap(settings => settings.forEach(UserSettingHelper.rehydrate)));
+  }
+
+  updateSetting(userId: string, setUserSetting: SetUserSettingRequestDto) {
+    return this.#http.patch<UserSettingDto>(`${this.#apiUrlRoot}${userId}/settings`, setUserSetting).pipe(tap(UserSettingHelper.rehydrate));
   }
 }

@@ -1,4 +1,5 @@
-﻿using LightNap.Core.Data;
+﻿using LightNap.Core.Configuration;
+using LightNap.Core.Data;
 using LightNap.Core.Email.Interfaces;
 using LightNap.Core.Email.Services;
 using Microsoft.EntityFrameworkCore;
@@ -15,10 +16,11 @@ namespace LightNap.Core.Extensions
         /// Adds an in-memory database for LightNap to the service collection.
         /// </summary>
         /// <param name="services">The service collection.</param>
+        /// <param name="databaseName">The name of the in-memory database.</param>
         /// <returns>The updated service collection.</returns>
-        public static IServiceCollection AddLightNapInMemoryDatabase(this IServiceCollection services)
+        public static IServiceCollection AddLightNapInMemoryDatabase(this IServiceCollection services, string databaseName = "LightNap")
         {
-            return services.AddDbContext<ApplicationDbContext>(options => options.UseInMemoryDatabase("LightNap"));
+            return services.AddDbContext<ApplicationDbContext>(options => options.UseInMemoryDatabase(databaseName));
         }
 
         /// <summary>
@@ -36,9 +38,9 @@ namespace LightNap.Core.Extensions
         /// </summary>
         /// <param name="services">The service collection.</param>
         /// <returns>The updated service collection.</returns>
-        public static IServiceCollection AddSmtpEmailSender(this IServiceCollection services)
+        public static IServiceCollection AddSmtpEmailSender(this IServiceCollection services, SmtpSettings smtpSettings)
         {
-            return services.AddSingleton<IEmailSender, SmtpEmailSender>();
+            return services.AddSingleton<IEmailSender>(_ => new SmtpEmailSender(smtpSettings));
         }
     }
 }

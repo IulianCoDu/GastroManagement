@@ -2,9 +2,12 @@ import { Component, inject, signal } from "@angular/core";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { FormBuilder, ReactiveFormsModule, Validators } from "@angular/forms";
 import { RouterModule } from "@angular/router";
-import { BlockUiService, ErrorListComponent } from "@core";
+import { LoginSuccessTypes, RoutePipe, setApiErrors } from "@core";
+import { BrandedCardComponent } from "@core/components/branded-card/branded-card.component";
+import { ErrorListComponent } from "@core/components/error-list/error-list.component";
+import { RouteAliasService } from "@core/features/routing/services/route-alias-service";
+import { BlockUiService } from "@core/services/block-ui.service";
 import { IdentityService } from "@core/services/identity.service";
-import { RouteAliasService, RoutePipe } from "@core";
 import { ButtonModule } from "primeng/button";
 import { CheckboxModule } from "primeng/checkbox";
 import { InputGroupModule } from "primeng/inputgroup";
@@ -12,7 +15,6 @@ import { InputGroupAddonModule } from "primeng/inputgroupaddon";
 import { InputTextModule } from "primeng/inputtext";
 import { PasswordModule } from "primeng/password";
 import { finalize } from "rxjs";
-import { IdentityCardComponent } from "@core";
 
 @Component({
   standalone: true,
@@ -25,7 +27,7 @@ import { IdentityCardComponent } from "@core";
     CheckboxModule,
     RoutePipe,
     PasswordModule,
-    IdentityCardComponent,
+    BrandedCardComponent,
     ErrorListComponent,
     InputGroupModule,
     InputGroupAddonModule,
@@ -57,7 +59,6 @@ export class LoginComponent {
 
   logIn() {
     this.#blockUi.show({ message: "Logging in..." });
-
     this.#identityService
       .logIn({
         login: this.form.value.login!,
@@ -69,20 +70,20 @@ export class LoginComponent {
       .subscribe({
         next: result => {
           switch (result.type) {
-            case "TwoFactorRequired":
+            case LoginSuccessTypes.TwoFactorRequired:
               this.#routeAlias.navigate("verify-code", this.form.value.login);
               break;
-            case "AccessToken":
+            case LoginSuccessTypes.AccessToken:
               this.#identityService.redirectLoggedInUser();
               break;
-            case "EmailVerificationRequired":
+            case LoginSuccessTypes.EmailVerificationRequired:
               this.#routeAlias.navigate("email-verification-required");
               break;
             default:
               throw new Error(`Unexpected LoginSuccessResult.type: '${result.type}'`);
           }
         },
-        error: response => this.errors.set(response.errorMessages),
+        error: setApiErrors(this.errors),
       });
   }
 
@@ -96,7 +97,7 @@ export class LoginComponent {
       .pipe(finalize(() => this.#blockUi.hide()))
       .subscribe({
         next: () => this.#routeAlias.navigate("magic-link-sent"),
-        error: response => this.errors.set(response.errorMessages),
+        error: setApiErrors(this.errors),
       });
   }
 }

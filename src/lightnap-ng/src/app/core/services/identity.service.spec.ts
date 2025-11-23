@@ -1,18 +1,12 @@
 import { provideZonelessChangeDetection } from "@angular/core";
 import { TestBed } from "@angular/core/testing";
 import { JwtHelperService } from "@auth0/angular-jwt";
+import { ChangePasswordRequestDto, NewPasswordRequestDto, RegisterRequestDto, ResetPasswordRequestDto, VerifyCodeRequestDto } from "@core";
+import { IdentityDataService } from "@core/backend-api/services/identity-data.service";
 import { of, throwError } from "rxjs";
 import { IdentityService } from "./identity.service";
 import { InitializationService } from "./initialization.service";
 import { TimerService } from "./timer.service";
-import {
-  RegisterRequestDto,
-  VerifyCodeRequestDto,
-  ResetPasswordRequestDto,
-  NewPasswordRequestDto,
-  ChangePasswordRequestDto,
-} from "@core/backend-api";
-import { IdentityDataService } from "@core/backend-api/services/identity-data.service";
 
 describe("IdentityService", () => {
   let service: IdentityService;
@@ -78,16 +72,18 @@ describe("IdentityService", () => {
   it("should log in and set token", () => {
     const loginRequest = {} as any;
     dataServiceSpy.logIn.and.returnValue(of({ accessToken: token, type: "AccessToken" }));
-    service.logIn(loginRequest).subscribe(() => {
-      expect(service.getBearerToken()).toBe(`Bearer ${token}`);
+    service.logIn(loginRequest).subscribe({
+      next: () => {
+        expect(service.getBearerToken()).toBe(`Bearer ${token}`);
+      },
     });
     expect(dataServiceSpy.logIn).toHaveBeenCalledWith(loginRequest);
   });
 
   it("should log out and clear token", () => {
     dataServiceSpy.logOut.and.returnValue(of(true));
-    service.logOut().subscribe(() => {
-      expect(service.getBearerToken()).toBeUndefined();
+    service.logOut().subscribe({
+      next: () => expect(service.getBearerToken()).toBeUndefined(),
     });
     expect(dataServiceSpy.logOut).toHaveBeenCalled();
   });
@@ -95,18 +91,14 @@ describe("IdentityService", () => {
   it("should register and set token", () => {
     const registerRequest: RegisterRequestDto = {} as any;
     dataServiceSpy.register.and.returnValue(of({ accessToken: token, type: "AccessToken" }));
-    service.register(registerRequest).subscribe(() => {
-      expect(service.getBearerToken()).toBe(`Bearer ${token}`);
-    });
+    service.register(registerRequest).subscribe({ next: () => expect(service.getBearerToken()).toBe(`Bearer ${token}`) });
     expect(dataServiceSpy.register).toHaveBeenCalledWith(registerRequest);
   });
 
   it("should verify code and set token", () => {
     const verifyCodeRequest: VerifyCodeRequestDto = {} as any;
     dataServiceSpy.verifyCode.and.returnValue(of(token));
-    service.verifyCode(verifyCodeRequest).subscribe(() => {
-      expect(service.getBearerToken()).toBe(`Bearer ${token}`);
-    });
+    service.verifyCode(verifyCodeRequest).subscribe({ next: () => expect(service.getBearerToken()).toBe(`Bearer ${token}`) });
     expect(dataServiceSpy.verifyCode).toHaveBeenCalledWith(verifyCodeRequest);
   });
 
@@ -120,9 +112,7 @@ describe("IdentityService", () => {
   it("should set new password and set token", () => {
     const newPasswordRequest: NewPasswordRequestDto = {} as any;
     dataServiceSpy.newPassword.and.returnValue(of({ accessToken: token, type: "AccessToken" }));
-    service.newPassword(newPasswordRequest).subscribe(() => {
-      expect(service.getBearerToken()).toBe(`Bearer ${token}`);
-    });
+    service.newPassword(newPasswordRequest).subscribe({ next: () => expect(service.getBearerToken()).toBe(`Bearer ${token}`) });
     expect(dataServiceSpy.newPassword).toHaveBeenCalledWith(newPasswordRequest);
   });
 
@@ -204,7 +194,7 @@ describe("IdentityService", () => {
     expect(hasClaim).toBeTrue();
   });
 
-    it("should emit correct values from watchAnyUserClaim$", done => {
+  it("should emit correct values from watchAnyUserClaim$", done => {
     // Setup token with a claim
     const tokenWithClaims =
       "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMiwiY2xhaW1UeXBlIjoiY2xhaW1WYWx1ZSJ9.PepfbmKe5h2OcPlPmwdmIRTMnydCBE7tnLsAIVwx8G4";

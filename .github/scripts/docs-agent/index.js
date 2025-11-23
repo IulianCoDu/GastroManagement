@@ -1,0 +1,616 @@
+#!/usr/bin/env node
+
+/**
+ * LightNap Documentation Agent
+ *
+ * This script analyzes code changes in the repository and proposes documentation updates.
+ * It runs after merges to main and creates a pull request with suggested doc changes.
+ */
+
+import { Octokit } from "@octokit/rest";
+import OpenAI from "openai";
+import Anthropic from "@anthropic-ai/sdk";
+import path from "path";
+import { fileURLToPath } from "url";
+import fs from "fs";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Configuration from environment variables
+const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
+const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
+const AI_PROVIDER =
+  process.env.AI_PROVIDER || (ANTHROPIC_API_KEY ? "anthropic" : "openai");
+const GITHUB_REPOSITORY =
+  process.env.GITHUB_REPOSITORY || "SharpLogic/LightNap";
+const [OWNER, REPO] = GITHUB_REPOSITORY.split("/");
+const BASE_BRANCH = process.env.BASE_BRANCH || "main";
+const COMMIT_SHA = process.env.GITHUB_SHA;
+
+// Initialize clients
+const octokit = new Octokit({ auth: GITHUB_TOKEN });
+let openai, anthropic;
+
+if (AI_PROVIDER === "openai") {
+  if (!OPENAI_API_KEY) {
+    throw new Error("OPENAI_API_KEY is required when using OpenAI provider");
+  }
+  openai = new OpenAI({ apiKey: OPENAI_API_KEY });
+} else if (AI_PROVIDER === "anthropic") {
+  if (!ANTHROPIC_API_KEY) {
+    throw new Error(
+      "ANTHROPIC_API_KEY is required when using Anthropic provider"
+    );
+  }
+  anthropic = new Anthropic({ apiKey: ANTHROPIC_API_KEY });
+}
+
+/**
+ * Load a prompt from the prompts directory
+ */
+function loadPrompt(filename) {
+  const promptPath = path.join(__dirname, "prompts", filename);
+  return fs.readFileSync(promptPath, "utf-8");
+}
+
+/**
+ * Main execution function
+ */
+async function main() {
+  try {
+    console.log("🤖 LightNap Documentation Agent starting...");
+    console.log(`📦 Repository: ${OWNER}/${REPO}`);
+    console.log(`🌿 Base branch: ${BASE_BRANCH}`);
+    console.log(`📝 Commit: ${COMMIT_SHA}`);
+    console.log(`🤖 AI Provider: ${AI_PROVIDER}`);
+
+    // Step 1: Get the recent changes
+    const changes = await getRecentChanges();
+
+    if (changes.length === 0) {
+      console.log(
+        "✅ No code changes detected that require documentation updates."
+      );
+      return;
+    }
+
+    console.log(`📊 Analyzing ${changes.length} changed files...`);
+
+    // Step 2: Read existing documentation structure
+    const docsStructure = await getDocsStructure();
+    console.log(`📚 Found ${docsStructure.length} documentation files`);
+
+    // Step 3: Analyze changes and determine documentation updates needed
+    const docUpdates = await analyzeChangesAndProposeUpdates(
+      changes,
+      docsStructure
+    );
+
+    if (!docUpdates || docUpdates.updates.length === 0) {
+      console.log("✅ No documentation updates needed based on code changes.");
+      return;
+    }
+
+    console.log(
+      `📝 Proposing ${docUpdates.updates.length} documentation updates...`
+    );
+
+    // Step 4: Create a new branch and apply changes
+    const branchName = await createBranchWithUpdates(docUpdates);
+
+    // Step 5: Create a pull request
+    await createPullRequest(branchName, docUpdates);
+
+    console.log("✨ Documentation agent completed successfully!");
+  } catch (error) {
+    console.error("❌ Error in documentation agent:", error);
+    process.exit(1);
+  }
+}
+
+/**
+ * Get recent changes from the last commit or compare with previous commit
+ */
+async function getRecentChanges() {
+  console.log(`🔍 Fetching commit: ${COMMIT_SHA}`);
+
+  const { data: commit } = await octokit.repos.getCommit({
+    owner: OWNER,
+    repo: REPO,
+    ref: COMMIT_SHA,
+  });
+
+  console.log(`📊 Total files in commit: ${commit.files?.length || 0}`);
+  console.log(`📋 Commit message: ${commit.commit.message}`);
+  console.log(`👥 Parents: ${commit.parents?.length || 0}`);
+
+  if (commit.files) {
+    console.log(`📁 All files changed:`, commit.files.map(f => f.filename));
+  }
+
+  let allChangedFiles = commit.files || [];
+
+  // If this is a merge commit with no files, or if we have very few files,
+  // try to get changes by comparing with the previous commit
+  if (allChangedFiles.length === 0 || (commit.parents?.length > 1 && allChangedFiles.length < 5)) {
+    console.log(`🔄 Merge commit detected or no files found, comparing with previous commit...`);
+
+    try {
+      // Compare current commit with its first parent (usually the previous main branch state)
+      const baseRef = commit.parents?.[0]?.sha || `${COMMIT_SHA}~1`;
+      console.log(`📊 Comparing ${COMMIT_SHA} with ${baseRef}`);
+
+      const { data: comparison } = await octokit.repos.compareCommits({
+        owner: OWNER,
+        repo: REPO,
+        base: baseRef,
+        head: COMMIT_SHA,
+      });
+
+      console.log(`📊 Comparison found ${comparison.files?.length || 0} changed files`);
+      allChangedFiles = comparison.files || [];
+
+      if (allChangedFiles.length > 0) {
+        console.log(`📁 Files from comparison:`, allChangedFiles.map(f => f.filename));
+      }
+    } catch (error) {
+      console.warn(`⚠️  Could not compare commits:`, error.message);
+
+      // Fallback: get recent commits and analyze their changes
+      console.log(`🔄 Fallback: analyzing recent commits...`);
+      try {
+        const { data: recentCommits } = await octokit.repos.listCommits({
+          owner: OWNER,
+          repo: REPO,
+          sha: COMMIT_SHA,
+          per_page: 5,
+        });
+
+        console.log(`📊 Found ${recentCommits.length} recent commits`);
+
+        // Get files from the most recent non-merge commits
+        for (const recentCommit of recentCommits.slice(0, 3)) {
+          if (recentCommit.parents.length === 1) { // Not a merge commit
+            const { data: commitDetail } = await octokit.repos.getCommit({
+              owner: OWNER,
+              repo: REPO,
+              ref: recentCommit.sha,
+            });
+
+            if (commitDetail.files && commitDetail.files.length > 0) {
+              console.log(`📁 Adding ${commitDetail.files.length} files from commit ${recentCommit.sha.substring(0, 7)}`);
+              allChangedFiles.push(...commitDetail.files);
+            }
+          }
+        }
+
+        // Remove duplicates based on filename
+        const uniqueFiles = allChangedFiles.filter((file, index, self) =>
+          index === self.findIndex(f => f.filename === file.filename)
+        );
+        allChangedFiles = uniqueFiles;
+        console.log(`📊 Total unique files after deduplication: ${allChangedFiles.length}`);
+      } catch (fallbackError) {
+        console.warn(`⚠️  Fallback strategy also failed:`, fallbackError.message);
+      }
+    }
+  }
+
+  // Filter to only include source code files, exclude docs
+  const codeFiles = allChangedFiles.filter((file) => {
+    const path = file.filename;
+    const isIncluded = (
+      (path.startsWith("src/") || path.startsWith("Scaffolding/")) &&
+      !path.includes("/bin/") &&
+      !path.includes("/obj/") &&
+      !path.includes("node_modules") &&
+      !path.startsWith("docs/")
+    );
+
+    if (isIncluded) {
+      console.log(`✅ Including: ${path}`);
+    } else {
+      console.log(`❌ Excluding: ${path}`);
+    }
+
+    return isIncluded;
+  });
+
+  console.log(`🔍 Found ${codeFiles.length} source code files after filtering`);
+
+  // Get file contents for changed files
+  const changes = [];
+  for (const file of codeFiles) {
+    try {
+      let content = "";
+      if (file.status !== "removed") {
+        const { data } = await octokit.repos.getContent({
+          owner: OWNER,
+          repo: REPO,
+          path: file.filename,
+          ref: COMMIT_SHA,
+        });
+        content = Buffer.from(data.content, "base64").toString("utf-8");
+      }
+
+      changes.push({
+        filename: file.filename,
+        status: file.status,
+        additions: file.additions,
+        deletions: file.deletions,
+        patch: file.patch,
+        content: content,
+      });
+    } catch (error) {
+      console.warn(
+        `⚠️  Could not fetch content for ${file.filename}:`,
+        error.message
+      );
+    }
+  }
+
+  console.log(`📊 Returning ${changes.length} file changes`);
+  return changes;
+}
+
+/**
+ * Get the structure of the docs folder
+ */
+async function getDocsStructure() {
+  const docs = [];
+
+  async function readDir(dirPath, relativePath = "") {
+    const { data: contents } = await octokit.repos.getContent({
+      owner: OWNER,
+      repo: REPO,
+      path: dirPath,
+      ref: BASE_BRANCH,
+    });
+
+    for (const item of contents) {
+      if (item.type === "file" && item.name.endsWith(".md")) {
+        try {
+          const { data } = await octokit.repos.getContent({
+            owner: OWNER,
+            repo: REPO,
+            path: item.path,
+            ref: BASE_BRANCH,
+          });
+          const content = Buffer.from(data.content, "base64").toString("utf-8");
+
+          docs.push({
+            path: item.path,
+            name: item.name,
+            content: content,
+            sha: item.sha,
+          });
+        } catch (error) {
+          console.warn(`⚠️  Could not read ${item.path}:`, error.message);
+        }
+      } else if (item.type === "dir" && !item.name.startsWith("_")) {
+        await readDir(item.path, path.join(relativePath, item.name));
+      }
+    }
+  }
+
+  await readDir("docs");
+  return docs;
+}
+
+/**
+ * Use AI to analyze changes and propose documentation updates
+ */
+async function analyzeChangesAndProposeUpdates(changes, docsStructure) {
+  const systemPrompt = loadPrompt("analysis-system.md");
+
+  const changesDescription = changes
+    .map((change) => {
+      return `
+File: ${change.filename}
+Status: ${change.status}
+Changes: +${change.additions} -${change.deletions}
+
+${change.patch ? `Diff:\n${change.patch}\n` : ""}
+${
+  change.content
+    ? `Current Content:\n${change.content.substring(0, 2000)}${
+        change.content.length > 2000 ? "...[truncated]" : ""
+      }`
+    : ""
+}
+---
+`;
+    })
+    .join("\n");
+
+  // Create a map for easy lookup
+  const docsMap = {};
+  docsStructure.forEach((doc) => {
+    docsMap[doc.path] = doc.content;
+  });
+
+  const docsDescription = docsStructure
+    .map((doc) => {
+      return `File: ${doc.path}\nPreview: ${doc.content.substring(
+        0,
+        500
+      )}${doc.content.length > 500 ? "...[truncated]" : ""}\n---`;
+    })
+    .join("\n");
+
+  const userPromptTemplate = loadPrompt("analysis-user.md");
+  const userPrompt = userPromptTemplate
+    .replace("{CHANGES_DESCRIPTION}", changesDescription)
+    .replace("{DOCS_DESCRIPTION}", docsDescription);
+
+  console.log("🤔 Consulting AI for documentation analysis...");
+
+  let analysis;
+
+  if (AI_PROVIDER === "openai") {
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o",
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: userPrompt },
+      ],
+      temperature: 0.2,
+      response_format: { type: "json_object" },
+    });
+    analysis = JSON.parse(response.choices[0].message.content);
+  } else if (AI_PROVIDER === "anthropic") {
+    const response = await anthropic.messages.create({
+      model: "claude-sonnet-4-5",
+      max_tokens: 8192,
+      temperature: 0.2,
+      system: systemPrompt,
+      messages: [{ role: "user", content: userPrompt }],
+    });
+
+    // Extract JSON from Claude's response
+    const content = response.content[0].text;
+    // Claude might wrap JSON in markdown code blocks
+    const jsonMatch =
+      content.match(/```json\n([\s\S]*?)\n```/) || content.match(/\{[\s\S]*\}/);
+    analysis = JSON.parse(jsonMatch ? jsonMatch[1] || jsonMatch[0] : content);
+  }
+
+  console.log(`💡 Analysis: ${analysis.summary}`);
+
+  // For files that need editing, make a second AI call with full file content
+  if (analysis.updates && analysis.updates.length > 0) {
+    const editsNeeded = analysis.updates.filter((u) => u.action === "edit");
+
+    if (editsNeeded.length > 0) {
+      console.log(
+        `📝 ${editsNeeded.length} files need editing, getting full content for updates...`
+      );
+
+      for (const edit of editsNeeded) {
+        const existingDoc = docsStructure.find((d) => d.path === edit.file);
+
+        if (existingDoc) {
+          console.log(`🔄 Generating complete update for ${edit.file}...`);
+
+          const editSystemPrompt = loadPrompt("edit-system.md");
+          const editUserTemplate = loadPrompt("edit-user.md");
+          const editPrompt = editUserTemplate
+            .replace("{FILE_PATH}", edit.file)
+            .replace("{REASON}", edit.reason)
+            .replace("{CURRENT_CONTENT}", existingDoc.content)
+            .replace("{CHANGES_DESCRIPTION}", changesDescription);
+
+          let updatedContent;
+
+          if (AI_PROVIDER === "openai") {
+            const editResponse = await openai.chat.completions.create({
+              model: "gpt-4o",
+              messages: [
+                { role: "system", content: editSystemPrompt },
+                { role: "user", content: editPrompt },
+              ],
+              temperature: 0.2,
+            });
+            updatedContent = editResponse.choices[0].message.content;
+          } else if (AI_PROVIDER === "anthropic") {
+            const editResponse = await anthropic.messages.create({
+              model: "claude-sonnet-4-5",
+              max_tokens: 8192,
+              temperature: 0.2,
+              system: editSystemPrompt,
+              messages: [{ role: "user", content: editPrompt }],
+            });
+            updatedContent = editResponse.content[0].text;
+          }
+
+          // Remove any markdown code fences if the AI added them despite instructions
+          updatedContent = updatedContent
+            .replace(/^```markdown\n/, "")
+            .replace(/^```\n/, "")
+            .replace(/\n```$/, "");
+
+          // Update the changes field with the complete content
+          edit.changes = updatedContent;
+
+          console.log(
+            `✅ Generated ${updatedContent.length} characters for ${edit.file}`
+          );
+        } else {
+          console.warn(
+            `⚠️  Could not find existing content for ${edit.file}, skipping detailed update`
+          );
+        }
+      }
+    }
+  }
+
+  return analysis;
+}
+
+/**
+ * Create a new branch with the proposed documentation updates
+ */
+async function createBranchWithUpdates(docUpdates) {
+  const timestamp = new Date()
+    .toISOString()
+    .replace(/[:.]/g, "-")
+    .substring(0, 19);
+  const branchName = `docs/auto-update-${timestamp}`;
+
+  console.log(`🌿 Creating branch: ${branchName}`);
+
+  // Get the base branch reference
+  const { data: ref } = await octokit.git.getRef({
+    owner: OWNER,
+    repo: REPO,
+    ref: `heads/${BASE_BRANCH}`,
+  });
+
+  // Create new branch
+  await octokit.git.createRef({
+    owner: OWNER,
+    repo: REPO,
+    ref: `refs/heads/${branchName}`,
+    sha: ref.object.sha,
+  });
+
+  // Apply each update
+  for (const update of docUpdates.updates) {
+    console.log(`📝 ${update.action}: ${update.file}`);
+
+    if (update.action === "create") {
+      await createFile(branchName, update.file, update.changes);
+    } else if (update.action === "edit") {
+      await updateFile(branchName, update.file, update.changes);
+    } else if (update.action === "delete") {
+      await deleteFile(branchName, update.file);
+    }
+  }
+
+  return branchName;
+}
+
+/**
+ * Create a new file in the repository
+ */
+async function createFile(branch, filePath, content) {
+  await octokit.repos.createOrUpdateFileContents({
+    owner: OWNER,
+    repo: REPO,
+    path: filePath,
+    message: `docs: Add ${path.basename(filePath)}`,
+    content: Buffer.from(content).toString("base64"),
+    branch: branch,
+  });
+}
+
+/**
+ * Update an existing file in the repository
+ */
+async function updateFile(branch, filePath, newContent) {
+  try {
+    // Get current file to get its SHA
+    const { data: currentFile } = await octokit.repos.getContent({
+      owner: OWNER,
+      repo: REPO,
+      path: filePath,
+      ref: branch,
+    });
+
+    await octokit.repos.createOrUpdateFileContents({
+      owner: OWNER,
+      repo: REPO,
+      path: filePath,
+      message: `docs: Update ${path.basename(filePath)}`,
+      content: Buffer.from(newContent).toString("base64"),
+      branch: branch,
+      sha: currentFile.sha,
+    });
+  } catch (error) {
+    console.warn(`⚠️  Could not update ${filePath}:`, error.message);
+  }
+}
+
+/**
+ * Delete a file from the repository
+ */
+async function deleteFile(branch, filePath) {
+  try {
+    const { data: currentFile } = await octokit.repos.getContent({
+      owner: OWNER,
+      repo: REPO,
+      path: filePath,
+      ref: branch,
+    });
+
+    await octokit.repos.deleteFile({
+      owner: OWNER,
+      repo: REPO,
+      path: filePath,
+      message: `docs: Remove ${path.basename(filePath)}`,
+      branch: branch,
+      sha: currentFile.sha,
+    });
+  } catch (error) {
+    console.warn(`⚠️  Could not delete ${filePath}:`, error.message);
+  }
+}
+
+/**
+ * Create a pull request with the documentation updates
+ */
+async function createPullRequest(branchName, docUpdates) {
+  console.log("📬 Creating pull request...");
+
+  const prBody = `## 🤖 Automated Documentation Update
+
+This PR was automatically generated by the LightNap Documentation Agent after analyzing recent code changes.
+
+### Summary
+${docUpdates.summary}
+
+### Proposed Changes
+${docUpdates.updates
+  .map((u) => `- **${u.action}** \`${u.file}\`: ${u.reason}`)
+  .join("\n")}
+
+### Instructions
+Please review these changes carefully:
+1. Verify that the documentation accurately reflects the code changes
+2. Check for completeness and clarity
+3. Edit the documentation directly in this PR if needed
+4. Merge when satisfied, or close if not needed
+
+---
+*This PR was created automatically. The agent analyzes code changes but human review is required.*`;
+
+  const { data: pr } = await octokit.pulls.create({
+    owner: OWNER,
+    repo: REPO,
+    title: "📚 Automated documentation update",
+    head: branchName,
+    base: BASE_BRANCH,
+    body: prBody,
+  });
+
+  console.log(`✅ Pull request created: ${pr.html_url}`);
+
+  // Add labels
+  try {
+    await octokit.issues.addLabels({
+      owner: OWNER,
+      repo: REPO,
+      issue_number: pr.number,
+      labels: ["documentation", "automated"],
+    });
+  } catch (error) {
+    console.warn("⚠️  Could not add labels:", error.message);
+  }
+
+  return pr;
+}
+
+// Run the main function
+main();

@@ -1,10 +1,10 @@
 /* You can add global styles to this file, and also import other style files */
 @import 'tailwindcss';
 @import 'tailwindcss-primeui';
-@import "primeicons/primeicons.css";
+@use "primeicons/primeicons.css";
 @import "./assets/layout/layout.css";
 
-@config "../tailwind.config.lightnap.js";
+@config "../tailwind.config.lightnap.mjs";
 
 /*
  * Add style customization here if you want to use Tailwind CSS.

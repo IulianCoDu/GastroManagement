@@ -18,8 +18,18 @@
                         "browser": "src/main.ts",
                         "polyfills": [],
                         "tsConfig": "tsconfig.app.json",
-                        "assets": ["src/favicon.ico", "src/assets"],
-                        "styles": ["src/styles.css"],
+                        "assets": [
+                            "src/favicon.ico",
+                            "src/assets",
+                            {
+                                "glob": "**/*",
+                                "input": "public"
+                            }
+                        ],
+                        "styles": [
+                            "src/styles.css",
+                            "node_modules/primeicons/primeicons.css"
+                        ],
                         "scripts": []
                     },
                     "configurations": {
@@ -27,7 +37,7 @@
                             "budgets": [
                                 {
                                     "type": "initial",
-                                    "maximumWarning": "1mb",
+                                    "maximumWarning": "1.5mb",
                                     "maximumError": "5mb"
                                 },
                                 {
@@ -36,7 +46,8 @@
                                     "maximumError": "4kb"
                                 }
                             ],
-                            "outputHashing": "all"
+                            "outputHashing": "all",
+                            "serviceWorker": "ngsw-config.json"
                         },
                         "development": {
                             "optimization": false,
@@ -75,13 +86,41 @@
                         "karmaConfig": "karma.conf.js",
                         "assets": ["src/favicon.ico", "src/assets"],
                         "styles": ["src/styles.css"],
-                        "scripts": []
+                        "scripts": [],
+                        "codeCoverage": false
+                    },
+                    "configurations": {
+                        "coverage": {
+                            "codeCoverage": true,
+                            "codeCoverageExclude": [
+                                "src/testing/**",
+                                "src/**/*.spec.ts",
+                                "src/environments/**"
+                            ]
+                        }
+                    }
+                },
+                "e2e": {
+                    "builder": "@cypress/schematic:cypress",
+                    "options": {
+                        "devServerTarget": "lightnap-ng:serve",
+                        "watch": true,
+                        "headless": false
+                    },
+                    "configurations": {
+                        "production": {
+                            "devServerTarget": "lightnap-ng:serve:production"
+                        },
+                        "ci": {
+                            "watch": false,
+                            "headless": true
+                        }
                     }
                 }
             }
         }
     },
     "cli": {
-      "analytics": "776e17bc-79dd-4a99-a838-24015c6ab62e"
+      "analytics": false
     }
 }

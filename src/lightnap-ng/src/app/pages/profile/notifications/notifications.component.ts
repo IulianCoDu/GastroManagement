@@ -1,9 +1,12 @@
 import { CommonModule } from "@angular/common";
 import { Component, inject, signal } from "@angular/core";
 import { Router } from "@angular/router";
-import { ErrorListComponent, ApiResponseComponent, EmptyPagedResponse, NotificationItem, ToastService } from "@core";
-import { NotificationItemComponent } from "@core/notifications/components/notification-item/notification-item.component";
-import { NotificationService } from "@core/notifications/services";
+import { EmptyPagedResponse, NotificationItem, NotificationSearchResults, setApiErrors, TypeHelpers } from "@core";
+import { ApiResponseComponent } from "@core/components/api-response/api-response.component";
+import { ErrorListComponent } from "@core/components/error-list/error-list.component";
+import { NotificationItemComponent } from "@core/features/notifications/components/notification-item/notification-item.component";
+import { NotificationService } from "@core/features/notifications/services/notification.service";
+import { ToastService } from "@core/services/toast.service";
 import { ButtonModule } from "primeng/button";
 import { PanelModule } from "primeng/panel";
 import { TableLazyLoadEvent, TableModule } from "primeng/table";
@@ -21,8 +24,8 @@ export class NotificationsComponent {
   readonly #toast = inject(ToastService);
   readonly #router = inject(Router);
 
-  #lazyLoadEventSubject = new Subject<TableLazyLoadEvent>();
-  notifications$ = this.#lazyLoadEventSubject.pipe(
+  readonly #lazyLoadEventSubject = new Subject<TableLazyLoadEvent>();
+  readonly notifications$ = this.#lazyLoadEventSubject.pipe(
     switchMap(_ =>
       this.#notificationService.searchNotifications({
         pageSize: this.pageSize,
@@ -34,8 +37,11 @@ export class NotificationsComponent {
     startWith(new EmptyPagedResponse<NotificationItem>())
   );
 
-  errors = signal(new Array<string>());
+  readonly errors = signal(new Array<string>());
   #currentPage = 0;
+
+  asNotifications = TypeHelpers.cast<NotificationSearchResults>;
+  asNotification = TypeHelpers.cast<NotificationItem>;
 
   onLazyLoad(event: TableLazyLoadEvent) {
     this.#currentPage = (event.first ?? 0) / this.pageSize + 1;
@@ -53,7 +59,7 @@ export class NotificationsComponent {
         this.#toast.success("All notifications marked as read.");
         this.#lazyLoadEventSubject.next({ first: 0 });
       },
-      error: response => this.errors.set(response.errorMessages),
+      error: setApiErrors(this.errors),
     });
   }
 }

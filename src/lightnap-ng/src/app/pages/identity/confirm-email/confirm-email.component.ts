@@ -1,19 +1,21 @@
 import { Component, inject, input, OnInit, signal } from "@angular/core";
 import { ReactiveFormsModule } from "@angular/forms";
 import { RouterModule } from "@angular/router";
-import { BlockUiService, ErrorListComponent } from "@core";
+import { setApiErrors } from "@core";
+import { BrandedCardComponent } from "@core/components/branded-card/branded-card.component";
+import { ErrorListComponent } from "@core/components/error-list/error-list.component";
+import { RouteAliasService } from "@core/features/routing/services/route-alias-service";
+import { BlockUiService } from "@core/services/block-ui.service";
 import { IdentityService } from "@core/services/identity.service";
-import { RouteAliasService } from "@core";
 import { ButtonModule } from "primeng/button";
 import { CheckboxModule } from "primeng/checkbox";
 import { InputTextModule } from "primeng/inputtext";
 import { finalize } from "rxjs";
-import { IdentityCardComponent } from "@core";
 
 @Component({
   standalone: true,
   templateUrl: "./confirm-email.component.html",
-  imports: [ReactiveFormsModule, RouterModule, ButtonModule, InputTextModule, CheckboxModule, IdentityCardComponent, ErrorListComponent],
+  imports: [ReactiveFormsModule, RouterModule, ButtonModule, InputTextModule, CheckboxModule, BrandedCardComponent, ErrorListComponent],
 })
 export class ConfirmEmailComponent implements OnInit {
   #identityService = inject(IdentityService);
@@ -35,7 +37,7 @@ export class ConfirmEmailComponent implements OnInit {
       .pipe(finalize(() => this.#blockUi.hide()))
       .subscribe({
         next: () => this.#routeAlias.navigateWithExtras("user-home", undefined, { replaceUrl: true }),
-        error: response => this.errors.set(response.errorMessages),
+        error: setApiErrors(this.errors),
       });
   }
 }

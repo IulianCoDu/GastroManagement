@@ -17,7 +17,7 @@ namespace LightNap.DataProviders.SqlServer.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.0")
+                .HasAnnotation("ProductVersion", "9.0.10")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -64,10 +64,6 @@ namespace LightNap.DataProviders.SqlServer.Migrations
 
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
-
-                    b.Property<string>("BrowserSettings")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
@@ -180,6 +176,9 @@ namespace LightNap.DataProviders.SqlServer.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("IsPersistent")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("IsRevoked")
                         .HasColumnType("bit");
 
@@ -199,6 +198,128 @@ namespace LightNap.DataProviders.SqlServer.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("RefreshTokens");
+                });
+
+            modelBuilder.Entity("LightNap.Core.Data.Entities.StaticContent", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CreatedByUserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("EditorRoles")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Key")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<string>("LastModifiedByUserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime?>("LastModifiedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("ReadAccess")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ReaderRoles")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<string>("StatusChangedByUserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime?>("StatusChangedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("Key")
+                        .IsUnique();
+
+                    b.HasIndex("LastModifiedByUserId");
+
+                    b.HasIndex("StatusChangedByUserId");
+
+                    b.ToTable("StaticContents");
+                });
+
+            modelBuilder.Entity("LightNap.Core.Data.Entities.StaticContentLanguage", b =>
+                {
+                    b.Property<int>("StaticContentId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("LanguageCode")
+                        .HasMaxLength(16)
+                        .HasColumnType("nvarchar(16)");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CreatedByUserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Format")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("LastModifiedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("LastModifiedUserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("StaticContentId", "LanguageCode");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("LanguageCode");
+
+                    b.HasIndex("LastModifiedUserId");
+
+                    b.ToTable("StaticContentLanguages");
+                });
+
+            modelBuilder.Entity("LightNap.Core.Data.Entities.UserSetting", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Key")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("LastModifiedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("UserId", "Key");
+
+                    b.ToTable("UserSettings");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -329,6 +450,61 @@ namespace LightNap.DataProviders.SqlServer.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("LightNap.Core.Data.Entities.StaticContent", b =>
+                {
+                    b.HasOne("LightNap.Core.Data.Entities.ApplicationUser", "CreatedByUser")
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId");
+
+                    b.HasOne("LightNap.Core.Data.Entities.ApplicationUser", "LastModifiedByUser")
+                        .WithMany()
+                        .HasForeignKey("LastModifiedByUserId");
+
+                    b.HasOne("LightNap.Core.Data.Entities.ApplicationUser", "StatusChangedByUser")
+                        .WithMany()
+                        .HasForeignKey("StatusChangedByUserId");
+
+                    b.Navigation("CreatedByUser");
+
+                    b.Navigation("LastModifiedByUser");
+
+                    b.Navigation("StatusChangedByUser");
+                });
+
+            modelBuilder.Entity("LightNap.Core.Data.Entities.StaticContentLanguage", b =>
+                {
+                    b.HasOne("LightNap.Core.Data.Entities.ApplicationUser", "CreatedByUser")
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId");
+
+                    b.HasOne("LightNap.Core.Data.Entities.ApplicationUser", "LastModifiedUser")
+                        .WithMany()
+                        .HasForeignKey("LastModifiedUserId");
+
+                    b.HasOne("LightNap.Core.Data.Entities.StaticContent", "StaticContent")
+                        .WithMany("Languages")
+                        .HasForeignKey("StaticContentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CreatedByUser");
+
+                    b.Navigation("LastModifiedUser");
+
+                    b.Navigation("StaticContent");
+                });
+
+            modelBuilder.Entity("LightNap.Core.Data.Entities.UserSetting", b =>
+                {
+                    b.HasOne("LightNap.Core.Data.Entities.ApplicationUser", "User")
+                        .WithMany("UserSettings")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("LightNap.Core.Data.Entities.ApplicationRole", null)
@@ -385,6 +561,13 @@ namespace LightNap.DataProviders.SqlServer.Migrations
                     b.Navigation("Notifications");
 
                     b.Navigation("RefreshTokens");
+
+                    b.Navigation("UserSettings");
+                });
+
+            modelBuilder.Entity("LightNap.Core.Data.Entities.StaticContent", b =>
+                {
+                    b.Navigation("Languages");
                 });
 #pragma warning restore 612, 618
         }

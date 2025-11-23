@@ -10,6 +10,7 @@ using LightNap.Core.Identity.Interfaces;
 using LightNap.Core.Identity.Models;
 using LightNap.Core.Interfaces;
 using LightNap.Core.Notifications.Dto.Request;
+using LightNap.Core.Notifications.Enums;
 using LightNap.Core.Notifications.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -27,10 +28,11 @@ namespace LightNap.Core.Identity.Services
         ITokenService tokenService,
         IEmailService emailService,
         INotificationService notificationService,
-        IOptions<ApplicationSettings> applicationSettings,
+        IOptions<AuthenticationSettings> authenticationSettings,
         ApplicationDbContext db,
         ICookieManager cookieManager,
-        IUserContext userContext) : IIdentityService
+        IUserContext userContext,
+        IRefreshTokenService refreshTokenService) : IIdentityService
     {
         /// <summary>
         /// Handles user login asynchronously.
@@ -41,7 +43,7 @@ namespace LightNap.Core.Identity.Services
         /// <returns>The login result DTO containing the access token or a flag indicating whether further steps are required.</returns>
         private async Task<LoginSuccessDto> HandleUserLoginAsync(ApplicationUser user, bool rememberMe, string deviceDetails)
         {
-            if (applicationSettings.Value.RequireEmailVerification && !user.EmailConfirmed)
+            if (authenticationSettings.Value.RequireEmailVerification && !user.EmailConfirmed)
             {
                 return new LoginSuccessDto() { Type = LoginSuccessType.EmailVerificationRequired };
             }
@@ -62,30 +64,20 @@ namespace LightNap.Core.Identity.Services
         }
 
         /// <summary>
-        /// Validates the refresh token asynchronously.
+        /// Gets the user from the refresh token cookie asynchronously. Also refreshes the refresh token if still valid.
         /// </summary>
         /// <returns>The application user if the refresh token is valid; otherwise, null.</returns>
-        private async Task<ApplicationUser?> ValidateRefreshTokenAsync()
+        private async Task<ApplicationUser?> GetUserFromCookieAsync()
         {
             string? refreshTokenCookie = cookieManager.GetCookie(Constants.Cookies.RefreshToken);
             if (refreshTokenCookie is null) { return null; }
 
-            // If neither of these was set last time then the user doesn't want us to remember them across sessions.
-            bool rememberMe = refreshTokenCookie.Contains(Constants.Cookies.Expires) || refreshTokenCookie.Contains(Constants.Cookies.MaxAge);
+            var refreshToken = await refreshTokenService.ValidateAndRefreshTokenAsync(refreshTokenCookie);
+            if (refreshToken is null) { return null; }
 
-            var refreshToken = await db.RefreshTokens.Include(token => token.User).FirstOrDefaultAsync(token => token.Token == refreshTokenCookie);
-            if (refreshToken is null || refreshToken.IsRevoked || refreshToken.Expires < DateTime.UtcNow) { return null; }
+            cookieManager.SetCookie(Constants.Cookies.RefreshToken, refreshToken.Token, refreshToken.IsPersistent, refreshToken.Expires);
 
-            refreshToken.LastSeen = DateTime.UtcNow;
-            refreshToken.IpAddress = userContext.GetIpAddress() ?? Constants.RefreshTokens.NoIpProvided;
-            refreshToken.Expires = DateTime.UtcNow.AddDays(rememberMe ? applicationSettings.Value.LogOutInactiveDeviceDays : (tokenService.ExpirationMinutes / (60.0 * 24)));
-            refreshToken.Token = tokenService.GenerateRefreshToken();
-
-            await db.SaveChangesAsync();
-
-            cookieManager.SetCookie(Constants.Cookies.RefreshToken, refreshToken.Token, rememberMe, refreshToken.Expires);
-
-            return refreshToken.User;
+            return await userManager.FindByIdAsync(refreshToken.UserId);
         }
 
         /// <summary>
@@ -97,23 +89,9 @@ namespace LightNap.Core.Identity.Services
         /// <returns>A task that represents the asynchronous operation.</returns>
         private async Task CreateRefreshTokenAsync(ApplicationUser user, bool rememberMe, string deviceDetails)
         {
-            DateTime expires = DateTime.UtcNow.AddDays(rememberMe ? applicationSettings.Value.LogOutInactiveDeviceDays : tokenService.ExpirationMinutes / (60.0 * 24));
-            string refreshToken = tokenService.GenerateRefreshToken();
-
-            db.RefreshTokens.Add(
-                new RefreshToken()
-                {
-                    Id = Guid.NewGuid().ToString(),
-                    Token = refreshToken,
-                    Expires = expires,
-                    LastSeen = DateTime.UtcNow,
-                    IpAddress = userContext.GetIpAddress() ?? Constants.RefreshTokens.NoIpProvided,
-                    Details = deviceDetails,
-                    UserId = user.Id
-                });
-            await db.SaveChangesAsync();
-
-            cookieManager.SetCookie(Constants.Cookies.RefreshToken, refreshToken, rememberMe, expires);
+            DateTime expires = DateTime.UtcNow.AddDays(rememberMe ? authenticationSettings.Value.LogOutInactiveDeviceDays : tokenService.ExpirationMinutes / (60.0 * 24));
+            var refreshToken = await refreshTokenService.CreateRefreshTokenAsync(user, deviceDetails, rememberMe, expires);
+            cookieManager.SetCookie(Constants.Cookies.RefreshToken, refreshToken.Token, rememberMe, expires);
         }
 
         /// <summary>
@@ -187,7 +165,7 @@ namespace LightNap.Core.Identity.Services
         /// <returns>The login result.</returns>
         public async Task<LoginSuccessDto> RegisterAsync(RegisterRequestDto requestDto)
         {
-            ApplicationUser user = requestDto.ToCreate(applicationSettings.Value.RequireTwoFactorForNewUsers);
+            ApplicationUser user = requestDto.ToCreate(authenticationSettings.Value.RequireTwoFactorForNewUsers);
             var result = await userManager.CreateAsync(user, requestDto.Password);
             if (!result.Succeeded)
             {
@@ -200,7 +178,7 @@ namespace LightNap.Core.Identity.Services
                 await emailService.SendRegistrationWelcomeAsync(user);
             }
 
-            if (applicationSettings.Value.RequireEmailVerification)
+            if (authenticationSettings.Value.RequireEmailVerification)
             {
                 await this.SendVerificationEmailAsync(user);
             }
@@ -372,10 +350,12 @@ namespace LightNap.Core.Identity.Services
         /// <summary>
         /// Gets a new access token using the refresh token.
         /// </summary>
-        /// <returns>The login result.</returns>
+        /// <returns>The access token or an empty string if the user is not logged in.</returns>
         public async Task<string> GetAccessTokenAsync()
         {
-            var user = await this.ValidateRefreshTokenAsync() ?? throw new UserFriendlyApiException("This account needs to sign in.");
+            var user = await this.GetUserFromCookieAsync();
+            if (user is null) { return string.Empty; }
+
             if (!await signInManager.CanSignInAsync(user)) { throw new UserFriendlyApiException("This account may not sign in."); }
 
             return await tokenService.GenerateAccessTokenAsync(user);
@@ -430,6 +410,8 @@ namespace LightNap.Core.Identity.Services
         /// <returns>A list of devices associated with the user.</returns>  
         public async Task<IList<DeviceDto>> GetDevicesAsync()
         {
+            userContext.AssertAuthenticated();
+
             var tokens = await db.RefreshTokens
                             .Where(token => token.UserId == userContext.GetUserId() && !token.IsRevoked && token.Expires > DateTime.UtcNow)
                             .OrderByDescending(device => device.Expires)
@@ -445,11 +427,9 @@ namespace LightNap.Core.Identity.Services
         /// <returns>A task that represents the asynchronous operation.</returns>  
         public async Task RevokeDeviceAsync(string deviceId)
         {
-            var token = await db.RefreshTokens.FindAsync(deviceId) ?? throw new UserFriendlyApiException("Device not found.");
-            if (token.UserId != userContext.GetUserId()) { throw new UserFriendlyApiException("Device not found."); }
+            userContext.AssertAuthenticated();
 
-            token.IsRevoked = true;
-            await db.SaveChangesAsync();
+            await refreshTokenService.RevokeRefreshTokenAsync(deviceId);
         }
     }
 }

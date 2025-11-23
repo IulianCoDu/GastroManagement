@@ -1,12 +1,13 @@
 import { CommonModule } from "@angular/common";
 import { Component, inject, signal } from "@angular/core";
-import { ConfirmDialogComponent, IdentityService } from "@core";
+import { DeviceDto, setApiErrors, TypeHelpers } from "@core";
 import { ApiResponseComponent } from "@core/components/api-response/api-response.component";
+import { ConfirmDialogComponent } from "@core/components/confirm-dialog/confirm-dialog.component";
 import { ErrorListComponent } from "@core/components/error-list/error-list.component";
-import { ProfileService } from "@core/services/profile.service";
+import { IdentityService } from "@core/services/identity.service";
 import { ConfirmationService } from "primeng/api";
 import { ButtonModule } from "primeng/button";
-import { PanelModule } from 'primeng/panel';
+import { PanelModule } from "primeng/panel";
 import { TableModule } from "primeng/table";
 
 @Component({
@@ -18,9 +19,12 @@ export class DevicesComponent {
   readonly #devicesService = inject(IdentityService);
   readonly #confirmationService = inject(ConfirmationService);
 
-  devices$ = signal(this.#devicesService.getDevices());
+  readonly devices$ = signal(this.#devicesService.getDevices());
 
-  errors = signal(new Array<string>());
+  readonly errors = signal(new Array<string>());
+
+  readonly asDevices = TypeHelpers.cast<Array<DeviceDto>>;
+  readonly asDevice = TypeHelpers.cast<DeviceDto>;
 
   revokeDevice(event: any, deviceId: string) {
     this.#confirmationService.confirm({
@@ -31,7 +35,7 @@ export class DevicesComponent {
       accept: () => {
         this.#devicesService.revokeDevice(deviceId).subscribe({
           next: () => this.devices$.set(this.#devicesService.getDevices()),
-          error: response => this.errors.set(response.errorMessages),
+          error: setApiErrors(this.errors),
         });
       },
     });

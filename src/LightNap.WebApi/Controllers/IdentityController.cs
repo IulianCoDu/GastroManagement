@@ -2,7 +2,9 @@ using LightNap.Core.Api;
 using LightNap.Core.Identity.Dto.Request;
 using LightNap.Core.Identity.Dto.Response;
 using LightNap.Core.Identity.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace LightNap.WebApi.Controllers
 {
@@ -11,6 +13,7 @@ namespace LightNap.WebApi.Controllers
     /// </summary>
     [ApiController]
     [Route("api/[controller]")]
+    [EnableRateLimiting("Auth")]
     public class IdentityController(IIdentityService identityService) : ControllerBase
     {
         /// <summary>
@@ -32,6 +35,7 @@ namespace LightNap.WebApi.Controllers
         /// <param name="registerRequest">The registration request DTO.</param>
         /// <returns>The API response containing the login result.</returns>
         [HttpPost("register")]
+        [EnableRateLimiting("Registration")]  // Override the controller-level "Auth" policy
         [ProducesResponseType(typeof(ApiResponseDto<LoginSuccessDto>), 200)]
         [ProducesResponseType(400)]
         public async Task<ApiResponseDto<LoginSuccessDto>> Register(RegisterRequestDto registerRequest)
@@ -211,6 +215,7 @@ namespace LightNap.WebApi.Controllers
         /// <response code="200">Returns the list of devices.</response>
         /// <response code="401">Unauthorized access.</response>
         [HttpGet("devices")]
+        [Authorize]
         [ProducesResponseType(typeof(ApiResponseDto<IList<DeviceDto>>), 200)]
         [ProducesResponseType(401)]
         public async Task<ApiResponseDto<IList<DeviceDto>>> GetDevices()
@@ -227,6 +232,7 @@ namespace LightNap.WebApi.Controllers
         /// <response code="401">Unauthorized access.</response>
         /// <response code="404">Device not found.</response>
         [HttpDelete("devices/{deviceId}")]
+        [Authorize]
         [ProducesResponseType(typeof(ApiResponseDto<bool>), 200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(404)]

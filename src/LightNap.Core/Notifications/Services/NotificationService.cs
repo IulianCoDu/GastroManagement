@@ -2,12 +2,15 @@ using LightNap.Core.Api;
 using LightNap.Core.Data;
 using LightNap.Core.Data.Entities;
 using LightNap.Core.Extensions;
+using LightNap.Core.Hubs;
 using LightNap.Core.Identity.Dto.Response;
 using LightNap.Core.Interfaces;
 using LightNap.Core.Notifications.Dto.Request;
 using LightNap.Core.Notifications.Dto.Response;
+using LightNap.Core.Notifications.Enums;
 using LightNap.Core.Notifications.Interfaces;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 
 namespace LightNap.Core.Notifications.Services
@@ -15,7 +18,7 @@ namespace LightNap.Core.Notifications.Services
     /// <summary>  
     /// Service for managing user notifications.
     /// </summary>  
-    public class NotificationService(ApplicationDbContext db, UserManager<ApplicationUser> userManager, IUserContext userContext) : INotificationService
+    public class NotificationService(ApplicationDbContext db, UserManager<ApplicationUser> userManager, IUserContext userContext, IHubContext<NotificationsHub> hubContext) : INotificationService
     {
         /// <summary>
         /// Creates a notification for a specific user.
@@ -30,7 +33,9 @@ namespace LightNap.Core.Notifications.Services
             db.Notifications.Add(notification);
             await db.SaveChangesAsync();
 
-            // TODO: Send notification to SignalR
+            // Send notification to SignalR
+            var notificationDto = notification.ToDto();
+            await hubContext.Clients.Group($"user:{userId}").SendAsync("ReceiveNotification", notificationDto);
         }
 
         /// <summary>
@@ -143,16 +148,13 @@ namespace LightNap.Core.Notifications.Services
 
             int skip = (requestDto.PageNumber - 1) * requestDto.PageSize;
 
-            // Batch the queries for totalCount, unreadCount, and page items
-            var totalCountTask = baseQuery.CountAsync();
-            var unreadCountTask = db.Notifications.CountAsync(n => n.UserId == userId && n.Status == NotificationStatus.Unread);
-            var itemsTask = query.Skip(skip).Take(requestDto.PageSize).Select(item => item.ToDto()).ToListAsync();
+            int totalCount = await baseQuery.CountAsync();
+            int unreadCount = await db.Notifications.CountAsync(n => n.UserId == userId && n.Status == NotificationStatus.Unread);
+            var items = await query.Skip(skip).Take(requestDto.PageSize).Select(item => item.ToDto()).ToListAsync();
 
-            await Task.WhenAll(totalCountTask, unreadCountTask, itemsTask);
-
-            return new NotificationSearchResultsDto(itemsTask.Result, requestDto.PageNumber, requestDto.PageSize, totalCountTask.Result)
+            return new NotificationSearchResultsDto(items, requestDto.PageNumber, requestDto.PageSize, totalCount)
             {
-                UnreadCount = unreadCountTask.Result
+                UnreadCount = unreadCount
             };
         }
 

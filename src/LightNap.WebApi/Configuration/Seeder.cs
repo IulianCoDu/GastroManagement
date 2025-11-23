@@ -3,28 +3,44 @@ using LightNap.Core.Data;
 using LightNap.Core.Data.Entities;
 using LightNap.Core.Extensions;
 using LightNap.Core.Identity.Dto.Request;
+using LightNap.Core.StaticContents.Dto.Request;
+using LightNap.Core.StaticContents.Enums;
+using LightNap.Core.StaticContents.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using System.Data;
+using System.Text.RegularExpressions;
 
 namespace LightNap.WebApi.Configuration
 {
     /// <summary>
-    /// Class responsible for seeding content in the application upon load.
+    /// Provides functionality to seed roles, users, and application-specific content into the database. This class is
+    /// designed to be used during application startup to ensure that required data is present.
     /// </summary>
-    /// <remarks>
-    /// Initializes a new instance of the <see cref="Seeder"/> class.
-    /// </remarks>
-    /// <param name="serviceProvider">Service provider to pull dependencies from.</param>
-    public partial class Seeder(IServiceProvider serviceProvider)
+    /// <remarks>The <see cref="Seeder"/> class is responsible for seeding roles, users, and other application
+    /// content into the database. It supports both baseline seeding (e.g., roles and administrators) and
+    /// environment-specific seeding. Environment-specific logic is handled directly in <see cref="SeedEnvironmentContentAsync"/>. 
+    /// This class relies on several dependencies, including <see cref="RoleManager{T}"/>, <see cref="UserManager{T}"/>,
+    /// and <see cref="ApplicationDbContext"/>, to perform its operations. It also uses configuration options to
+    /// determine the users and roles to seed. You may also implement a Seeder.Local.cs that is not included in source control
+    /// for scenarios (like your local development environment) where you want to seed for a specific scenario that is not
+    /// committed.</remarks>
+    /// <param name="serviceProvider">A service provider to pull in dependencies.</param>
+    /// <param name="logger">The logger.</param>
+    /// <param name="roleManager">The role manager.</param>
+    /// <param name="userManager">The user manager.</param>
+    /// <param name="contentService">The static content service.</param>
+    /// <param name="seededUserConfigurations">The users to seed.</param>
+    /// <param name="authenticationSettings">The configured authentication settings.</param>
+    public partial class Seeder(
+        IServiceProvider serviceProvider,
+        ILogger<Seeder> logger,
+        RoleManager<ApplicationRole> roleManager,
+        UserManager<ApplicationUser> userManager,
+        IStaticContentService contentService,
+        IOptions<Dictionary<string, List<SeededUserConfiguration>>> seededUserConfigurations,
+        IOptions<AuthenticationSettings> authenticationSettings)
     {
-        private readonly RoleManager<ApplicationRole> _roleManager = serviceProvider.GetRequiredService<RoleManager<ApplicationRole>>();
-        private readonly ILogger<Seeder> _logger = serviceProvider.GetRequiredService<ILogger<Seeder>>();
-        private readonly UserManager<ApplicationUser> _userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-        private readonly ApplicationDbContext _db = serviceProvider.GetRequiredService<ApplicationDbContext>();
-        private readonly IServiceProvider _serviceProvider = serviceProvider;
-        private readonly IOptions<Dictionary<string, List<SeededUserConfiguration>>> _seededUserConfigurations = serviceProvider.GetRequiredService<IOptions<Dictionary<string, List<SeededUserConfiguration>>>>();
-        private readonly IOptions<ApplicationSettings> _applicationSettings = serviceProvider.GetRequiredService<IOptions<ApplicationSettings>>();
 
         /// <summary>
         /// Run seeding functionality necessary every time an application loads, regardless of environment.
@@ -34,8 +50,140 @@ namespace LightNap.WebApi.Configuration
         {
             await this.SeedRolesAsync();
             await this.SeedUsersAsync();
+            await this.SeedStaticContentAsync();
             await this.SeedApplicationContentAsync();
             await this.SeedEnvironmentContentAsync();
+            await this.SeedLocalContentAsync();
+        }
+
+        private async Task SeedStaticContentAsync()
+        {
+            string basePath = Path.Combine(AppContext.BaseDirectory, "StaticContent");
+            if (!Directory.Exists(basePath))
+            {
+                logger.LogWarning("Static content directory not found: '{basePath}'", basePath);
+                return;
+            }
+
+            // Track keys during this scan to detect duplicates in the file system
+            var keyRegistry = new Dictionary<string, (StaticContentType Type, StaticContentReadAccess ReadAccess, string Path)>();
+
+            // Pattern: {languageCode}.{extension}
+            Regex fileNameRegex = new Regex(@"^([a-z]{2})\.([a-z0-9]+)$", RegexOptions.Compiled);
+
+            // Iterate through type folders (zones, pages, others added in future)
+            foreach (var typeDir in Directory.GetDirectories(basePath))
+            {
+                string typeName = Path.GetFileName(typeDir);
+                StaticContentType type = typeName.ToLowerInvariant() switch
+                {
+                    "zones" => StaticContentType.Zone,
+                    "pages" => StaticContentType.Page,
+                    _ => throw new InvalidOperationException($"Invalid static content type directory: '{typeDir}'")
+                };
+
+                // Iterate through read access folders (public, authenticated, explicit)
+                foreach (var accessDir in Directory.GetDirectories(typeDir))
+                {
+                    string accessName = Path.GetFileName(accessDir);
+                    StaticContentReadAccess readAccess = accessName.ToLowerInvariant() switch
+                    {
+                        "public" => StaticContentReadAccess.Public,
+                        "authenticated" => StaticContentReadAccess.Authenticated,
+                        "explicit" => StaticContentReadAccess.Explicit,
+                        _ => throw new InvalidOperationException($"Invalid static content read access directory: '{accessDir}'")
+                    };
+
+                    // Iterate through key folders
+                    foreach (var keyDir in Directory.GetDirectories(accessDir))
+                    {
+                        string key = Path.GetFileName(keyDir);
+
+                        // Validate key format (kebab-case)
+                        if (!Regex.IsMatch(key, @"^[a-z0-9]+(-[a-z0-9]+)*$"))
+                        {
+                            throw new InvalidOperationException($"Invalid static content key directory name: '{key}'. Must be kebab-case.");
+                        }
+
+                        // Check for duplicate keys in the file system
+                        if (keyRegistry.TryGetValue(key, out var existing))
+                        {
+                            throw new InvalidOperationException(
+                                $"Duplicate static content key '{key}' found in file system.\n" +
+                                $"  First location: {existing.Path} (Type: {existing.Type}, Access: {existing.ReadAccess})\n" +
+                                $"  Second location: {keyDir} (Type: {type}, Access: {readAccess})\n" +
+                                $"Each key must appear in exactly one location.");
+                        }
+
+                        // Register this key
+                        keyRegistry[key] = (type, readAccess, keyDir);
+
+                        // Iterate through language files
+                        foreach (var filePath in Directory.GetFiles(keyDir))
+                        {
+                            string fileName = Path.GetFileName(filePath);
+                            Match match = fileNameRegex.Match(fileName);
+
+                            if (!match.Success)
+                            {
+                                logger.LogWarning("Skipping invalid static content file: '{filePath}'. Expected format: {{languageCode}}.{{extension}}", filePath);
+                                continue;
+                            }
+
+                            string languageCode = match.Groups[1].Value;
+                            string extension = match.Groups[2].Value;
+
+                            StaticContentFormat format = extension.ToLowerInvariant() switch
+                            {
+                                "html" => StaticContentFormat.Html,
+                                "md" => StaticContentFormat.Markdown,
+                                "txt" => StaticContentFormat.PlainText,
+                                _ => throw new InvalidOperationException($"Invalid static content format in file: '{filePath}'")
+                            };
+
+                            string content = await File.ReadAllTextAsync(filePath);
+
+                            await this.SeedStaticContentLanguageAsync(key, type, readAccess, languageCode, format, content);
+                        }
+                    }
+                }
+            }
+
+            logger.LogInformation("Seeded {count} static content keys from file system", keyRegistry.Count);
+        }
+
+        private async Task SeedStaticContentLanguageAsync(string key, StaticContentType type, StaticContentReadAccess readAccess,
+            string languageCode, StaticContentFormat format, string content)
+        {
+            var staticContent = await contentService.GetStaticContentAsync(key);
+            if (staticContent is null)
+            {
+                staticContent = await contentService.CreateStaticContentAsync(
+                    new CreateStaticContentDto()
+                    {
+                        Key = key,
+                        Type = type,
+                        Status = StaticContentStatus.Published,
+                        ReadAccess = readAccess
+                    });
+
+                logger.LogInformation("Created static content with key '{key}'", key);
+            }
+
+            var existingLanguage = await contentService.GetStaticContentLanguageAsync(key, languageCode);
+            if (existingLanguage is null)
+            {
+                await contentService.CreateStaticContentLanguageAsync(
+                    staticContent.Key,
+                    languageCode,
+                    new CreateStaticContentLanguageDto()
+                    {
+                        Content = content,
+                        Format = format,
+                    });
+
+                logger.LogInformation("Created static content language '{languageCode}' for key '{key}'", languageCode, key);
+            }
         }
 
         /// <summary>
@@ -46,27 +194,27 @@ namespace LightNap.WebApi.Configuration
         {
             foreach (ApplicationRole role in ApplicationRoles.All)
             {
-                if (!await this._roleManager.RoleExistsAsync(role.Name!))
+                if (!await roleManager.RoleExistsAsync(role.Name!))
                 {
-                    var result = await this._roleManager.CreateAsync(role);
+                    var result = await roleManager.CreateAsync(role);
                     if (!result.Succeeded)
                     {
                         throw new ArgumentException($"Unable to create role '{role.Name}': {string.Join("; ", result.Errors.Select(error => error.Description))}");
                     }
-                    this._logger.LogInformation("Added role '{roleName}'", role.Name);
+                    logger.LogInformation("Added role '{roleName}'", role.Name);
                 }
             }
 
             var roleSet = new HashSet<string>(ApplicationRoles.All.Select(role => role.Name!), StringComparer.OrdinalIgnoreCase);
 
-            foreach (var role in this._roleManager.Roles.Where(role => role.Name != null && !roleSet.Contains(role.Name)))
+            foreach (var role in roleManager.Roles.Where(role => role.Name != null && !roleSet.Contains(role.Name)))
             {
-                var result = await this._roleManager.DeleteAsync(role);
+                var result = await roleManager.DeleteAsync(role);
                 if (!result.Succeeded)
                 {
                     throw new ArgumentException($"Unable to remove role '{role.Name}': {string.Join("; ", result.Errors.Select(error => error.Description))}");
                 }
-                this._logger.LogInformation("Removed role '{roleName}'", role.Name);
+                logger.LogInformation("Removed role '{roleName}'", role.Name);
             }
         }
 
@@ -76,16 +224,16 @@ namespace LightNap.WebApi.Configuration
         /// <returns>A task representing the asynchronous operation.</returns>
         private async Task SeedUsersAsync()
         {
-            if (this._seededUserConfigurations.Value is null) { return; }
+            if (seededUserConfigurations.Value is null) { return; }
 
             // Loop through the dictionary keys (roles) and add/get each user and add them to the role. Note that we sort the roles alphabetically,
             // so the "earliest" alphabetic instance of a new user will use that email/password.
-            foreach (var roleToUsers in this._seededUserConfigurations.Value.OrderBy(roleToUser => roleToUser.Key)
+            foreach (var roleToUsers in seededUserConfigurations.Value.OrderBy(roleToUser => roleToUser.Key)
                 .Select(roleToUser => new { Role = roleToUser.Key, Users = roleToUser.Value }))
             {
                 if (!string.IsNullOrWhiteSpace(roleToUsers.Role))
                 {
-                    if (!await this._roleManager.RoleExistsAsync(roleToUsers.Role)) { throw new ArgumentException($"Unable to find role '{roleToUsers.Role}' to seed users."); }
+                    if (!await roleManager.RoleExistsAsync(roleToUsers.Role)) { throw new ArgumentException($"Unable to find role '{roleToUsers.Role}' to seed users."); }
                 }
 
                 foreach (var seededUser in roleToUsers.Users)
@@ -109,7 +257,7 @@ namespace LightNap.WebApi.Configuration
         /// <returns>A task representing the asynchronous operation.</returns>
         private async Task<ApplicationUser> GetOrCreateUserAsync(string userName, string email, string? password = null)
         {
-            ApplicationUser? user = await this._userManager.FindByEmailAsync(email);
+            ApplicationUser? user = await userManager.FindByEmailAsync(email);
 
             if (user is null)
             {
@@ -125,15 +273,15 @@ namespace LightNap.WebApi.Configuration
                     UserName = userName
                 };
 
-                user = registerRequestDto.ToCreate(this._applicationSettings.Value.RequireTwoFactorForNewUsers);
+                user = registerRequestDto.ToCreate(authenticationSettings.Value.RequireTwoFactorForNewUsers);
 
-                var result = await this._userManager.CreateAsync(user, passwordToSet);
+                var result = await userManager.CreateAsync(user, passwordToSet);
                 if (!result.Succeeded)
                 {
                     throw new ArgumentException($"Unable to create user '{userName}' ('{email}'): {string.Join("; ", result.Errors.Select(error => error.Description))}");
                 }
 
-                this._logger.LogInformation("Created user '{userName}' ('{email}')", userName, email);
+                logger.LogInformation("Created user '{userName}' ('{email}')", userName, email);
             }
 
             return user;
@@ -147,17 +295,15 @@ namespace LightNap.WebApi.Configuration
         /// <returns>A task representing the asynchronous operation.</returns>
         private async Task AddUserToRole(ApplicationUser user, string role)
         {
-            if (!await this._userManager.IsInRoleAsync(user, role))
-            {
-                var result = await this._userManager.AddToRoleAsync(user, role);
-                if (!result.Succeeded)
-                {
-                    throw new ArgumentException(
-                        $"Unable to add user '{user.UserName}' ('{user.Email}') to role '{role}': {string.Join("; ", result.Errors.Select(error => error.Description))}");
-                }
-            }
+            if (await userManager.IsInRoleAsync(user, role)) { return; }
 
-            this._logger.LogInformation("Added user '{userName}' ('{email}') to role '{roleName}'", user.UserName, user.Email, role);
+            var result = await userManager.AddToRoleAsync(user, role);
+            if (!result.Succeeded)
+            {
+                throw new ArgumentException(
+                    $"Unable to add user '{user.UserName}' ('{user.Email}') to role '{role}': {string.Join("; ", result.Errors.Select(error => error.Description))}");
+            }
+            logger.LogInformation("Added user '{userName}' ('{email}') to role '{roleName}'", user.UserName, user.Email, role);
         }
 
         /// <summary>
@@ -165,28 +311,97 @@ namespace LightNap.WebApi.Configuration
         /// seed any content required to be loaded regardless of environment.
         /// </summary>
         /// <returns>A task representing the asynchronous operation.</returns>
+#pragma warning disable CA1822 // Mark members as static. This needs to be here for the partial method to work properly.
         private Task SeedApplicationContentAsync()
+#pragma warning restore CA1822 // Mark members as static
         {
-            // TODO: Add any seeding code you want run every time the app loads in any environment. For environment-specific seeding, see SeedEnvironmentContent().
+            // TODO: Add any seeding code you want run every time the app loads in any environment. For environment-specific seeding, see SeedEnvironmentContentAsync().
 
             return Task.CompletedTask;
         }
 
         /// <summary>
-        /// Seeds content in the application based on the implementation of a SeedEnvironmentContent partial method in the class. To use this, add a Seeder 
-        /// partial class (like Seeder.Development.cs) that implements the private method SeedEnvironmentContent(). It runs after SeedApplicationContentAsync()
+        /// Seeds content in the application based on the environment.
+        /// </summary>
+        /// <returns>A task representing the asynchronous operation.</returns>
+        public async Task SeedEnvironmentContentAsync()
+        {
+            var environment = serviceProvider.GetRequiredService<IHostEnvironment>();
+
+            if (environment.EnvironmentName == "Development")
+            {
+                await this.SeedDevelopmentContentAsync();
+            }
+            else if (environment.EnvironmentName == "E2e")
+            {
+                await this.SeedE2eContentAsync();
+            }
+            else if (environment.EnvironmentName == "Staging")
+            {
+                await this.SeedStagingContentAsync();
+            }
+            else if (environment.EnvironmentName == "Production")
+            {
+                await this.SeedProductionContentAsync();
+            }
+            else
+            {
+                logger.LogWarning("No environment-specific seeding defined for environment '{environmentName}'", environment.EnvironmentName);
+            }
+            // Add more environments as needed
+        }
+
+        private async Task SeedE2eContentAsync()
+        {
+            logger.LogInformation("Seeding E2E test content");
+            
+            logger.LogInformation("Seeded E2E test content");
+        }
+
+        private async Task SeedDevelopmentContentAsync()
+        {
+            logger.LogInformation("Seeding Development environment content");
+
+            // Add Development-specific seeding logic here. Note that this is intended to be Development environment content
+            // that is committed to source control and useful for most/all developers working on this project. For local-only
+            // seeding important for the task at hand, consider implementing a Seeder.Local.cs, which is run after environment seeding.
+
+            logger.LogInformation("Seeded Development environment content");
+        }
+
+        private async Task SeedStagingContentAsync()
+        {
+            logger.LogInformation("Seeding Staging environment content");
+
+            // Add Staging-specific seeding logic here
+
+            logger.LogInformation("Seeded Staging environment content");
+        }
+
+        private async Task SeedProductionContentAsync()
+        {
+            logger.LogInformation("Seeding Production environment content");
+
+            // Add Production-specific seeding logic here
+
+            logger.LogInformation("Seeded Production environment content");
+        }
+
+        /// <summary>
+        /// Seeds content in the application based on the implementation of a SeedLocalContent partial method in the class. To use this, add a Seeder 
+        /// partial class (Seeder.Local.cs) that implements the private method SeedLocalContent(). It runs after SeedEnvironmentContentAsync()
         /// and is always executed on load if it exists.
         /// </summary>
         /// <returns>A task representing the asynchronous operation.</returns>
-        public Task SeedEnvironmentContentAsync()
+        public Task SeedLocalContentAsync()
         {
-            this.SeedEnvironmentContent();
+            this.SeedLocalContent();
             return Task.CompletedTask;
         }
 
         /// <summary>
-        /// Optional partial to implement in a new class (like Seeder.Development.cs) to seed environment-specific content.
+        /// Optional partial to implement in a new class (Seeder.Local.cs) to seed local content.
         /// </summary>
-        partial void SeedEnvironmentContent();
+        partial void SeedLocalContent();
     }
 }

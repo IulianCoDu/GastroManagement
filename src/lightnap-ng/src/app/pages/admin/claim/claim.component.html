@@ -1,5 +1,7 @@
-<api-response [apiResponse]="usersForClaim$()" errorMessage="Error loading claim" loadingMessage="Loading claim...">
-  <ng-template #success let-usersForClaim>
+<ln-api-response [apiResponse]="usersForClaim$()" errorMessage="Error loading claim" loadingMessage="Loading claim...">
+  <ng-template #success let-usersForClaimAny>
+    @let usersForClaimResults = asUsersForClaimResults(usersForClaimAny);
+
     <p-panel header="Manage Claim">
       <div class="flex gap-8">
         <div class="flex flex-col">
@@ -12,7 +14,13 @@
         </div>
       </div>
 
-      <p-table [value]="usersForClaim">
+      <p-table
+        [value]="usersForClaimResults.data"
+        [paginator]="true"
+        [rows]="pageSize"
+        [totalRecords]="usersForClaimResults.totalCount"
+        [lazy]="true"
+        (onLazyLoad)="loadUsersLazy($event)">
         <ng-template #header>
           <tr>
             <th><i class="pi pi-trash"></i></th>
@@ -20,14 +28,16 @@
             <th width="100%">Email</th>
           </tr>
         </ng-template>
-        <ng-template #body let-user>
+        <ng-template #body let-userAny>
+          @let user = asUser(userAny);
+
           <tr>
             <td>
-              <confirm-popup [key]="user.id" confirmStyleClass="p-button-danger" />
+              <ln-confirm-popup [key]="user.id" confirmStyleClass="p-button-danger" />
               <p-button severity="danger" icon="pi pi-trash" title="Remove user claim" (onClick)="removeUserClaim($event, user.id)" />
             </td>
             <td>
-              <a [routerLink]="'admin-user' | route: user.id"> {{ user.userName }}</a>
+              <a [routerLink]="'admin-user' | route: user.userName"> {{ user.userName }}</a>
             </td>
             <td>
               <a href="mailto:{{ user.email }}"> {{ user.email }}</a>
@@ -42,11 +52,11 @@
       </p-table>
 
       <form [formGroup]="form" class="flex gap-2 my-3" (ngSubmit)="addUserClaim()">
-        <people-picker formControlName="userId" />
+        <ln-user-picker formControlName="userId" />
         <p-button type="submit" label="Add User" icon="pi pi-plus" [disabled]="!form.valid" />
       </form>
 
-      <error-list [errors]="errors()" />
+      <ln-error-list [errors]="errors()" />
     </p-panel>
   </ng-template>
-</api-response>
+</ln-api-response>

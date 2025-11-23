@@ -1,20 +1,24 @@
-<api-response [apiResponse]="roles$" errorMessage="Error loading roles" loadingMessage="Loading roles...">
-  <ng-template #success let-roles>
-    <p-panel header="Manage Roles">
+<ln-api-response [apiResponse]="roles$" errorMessage="Error loading roles" loadingMessage="Loading roles...">
+  <ng-template #success let-rolesAny>
+    @let roles = asRoles(rolesAny);
+
+    <p-panel data-cy="manage-roles-panel" header="Manage Roles">
       <p-table [value]="roles">
         <ng-template #header>
           <tr>
-            <th>Role</th>
-            <th>Name</th>
-            <th>Description</th>
+            <th data-cy="role-header">Role</th>
+            <th data-cy="name-header">Name</th>
+            <th data-cy="description-header">Description</th>
           </tr>
         </ng-template>
-        <ng-template #body let-role>
+        <ng-template #body let-roleAny>
+          @let role = asRole(roleAny);
+
           <tr>
             <td>
               <a [routerLink]="'admin-role' | route: role.name"> {{ role.displayName }}</a>
             </td>
-            <td>{{ role.name }}</td>
+            <td>{{ role.displayName }}</td>
             <td>
               {{ role.description }}
             </td>
@@ -28,4 +32,4 @@
       </p-table>
     </p-panel>
   </ng-template>
-</api-response>
+</ln-api-response>

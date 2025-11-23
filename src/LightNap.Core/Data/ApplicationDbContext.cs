@@ -1,7 +1,6 @@
 ﻿using LightNap.Core.Data.Comparers;
 using LightNap.Core.Data.Converters;
 using LightNap.Core.Data.Entities;
-using LightNap.Core.Profile.Dto.Response;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -21,6 +20,21 @@ namespace LightNap.Core.Data
         /// Refresh tokens in the DB.
         /// </summary>
         public DbSet<RefreshToken> RefreshTokens { get; set; } = null!;
+
+        /// <summary>
+        /// Static content in the DB.
+        /// </summary>
+        public DbSet<StaticContent> StaticContents { get; set; } = null!;
+
+        /// <summary>
+        /// Static content language variants in the DB.
+        /// </summary>
+        public DbSet<StaticContentLanguage> StaticContentLanguages { get; set; } = null!;
+
+        /// <summary>
+        /// User settings in the DB.
+        /// </summary>
+        public DbSet<UserSetting> UserSettings { get; set; } = null!;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ApplicationDbContext"/> class.
@@ -57,9 +71,12 @@ namespace LightNap.Core.Data
                 .HasForeignKey(rt => rt.UserId)
                 .IsRequired();
 
-            builder.Entity<ApplicationUser>()
-                .Property(u => u.BrowserSettings)
-                .Metadata.SetValueComparer(new BrowserSettingsValueComparer());
+            builder.Entity<StaticContent>()
+                .HasIndex(sc => sc.Key)
+                .IsUnique();
+
+            builder.Entity<StaticContentLanguage>()
+                .HasIndex(scl => scl.LanguageCode);
         }
 
         /// <inheritdoc />
@@ -67,10 +84,6 @@ namespace LightNap.Core.Data
         {
             // Make sure all DateTime properties are stored as UTC.
             configurationBuilder.Properties<DateTime>().HaveConversion<UtcValueConverter>();
-
-            // Storing this as a JSON string.
-            configurationBuilder.Properties<BrowserSettingsDto>()
-                .HaveConversion<BrowserSettingsValueConverter>();
         }
     }
 }

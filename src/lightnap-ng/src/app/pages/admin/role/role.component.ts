@@ -2,7 +2,12 @@ import { CommonModule } from "@angular/common";
 import { Component, inject, input, OnInit, signal } from "@angular/core";
 import { FormBuilder, ReactiveFormsModule, Validators } from "@angular/forms";
 import { RouterLink } from "@angular/router";
-import { AdminUsersService, ApiResponseComponent, ConfirmPopupComponent, ErrorListComponent, PeoplePickerComponent, RoleWithAdminUsers, RoutePipe } from "@core";
+import { AdminUserDto, RoleWithAdminUsers, RoutePipe, setApiErrors, TypeHelpers } from "@core";
+import { ApiResponseComponent } from "@core/components/api-response/api-response.component";
+import { ConfirmPopupComponent } from "@core/components/confirm-popup/confirm-popup.component";
+import { ErrorListComponent } from "@core/components/error-list/error-list.component";
+import { UserPickerComponent } from "@core/features/users/components/user-picker/user-picker.component";
+import { AdminUsersService } from "@core/features/users/services/admin-users.service";
 import { ConfirmationService } from "primeng/api";
 import { ButtonModule } from "primeng/button";
 import { PanelModule } from "primeng/panel";
@@ -23,7 +28,7 @@ import { Observable } from "rxjs";
     ErrorListComponent,
     ApiResponseComponent,
     ConfirmPopupComponent,
-    PeoplePickerComponent,
+    UserPickerComponent,
   ],
 })
 export class RoleComponent implements OnInit {
@@ -37,9 +42,12 @@ export class RoleComponent implements OnInit {
     userId: this.#fb.control<string | null>(null, [Validators.required]),
   });
 
-  errors = signal(new Array<string>());
+  readonly errors = signal(new Array<string>());
 
-  roleWithUsers$ = signal(new Observable<RoleWithAdminUsers>());
+  readonly roleWithUsers$ = signal(new Observable<RoleWithAdminUsers>());
+
+  readonly asRoleWithUsers = TypeHelpers.cast<RoleWithAdminUsers>;
+  readonly asAdminUser = TypeHelpers.cast<AdminUserDto>;
 
   ngOnInit() {
     this.#refreshRole();
@@ -55,7 +63,7 @@ export class RoleComponent implements OnInit {
         this.form.reset();
         this.#refreshRole();
       },
-      error: response => this.errors.set(response.errorMessages),
+      error: setApiErrors(this.errors),
     });
   }
 
@@ -70,7 +78,7 @@ export class RoleComponent implements OnInit {
       accept: () => {
         this.#adminService.removeUserFromRole(userId, this.role()).subscribe({
           next: () => this.#refreshRole(),
-          error: response => this.errors.set(response.errorMessages),
+          error: setApiErrors(this.errors),
         });
       },
     });
