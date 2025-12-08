@@ -41,6 +41,7 @@ export class RegisterComponent {
       password: this.#fb.control("", [Validators.required]),
       confirmPassword: this.#fb.control("", [Validators.required]),
       userName: this.#fb.control("", [Validators.required]),
+      medicName: this.#fb.control(""),
       agreedToTerms: this.#fb.control(false, [Validators.requiredTrue]),
       rememberMe: this.#fb.control(true),
     },
@@ -60,6 +61,7 @@ export class RegisterComponent {
         deviceDetails: navigator.userAgent,
         rememberMe: this.form.value.rememberMe!,
         userName: this.form.value.userName!,
+        medicName: this.form.value.medicName || undefined,
       })
       .pipe(finalize(() => this.#blockUi.hide()))
       .subscribe({

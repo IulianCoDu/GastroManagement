@@ -16,6 +16,11 @@
         </div>
 
         <div class="flex flex-col gap-2">
+          <label for="medicName" class="text-xl">Medic Name (Optional)</label>
+          <input id="medicName" data-cy="register-medic-name" type="text" placeholder="Dr. Name (for medical staff only)" pInputText formControlName="medicName" />
+        </div>
+
+        <div class="flex flex-col gap-2">
           <label for="password" class="text-xl">Password</label>
           <p-password data-cy="register-password" formControlName="password" class="w-full" inputStyleClass="w-full" placeholder="Password" [toggleMask]="true" />
         </div>

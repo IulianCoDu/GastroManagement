@@ -39,7 +39,8 @@ namespace LightNap.Core.Extensions
             {
                 Email = dto.Email,
                 TwoFactorEnabled = twoFactorEnabled,
-                UserName = dto.UserName
+                UserName = dto.UserName,
+                MedicName = dto.MedicName
             };
             return user;
         }

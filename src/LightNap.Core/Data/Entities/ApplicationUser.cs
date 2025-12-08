@@ -21,6 +21,18 @@ namespace LightNap.Core.Data.Entities
         public DateTime LastModifiedDate { get; set; } = DateTime.UtcNow;
 
         /// <summary>
+        /// The doctor's name (for medical staff users).
+        /// Stored directly on user for quick access without joins.
+        /// </summary>
+        public string? MedicName { get; set; }
+
+        /// <summary>
+        /// The associated doctor profile (optional, for medical staff users).
+        /// Created during registration when user enters their doctor name.
+        /// </summary>
+        public Medic? Medic { get; set; }
+
+        /// <summary>
         /// The notifications associated with the user.
         /// </summary>
         public ICollection<Notification>? Notifications { get; set; }

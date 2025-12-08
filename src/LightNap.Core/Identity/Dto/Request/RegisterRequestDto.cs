@@ -44,6 +44,12 @@ namespace LightNap.Core.Identity.Dto.Request
         public bool RememberMe { get; set; }
 
         /// <summary>
+        /// Gets or sets the medic/doctor name (optional, for medical staff).
+        /// </summary>
+        [StringLength(50)]
+        public string? MedicName { get; set; }
+
+        /// <summary>
         /// Gets or sets the device details of the user.
         /// </summary>
         [Required]

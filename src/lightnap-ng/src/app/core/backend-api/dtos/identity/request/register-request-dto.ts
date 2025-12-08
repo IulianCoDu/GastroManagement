@@ -28,6 +28,11 @@ export interface RegisterRequestDto {
     rememberMe: boolean;
 
     /**
+     * The medic/doctor name (optional, for medical staff).
+     */
+    medicName?: string;
+
+    /**
      * Details about the device being used for registration.
      */
     deviceDetails: string;

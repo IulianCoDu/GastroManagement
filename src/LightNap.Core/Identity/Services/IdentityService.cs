@@ -173,6 +173,18 @@ namespace LightNap.Core.Identity.Services
                 throw new UserFriendlyApiException("Unable to create user.");
             }
 
+            // Create Medic record if MedicName was provided
+            if (!string.IsNullOrWhiteSpace(requestDto.MedicName))
+            {
+                var medic = new Medic
+                {
+                    MedicName = requestDto.MedicName,
+                    UserId = user.Id
+                };
+                db.Medici.Add(medic);
+                await db.SaveChangesAsync();
+            }
+
             if (!user.TwoFactorEnabled)
             {
                 await emailService.SendRegistrationWelcomeAsync(user);

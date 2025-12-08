@@ -4,6 +4,7 @@ using LightNap.Core.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LightNap.DataProviders.SqlServer.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251207164630_AddGastroTables")]
+    partial class AddGastroTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -87,9 +90,6 @@ namespace LightNap.DataProviders.SqlServer.Migrations
 
                     b.Property<DateTimeOffset?>("LockoutEnd")
                         .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("MedicName")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)
@@ -705,21 +705,12 @@ namespace LightNap.DataProviders.SqlServer.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("MedicName")
-                        .IsRequired()
+                    b.Property<string>("Medic1")
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)")
                         .HasColumnName("Medic");
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)")
-                        .HasColumnName("UserId");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("UserId")
-                        .IsUnique();
 
                     b.ToTable("Medici", (string)null);
                 });
@@ -1071,17 +1062,6 @@ namespace LightNap.DataProviders.SqlServer.Migrations
                         .HasForeignKey("SistemNumarsistem");
                 });
 
-            modelBuilder.Entity("LightNap.Core.Data.Entities.Medic", b =>
-                {
-                    b.HasOne("LightNap.Core.Data.Entities.ApplicationUser", "User")
-                        .WithOne("Medic")
-                        .HasForeignKey("LightNap.Core.Data.Entities.Medic", "UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("LightNap.Core.Data.Entities.Notification", b =>
                 {
                     b.HasOne("LightNap.Core.Data.Entities.ApplicationUser", "User")
@@ -1212,8 +1192,6 @@ namespace LightNap.DataProviders.SqlServer.Migrations
 
             modelBuilder.Entity("LightNap.Core.Data.Entities.ApplicationUser", b =>
                 {
-                    b.Navigation("Medic");
-
                     b.Navigation("Notifications");
 
                     b.Navigation("RefreshTokens");
