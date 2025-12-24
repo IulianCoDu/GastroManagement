@@ -3,26 +3,26 @@ import { AppRoute } from "@core";
 export const Routes: AppRoute[] = [
   {
     path: "",
-    title: "Admin | Home",
+    title: "Administrare | Acasa",
     data: { alias: "admin-home", breadcrumb: "" },
     loadComponent: () => import("./index/index.component").then(m => m.IndexComponent),
   },
   {
     path: "users",
-    data: { breadcrumb: "Users" },
+    data: { breadcrumb: "Utilizatori" },
     children: [
       {
         path: "",
-        title: "Admin | Users",
+        title: "Administrare | Utilizatori",
         data: { alias: "admin-users", breadcrumb: "" },
         loadComponent: () => import("./users/users.component").then(m => m.UsersComponent),
       },
       {
         path: "users/:userName",
-        title: "Admin | User",
+        title: "Administrare | Utilizator",
         data: {
           alias: "admin-user",
-          breadcrumb: (route) => route.params["userName"] || "User Details"
+          breadcrumb: (route) => route.params["userName"] || "Detalii utilizator"
         },
         loadComponent: () => import("./user/user.component").then(m => m.UserComponent),
       },
@@ -30,20 +30,20 @@ export const Routes: AppRoute[] = [
   },
   {
     path: "roles",
-    data: { breadcrumb: "Roles" },
+    data: { breadcrumb: "Roluri" },
     children: [
       {
         path: "",
-        title: "Admin | Roles",
+        title: "Administrare | Roluri",
         data: { alias: "admin-roles", breadcrumb: "" },
         loadComponent: () => import("./roles/roles.component").then(m => m.RolesComponent),
       },
       {
         path: "roles/:role",
-        title: "Admin | Role",
+        title: "Administrare | Rol",
         data: {
           alias: "admin-role",
-          breadcrumb: (route) => route.params["role"] || "Role Details"
+          breadcrumb: (route) => route.params["role"] || "Detalii rol"
         },
         loadComponent: () => import("./role/role.component").then(m => m.RoleComponent),
       },
@@ -51,23 +51,23 @@ export const Routes: AppRoute[] = [
   },
   {
     path: "claims",
-    data: { breadcrumb: "Claims" },
+    data: { breadcrumb: "Permisiuni" },
     children: [
       {
         path: "",
-        title: "Admin | Claims",
+        title: "Administrare | Permisiuni",
         data: { alias: "admin-claims", breadcrumb: "" },
         loadComponent: () => import("./claims/claims.component").then(m => m.ClaimsComponent),
       },
       {
         path: "claims/:type/:value",
-        title: "Admin | Claim",
+        title: "Administrare | Permisiune",
         data: {
           alias: "admin-claim",
           breadcrumb: (route) => {
             const type = route.params["type"];
             const value = route.params["value"];
-            return type && value ? `${type}: ${value}` : "Claim Details";
+            return type && value ? `${type}: ${value}` : "Detalii permisiune";
           }
         },
         loadComponent: () => import("./claim/claim.component").then(m => m.ClaimComponent),

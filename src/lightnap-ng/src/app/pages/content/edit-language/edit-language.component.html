@@ -3,9 +3,9 @@
     @let language = asLanguage(languageAny);
 
     <div class="flex flex-wrap gap-2">
-      <p-panel header="Edit Content: {{ key() }} ({{ language.languageCode }})" class="w-full">
+      <p-panel header="Editeaza continut: {{ key() }} ({{ language.languageCode }})" class="w-full">
         <p class="text-sm">
-          Created {{ language.createdDate | date: "medium" }}
+          Creat {{ language.createdDate | date: "medium" }}
           @if (language.createdByUserId) {
             <ln-user-link [userId]="language.createdByUserId" />
           }
@@ -13,7 +13,7 @@
 
         @if (language.lastModifiedDate) {
           <p class="text-sm">
-            Last Updated {{ language.lastModifiedDate | date: "medium" }} by
+            Ultima actualizare {{ language.lastModifiedDate | date: "medium" }} de
             @if (language.lastModifiedByUserId) {
               <ln-user-link [userId]="language.lastModifiedByUserId" />
             }
@@ -28,11 +28,11 @@
             </div>
 
             <div class="field">
-              <label for="content" class="text-xl">Content</label>
+              <label for="content" class="text-xl">Continut</label>
               <textarea id="content" pTextarea formControlName="content" class="w-full" [rows]="20"></textarea>
             </div>
 
-            <p-button type="submit" label="Save" [disabled]="!form.valid || form.pristine" />
+            <p-button type="submit" label="Salveaza" [disabled]="!form.valid || form.pristine" />
           </div>
         </form>
 
@@ -40,13 +40,13 @@
       </p-panel>
 
       <div>
-        <h2>Preview</h2>
+        <h2>Previzualizare</h2>
         <div staticContent [format]="form.controls.format.value" [content]="form.controls.content.value"></div>
       </div>
     </div>
   </ng-template>
   <ng-template #null>
-    <p>There is no "{{ languageCode() }}" language content content for key "{{ key() }}".</p>
-    <p-button label="Create Language Content" (onClick)="onCreate()" />
+    <p>Nu exista continut in limba "{{ languageCode() }}" pentru cheia "{{ key() }}".</p>
+    <p-button label="Creeaza continut pentru limba" (onClick)="onCreate()" />
   </ng-template>
 </ln-api-response>

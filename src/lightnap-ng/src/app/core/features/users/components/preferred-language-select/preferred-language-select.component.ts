@@ -17,6 +17,6 @@ export class PreferredLanguageSelectComponent {
   readonly supportedLanguages = signal(
     this.#contentService
       .getSupportedLanguages()
-      .pipe(map(languages => [new ListItem("", "Auto-detect"), ...languages.map(lang => new ListItem(lang.languageCode, lang.languageName))]))
+      .pipe(map(languages => languages.map(lang => new ListItem(lang.languageCode, lang.languageName))))
   );
 }

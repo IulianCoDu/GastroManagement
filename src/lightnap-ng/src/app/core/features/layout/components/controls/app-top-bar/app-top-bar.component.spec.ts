@@ -218,7 +218,7 @@ describe("AppTopBarComponent", () => {
     const topbarMenu = compiled.querySelector(".layout-topbar-menu");
 
     expect(topbarMenu).toBeTruthy();
-    expect(topbarMenu?.textContent).toContain("Profile");
+    expect(topbarMenu?.textContent).toContain("Profil");
   });
 
   it("should render profile icon in menu", () => {

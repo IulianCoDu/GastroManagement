@@ -18,16 +18,16 @@ export const Routes: AppRoute[] = [
     canActivate: [loggedInGuard],
     children: [
       { path: "home", children: HomeRoutes },
-      { path: "profile", data: { breadcrumb: "Profile" }, children: ProfileRoutes },
+      { path: "profile", data: { breadcrumb: "Profil" }, children: ProfileRoutes },
     ],
   },
   {
     path: "admin",
     component: AppLayoutComponent,
     canActivate: [loggedInGuard, roleGuard(RoleNames.Administrator)],
-    children: [{ path: "", data: { breadcrumb: "Admin" }, children: AdminRoutes }],
+    children: [{ path: "", data: { breadcrumb: "Administrare" }, children: AdminRoutes }],
   },
   { path: "content", children: ContentRoutes },
-  { path: "identity", component: PublicLayoutComponent, data: { breadcrumb: "Identity" }, children: IdentityRoutes },
+  { path: "identity", component: PublicLayoutComponent, data: { breadcrumb: "Identitate" }, children: IdentityRoutes },
   { path: "**", redirectTo: "/not-found" },
 ];

@@ -1,15 +1,15 @@
-<ln-api-response [apiResponse]="usersForClaim$()" errorMessage="Error loading claim" loadingMessage="Loading claim...">
+<ln-api-response [apiResponse]="usersForClaim$()" errorMessage="Eroare la incarcarea permisiunii" loadingMessage="Se incarca permisiunea...">
   <ng-template #success let-usersForClaimAny>
     @let usersForClaimResults = asUsersForClaimResults(usersForClaimAny);
 
-    <p-panel header="Manage Claim">
+    <p-panel header="Gestioneaza permisiunea">
       <div class="flex gap-8">
         <div class="flex flex-col">
-          <span>Claim Type</span>
+          <span>Tip permisiune</span>
           <span class="font-semibold">{{ type() }}</span>
         </div>
         <div class="flex flex-col">
-          <span>Claim Value</span>
+          <span>Valoare permisiune</span>
           <span class="font-semibold">{{ value() }}</span>
         </div>
       </div>
@@ -24,7 +24,7 @@
         <ng-template #header>
           <tr>
             <th><i class="pi pi-trash"></i></th>
-            <th class="whitespace-nowrap">User Name</th>
+            <th class="whitespace-nowrap">Nume utilizator</th>
             <th width="100%">Email</th>
           </tr>
         </ng-template>
@@ -34,7 +34,7 @@
           <tr>
             <td>
               <ln-confirm-popup [key]="user.id" confirmStyleClass="p-button-danger" />
-              <p-button severity="danger" icon="pi pi-trash" title="Remove user claim" (onClick)="removeUserClaim($event, user.id)" />
+              <p-button severity="danger" icon="pi pi-trash" title="Elimina permisiunea utilizatorului" (onClick)="removeUserClaim($event, user.id)" />
             </td>
             <td>
               <a [routerLink]="'admin-user' | route: user.userName"> {{ user.userName }}</a>
@@ -46,14 +46,14 @@
         </ng-template>
         <ng-template #emptymessage>
           <tr>
-            <td colspan="100%">No users have this claim.</td>
+            <td colspan="100%">Niciun utilizator nu are aceasta permisiune.</td>
           </tr>
         </ng-template>
       </p-table>
 
       <form [formGroup]="form" class="flex gap-2 my-3" (ngSubmit)="addUserClaim()">
         <ln-user-picker formControlName="userId" />
-        <p-button type="submit" label="Add User" icon="pi pi-plus" [disabled]="!form.valid" />
+        <p-button type="submit" label="Adauga utilizator" icon="pi pi-plus" [disabled]="!form.valid" />
       </form>
 
       <ln-error-list [errors]="errors()" />

@@ -1,24 +1,24 @@
-<ln-api-response [apiResponse]="profile$" errorMessage="Error loading profile" loadingMessage="Loading profile...">
+<ln-api-response [apiResponse]="profile$" errorMessage="Eroare la incarcarea profilului" loadingMessage="Se incarca profilul...">
   <ng-template #success let-profileAny>
     @let profile = asProfile(profileAny);
 
-    <p-panel data-cy="profile-panel" header="Manage Your Profile">
+    <p-panel data-cy="profile-panel" header="Gestioneaza profilul">
       <ng-template #icons>
-        <p-button data-cy="profile-logout" (onClick)="logOut()" label="Log Out" severity="danger" size="small" icon="pi pi-sign-out" />
+        <p-button data-cy="profile-logout" (onClick)="logOut()" label="Deconectare" severity="danger" size="small" icon="pi pi-sign-out" />
       </ng-template>
       <div class="flex flex-col gap-2">
         <div data-cy="profile-info" class="flex flex-col gap-1">
-          <label for="userName" class="font-semibold">User Name</label>
+          <label for="userName" class="font-semibold">Nume utilizator</label>
           <span id="userName">{{ profile.userName }}</span>
         </div>
 
         <div data-cy="profile-info" class="flex flex-col gap-1">
           <label for="email" class="font-semibold">Email</label>
-          <span id="email">{{ profile.email }} (<a data-cy="profile-change-email" [routerLink]="'change-email' | route">change</a>)</span>
+          <span id="email">{{ profile.email }} (<a data-cy="profile-change-email" [routerLink]="'change-email' | route">schimba</a>)</span>
         </div>
 
         <div class="flex flex-col gap-1">
-          <label for="preferredLanguage" class="font-semibold">Preferred Language</label>
+          <label for="preferredLanguage" class="font-semibold">Limba preferata</label>
             <ln-preferred-language-select data-cy="profile-language-select" id="preferredLanguage" class="w-40" />
         </div>
 
@@ -26,7 +26,7 @@
           <div class="flex flex-col w-80 gap-5">
 
             <ln-error-list data-cy="profile-errors" [errors]="errors()" />
-            <p-button data-cy="profile-submit" type="submit" label="Update Profile" styleClass="w-full" [disabled]="!form.valid || !form.dirty" />
+            <p-button data-cy="profile-submit" type="submit" label="Actualizeaza profilul" styleClass="w-full" [disabled]="!form.valid || !form.dirty" />
           </div>
         </form>
       </div>

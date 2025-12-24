@@ -14,43 +14,58 @@ export class MenuService {
 
   readonly #defaultMenuItems: MenuItem[] = [
     {
-      label: "Home",
+      label: "Acasă",
       expanded: true,
       items: [
-        { label: "Home", icon: "pi pi-fw pi-home", routerLink: this.#routeAlias.getRoute("user-home"), routerLinkActiveOptions: { exact: true } },
+        { label: "Acasă", icon: "pi pi-fw pi-home", routerLink: this.#routeAlias.getRoute("user-home"), routerLinkActiveOptions: { exact: true } },
+        {
+          label: "Buletine ECO",
+          icon: "pi pi-fw pi-table",
+          routerLink: this.#routeAlias.getRoute("buletine-eco"),
+        },
+        {
+          label: "Buletine EDS",
+          icon: "pi pi-fw pi-table",
+          routerLink: this.#routeAlias.getRoute("buletine-eds"),
+        },
+        {
+          label: "Buletine EDI",
+          icon: "pi pi-fw pi-table",
+          routerLink: this.#routeAlias.getRoute("buletine-edi"),
+        },
       ],
     },
   ];
 
   readonly #loggedInMenuItems: MenuItem[] = [
     {
-      label: "Profile",
+      label: "Profil",
       expanded: true,
       items: [
-        { label: "Profile", icon: "pi pi-fw pi-user", routerLink: this.#routeAlias.getRoute("profile"), routerLinkActiveOptions: { exact: true } },
-        { label: "Devices", icon: "pi pi-fw pi-mobile", routerLink: this.#routeAlias.getRoute("devices") },
-        { label: "Change Password", icon: "pi pi-fw pi-lock", routerLink: this.#routeAlias.getRoute("change-password") },
+        { label: "Profil", icon: "pi pi-fw pi-user", routerLink: this.#routeAlias.getRoute("profile"), routerLinkActiveOptions: { exact: true } },
+        { label: "Dispozitive", icon: "pi pi-fw pi-mobile", routerLink: this.#routeAlias.getRoute("devices") },
+        { label: "Schimbă parola", icon: "pi pi-fw pi-lock", routerLink: this.#routeAlias.getRoute("change-password") },
       ],
     },
   ];
 
   readonly #contentMenuItems: MenuItem[] = [
     {
-      label: "Content",
+      label: "Conținut",
       expanded: true,
-      items: [{ label: "Manage", icon: "pi pi-fw pi-cog", routerLink: this.#routeAlias.getRoute("manage-content") }],
+      items: [{ label: "Administrare", icon: "pi pi-fw pi-cog", routerLink: this.#routeAlias.getRoute("manage-content") }],
     },
   ];
 
   readonly #adminMenuItems: MenuItem[] = [
     {
-      label: "Admin",
+      label: "Administrare",
       expanded: true,
       items: [
-        { label: "Home", icon: "pi pi-fw pi-home", routerLink: this.#routeAlias.getRoute("admin-home"), routerLinkActiveOptions: { exact: true } },
-        { label: "Users", icon: "pi pi-fw pi-users", routerLink: this.#routeAlias.getRoute("admin-users") },
-        { label: "Roles", icon: "pi pi-fw pi-lock", routerLink: this.#routeAlias.getRoute("admin-roles") },
-        { label: "Claims", icon: "pi pi-fw pi-shield", routerLink: this.#routeAlias.getRoute("admin-claims") },
+        { label: "Acasă", icon: "pi pi-fw pi-home", routerLink: this.#routeAlias.getRoute("admin-home"), routerLinkActiveOptions: { exact: true } },
+        { label: "Utilizatori", icon: "pi pi-fw pi-users", routerLink: this.#routeAlias.getRoute("admin-users") },
+        { label: "Roluri", icon: "pi pi-fw pi-lock", routerLink: this.#routeAlias.getRoute("admin-roles") },
+        { label: "Permisiuni", icon: "pi pi-fw pi-shield", routerLink: this.#routeAlias.getRoute("admin-claims") },
       ],
     },
   ];

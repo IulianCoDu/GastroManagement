@@ -1,5 +1,5 @@
 <ln-api-response [apiResponse]="supportedLanguages()">
   <ng-template #success let-supportedLanguages>
-    <ln-user-setting-select key="PreferredLanguage" label="Preferred Language" [options]="supportedLanguages" [defaultValue]="null" />
+    <ln-user-setting-select key="PreferredLanguage" label="Limba preferata" [options]="supportedLanguages" [defaultValue]="'ro'" />
   </ng-template>
 </ln-api-response>

@@ -11,7 +11,7 @@ namespace LightNap.Core.Configuration
         /// Change this to select a different fallback language when the selected option is not available.
         /// See StaticContentConfig.SupportedLanguages for available options (and to add more).
         /// </summary>
-        public const string DefaultLanguageCode = "en";
+        public const string DefaultLanguageCode = "ro";
 
         /// <summary>
         /// Defines the list of roles that have global permissions to create and manage static content.
@@ -27,9 +27,8 @@ namespace LightNap.Core.Configuration
         /// </summary>
         public static IReadOnlyList<StaticContentSupportedLanguage> SupportedLanguages =>
         [
+            new StaticContentSupportedLanguage("ro", "Romana"),
             new StaticContentSupportedLanguage("en", "English"),
-            new StaticContentSupportedLanguage("fr", "French"),
-            new StaticContentSupportedLanguage("es", "Spanish"),
         ];
 
         /// <summary>

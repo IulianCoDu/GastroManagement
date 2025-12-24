@@ -1,0 +1,20 @@
+.p-panel {
+  width: 100%;
+}
+
+.p-table {
+  border-radius: 0.35rem;
+}
+
+.p-table th,
+.p-table td {
+  padding: 0.65rem;
+}
+
+:host ::ng-deep .gastro-row-even td {
+  background-color: #f8fafc;
+}
+
+:host ::ng-deep .gastro-row-odd td {
+  background-color: white;
+}

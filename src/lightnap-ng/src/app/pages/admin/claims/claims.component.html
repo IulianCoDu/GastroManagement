@@ -1,22 +1,22 @@
-<ln-api-response [apiResponse]="claims$" errorMessage="Error loading claims" loadingMessage="Loading claims...">
+<ln-api-response [apiResponse]="claims$" errorMessage="Eroare la incarcarea permisiunilor" loadingMessage="Se incarca permisiunile...">
   <ng-template #success let-claimResultsAny>
     @let claimResults = asClaimResults(claimResultsAny);
 
-    <p-panel data-cy="search-claims-panel" header="Search Claims">
+    <p-panel data-cy="search-claims-panel" header="Cauta permisiuni">
       <form [formGroup]="form" class="my-2">
         <div class="flex gap-1">
           <div class="flex flex-col">
-            <input data-cy="claim-type-filter" pInputText placeholder="Type" formControlName="type" />
+            <input data-cy="claim-type-filter" pInputText placeholder="Tip" formControlName="type" />
             <div class="flex items-end">
               <p-checkBox data-cy="type-exact-checkbox" inputId="typeExact" formControlName="typeExact" [binary]="true" class="mt-2" />
-              <label for="typeExact" class="ml-2">Exact match</label>
+              <label for="typeExact" class="ml-2">Potrivire exacta</label>
             </div>
           </div>
           <div class="flex flex-col">
-            <input data-cy="claim-value-filter" pInputText placeholder="Value" formControlName="value" />
+            <input data-cy="claim-value-filter" pInputText placeholder="Valoare" formControlName="value" />
             <div class="flex items-end">
               <p-checkBox data-cy="value-exact-checkbox" inputId="valueExact" formControlName="valueExact" [binary]="true" class="mt-2" />
-              <label for="valueExact" class="ml-2">Exact match</label>
+              <label for="valueExact" class="ml-2">Potrivire exacta</label>
             </div>
           </div>
         </div>
@@ -32,8 +32,8 @@
       >
         <ng-template #header>
           <tr>
-            <th class="whitespace-nowrap">Claim Type</th>
-            <th width="100%">Claim Value</th>
+            <th class="whitespace-nowrap">Tip permisiune</th>
+            <th width="100%">Valoare permisiune</th>
           </tr>
         </ng-template>
         <ng-template #body let-claimAny>
@@ -51,10 +51,10 @@
         <ng-template #emptymessage>
           <tr>
             <td colspan="100%">
-              <span>There are no matching claims.</span>
+              <span>Nu exista permisiuni care sa corespunda.</span>
 
               @if (form.value.type && form.value.value) {
-                <span> Add one <a [routerLink]="'admin-claim' | route: [form.value.type, form.value.value]">here</a>.</span>
+                <span> Adauga una <a [routerLink]="'admin-claim' | route: [form.value.type, form.value.value]">aici</a>.</span>
               }
             </td>
           </tr>

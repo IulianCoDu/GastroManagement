@@ -29,12 +29,10 @@ export class ContentService {
   #publishedContentCache = new ExtendedMap<string, Observable<PublishedContent | null>>();
 
   /**
-   * Gets the browser's default language code.
-   * @returns The browser's default language code or "en" if not detectable.
+   * Gets the default language code for static content.
    */
-  #getBrowserLanguageCode(): string {
-    const browserLang = navigator.language.split("-")[0];
-    return browserLang || "en";
+  #getDefaultLanguageCode(): string {
+    return "ro";
   }
 
   /**
@@ -44,14 +42,14 @@ export class ContentService {
     return this.#identityService.watchLoggedIn$().pipe(
       take(1),
       switchMap(isLoggedIn => {
-        if (!isLoggedIn) return of(this.#getBrowserLanguageCode());
+        if (!isLoggedIn) return of(this.#getDefaultLanguageCode());
 
         return this.#profileService.getSetting<string>(UserSettingKeys.PreferredLanguage, "").pipe(
           map(preferredLanguage => {
             if (preferredLanguage?.length > 0) return preferredLanguage;
-            return this.#getBrowserLanguageCode();
+            return this.#getDefaultLanguageCode();
           }),
-          catchError(() => of(this.#getBrowserLanguageCode()))
+          catchError(() => of(this.#getDefaultLanguageCode()))
         );
       })
     );

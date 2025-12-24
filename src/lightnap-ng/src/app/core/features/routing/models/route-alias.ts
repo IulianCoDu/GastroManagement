@@ -10,8 +10,17 @@ export type RouteAlias =
     | 'error'
     | 'not-found'
 
-    // User
+ // User
     | 'user-home'
+    | 'buletine-eco'
+    | 'buletine-eco-new'
+    | 'buletine-eco-edit'
+    | 'buletine-eds'
+    | 'buletine-eds-new'
+    | 'buletine-eds-edit'
+    | 'buletine-edi'
+    | 'buletine-edi-new'
+    | 'buletine-edi-edit'
 
     // Content
     | 'view-content'

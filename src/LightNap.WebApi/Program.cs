@@ -11,6 +11,7 @@ using System.Text.Json.Serialization;
 using Microsoft.Extensions.Caching.Hybrid;
 using StackExchange.Redis;
 using LightNap.Core.Extensions;
+using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -55,6 +56,7 @@ if (seededUsersSection.Exists())
 builder.Services.AddControllers().AddJsonOptions((options) =>
 {
     options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+    options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
     options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
 });
 

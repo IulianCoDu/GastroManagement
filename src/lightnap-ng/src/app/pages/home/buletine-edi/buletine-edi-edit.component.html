@@ -1,0 +1,176 @@
+<p-panel header="Buletin EDI" styleClass="shadow-sm">
+  <div *ngIf="loading()" class="flex justify-center py-8">
+    <p-progressSpinner strokeWidth="6"></p-progressSpinner>
+  </div>
+
+  <div *ngIf="!loading()">
+    <form [formGroup]="form" class="grid gap-4">
+      <div class="grid md:grid-cols-3 gap-4">
+        <div>
+          <label class="block mb-1">Nume</label>
+          <input pInputText formControlName="nume" />
+        </div>
+        <div>
+          <label class="block mb-1">Prenume</label>
+          <input pInputText formControlName="prenume" />
+        </div>
+        <div>
+          <label class="block mb-1">Vârsta</label>
+          <input pInputText type="number" formControlName="virsta" />
+        </div>
+        <div>
+          <label class="block mb-1">CNP</label>
+          <input pInputText formControlName="cnp" />
+        </div>
+        <div>
+          <label class="block mb-1">Domiciliu</label>
+          <input pInputText formControlName="domiciliu" />
+        </div>
+        <div>
+          <label class="block mb-1">Diagnostic</label>
+          <input pInputText formControlName="diagnostic" />
+        </div>
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-4">
+        <div>
+          <label class="block mb-1">Sistem</label>
+          <input pInputText formControlName="sistem" />
+        </div>
+        <div>
+          <label class="block mb-1">Sedare</label>
+          <input pInputText formControlName="sedareT" />
+        </div>
+        <div>
+          <label class="block mb-1">Medicație</label>
+          <input pInputText formControlName="medicatie" />
+        </div>
+        <div>
+          <label class="block mb-1">Ileon</label>
+          <input pInputText formControlName="ileon" />
+        </div>
+        <div>
+          <label class="block mb-1">Cec</label>
+          <input pInputText formControlName="cec" />
+        </div>
+        <div>
+          <label class="block mb-1">Ascendent</label>
+          <input pInputText formControlName="ascendent" />
+        </div>
+        <div>
+          <label class="block mb-1">Transvers</label>
+          <input pInputText formControlName="transvers" />
+        </div>
+        <div>
+          <label class="block mb-1">Descendent</label>
+          <input pInputText formControlName="descendent" />
+        </div>
+        <div>
+          <label class="block mb-1">Sigmoid</label>
+          <input pInputText formControlName="sigmoid" />
+        </div>
+        <div>
+          <label class="block mb-1">Rect</label>
+          <input pInputText formControlName="rect" />
+        </div>
+        <div>
+          <label class="block mb-1">JAR</label>
+          <input pInputText formControlName="jar" />
+        </div>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-4">
+        <div>
+          <label class="block mb-1">Biopsii L</label>
+          <input pInputText formControlName="biopsiiL" />
+        </div>
+        <div>
+          <label class="block mb-1">Biopsii N</label>
+          <input pInputText type="number" formControlName="biopsiiN" />
+        </div>
+        <div>
+          <label class="block mb-1">Nr AP</label>
+          <input pInputText type="number" formControlName="nrap" />
+        </div>
+        <div>
+          <label class="block mb-1">Rezultate</label>
+          <input pInputText formControlName="biopsiiR" />
+        </div>
+        <div>
+          <label class="block mb-1">Tratament</label>
+          <input pInputText formControlName="tratament" />
+        </div>
+        <div>
+          <label class="block mb-1">Data</label>
+          <input pInputText formControlName="data" />
+        </div>
+        <div>
+          <label class="block mb-1">Ora</label>
+          <input pInputText formControlName="ora" />
+        </div>
+        <div>
+          <label class="block mb-1">Medic</label>
+          <input pInputText formControlName="medic" />
+        </div>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-4">
+        <div>
+          <label class="block mb-1">Biopsii L1</label>
+          <input pInputText formControlName="biopsiiL1" />
+        </div>
+        <div>
+          <label class="block mb-1">Biopsii N1</label>
+          <input pInputText type="number" formControlName="biopsiiN1" />
+        </div>
+        <div>
+          <label class="block mb-1">Nr AP 1</label>
+          <input pInputText type="number" formControlName="nrap1" />
+        </div>
+        <div>
+          <label class="block mb-1">Rezultate 1</label>
+          <input pInputText formControlName="biopsiiR1" />
+        </div>
+        <div>
+          <label class="block mb-1">Data 1</label>
+          <input pInputText formControlName="data1" />
+        </div>
+        <div>
+          <label class="block mb-1">Ora 1</label>
+          <input pInputText formControlName="ora1" />
+        </div>
+        <div>
+          <label class="block mb-1">Sedare 1</label>
+          <input pInputText formControlName="sedareT1" />
+        </div>
+        <div>
+          <label class="block mb-1">Doza S</label>
+          <input pInputText type="number" formControlName="dozaS" />
+        </div>
+        <div>
+          <label class="block mb-1">Medicație 1</label>
+          <input pInputText formControlName="medicatie1" />
+        </div>
+        <div>
+          <label class="block mb-1">Doza M</label>
+          <input pInputText type="number" formControlName="dozaM" />
+        </div>
+        <div>
+          <label class="block mb-1">Consumabile</label>
+          <input pInputText formControlName="consumabile" />
+        </div>
+        <div>
+          <label class="block mb-1">Materiale</label>
+          <input pInputText formControlName="materiale" />
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <p-button label="Salvează" icon="pi pi-save" (onClick)="onSave()" />
+        <a routerLink="/home/buletine-edi" class="p-button p-button-secondary">Înapoi</a>
+      </div>
+    </form>
+
+    <ln-error-list [errors]="errors()" />
+  </div>
+</p-panel>

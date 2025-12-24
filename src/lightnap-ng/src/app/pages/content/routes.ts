@@ -9,36 +9,36 @@ export const Routes: AppRoute[] = [
   {
     path: "",
     component: AppLayoutComponent,
-    data: { breadcrumb: "Content" },
+    data: { breadcrumb: "Continut" },
     children: [
       {
         path: "",
         canActivate: [permissionsGuard([RoleNames.Administrator, RoleNames.ContentEditor], [])],
         data: { alias: "manage-content", breadcrumb: "" },
-        title: "Manage Content",
+        title: "Gestioneaza continutul",
         loadComponent: () => import("./manage/manage.component").then(m => m.ManageComponent),
       },
       {
         path: "edit/:key",
         data: {
-          breadcrumb: route => route.params["key"] || "Edit",
+          breadcrumb: route => route.params["key"] || "Editare",
         },
         children: [
           {
             path: "",
             data: { alias: "edit-content", breadcrumb: "" },
             canActivate: [editPageGuard],
-            title: "Edit Content",
+            title: "Editeaza continut",
             loadComponent: () => import("./edit/edit.component").then(m => m.EditComponent),
           },
           {
             path: ":languageCode",
             data: {
               alias: "edit-language",
-              breadcrumb: route => route.params["languageCode"] || "Language",
+              breadcrumb: route => route.params["languageCode"] || "Limba",
             },
             canActivate: [editPageGuard],
-            title: "Edit Language",
+            title: "Editeaza limba",
             loadComponent: () => import("./edit-language/edit-language.component").then(m => m.EditLanguageComponent),
           },
         ],
@@ -53,7 +53,7 @@ export const Routes: AppRoute[] = [
         path: ":key",
         canActivate: [readPageGuard],
         data: { alias: "view-content" },
-        title: "View Content",
+        title: "Vizualizeaza continutul",
         loadComponent: () => import("./page/page.component").then(m => m.PageComponent),
       },
     ],

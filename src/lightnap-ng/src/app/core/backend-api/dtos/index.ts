@@ -5,4 +5,5 @@ export * from "./paged-response-dto";
 export * from "./profile";
 export * from "./static-contents";
 export * from "./users";
+export * from "./gastro";
 

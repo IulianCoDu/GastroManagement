@@ -1,0 +1,31 @@
+:host {
+  display: block;
+}
+
+.gastro-controls {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.gastro-controls input {
+  min-width: 200px;
+}
+
+.gastro-table-wrap {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+:host ::ng-deep .p-table th,
+:host ::ng-deep .p-table td {
+  padding: 0.65rem;
+}
+
+:host ::ng-deep .gastro-row-even td {
+  background-color: #f8fafc;
+}
+
+:host ::ng-deep .gastro-row-odd td {
+  background-color: #ffffff;
+}
