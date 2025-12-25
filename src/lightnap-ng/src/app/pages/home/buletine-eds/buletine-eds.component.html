@@ -1,15 +1,17 @@
-<p-panel header="Buletine EDS" styleClass="shadow-sm">
-  <div *ngIf="loading()" class="flex justify-center py-8">
-    <p-progressSpinner strokeWidth="6"></p-progressSpinner>
-  </div>
-
-  <div *ngIf="!loading()">
+<p-panel header="Buletine EDS" class="shadow-sm">
+  @if (loading()) {
+    <div class="flex justify-center py-8">
+      <p-progressSpinner strokeWidth="6"></p-progressSpinner>
+    </div>
+  } @else {
     <div class="flex flex-col gap-3 mb-4">
       <p-button label="Adauga" icon="pi pi-plus" routerLink="/home/buletine-eds/new" />
       <div class="flex items-center gap-2 text-sm text-slate-600">Cauta:</div>
       <div [formGroup]="form" class="gastro-controls">
+        <input pInputText placeholder="Nr" formControlName="nr" />
         <input pInputText placeholder="Nume" formControlName="nume" />
         <input pInputText placeholder="Prenume" formControlName="prenume" />
+        <input pInputText placeholder="CNP" formControlName="cnp" />
       </div>
     </div>
 
@@ -28,8 +30,11 @@
       >
         <ng-template #header let-columns>
           <tr>
-            <th class="w-1">
-              <i class="pi pi-trash"></i>
+            <th pFrozenColumn class="gastro-actions-col">
+              <div class="flex items-center gap-1">
+                <i class="pi pi-pencil"></i>
+                <i class="pi pi-trash"></i>
+              </div>
             </th>
             <th *ngFor="let column of columns" class="text-left uppercase text-xs tracking-wider text-slate-500">
               {{ column.header }}
@@ -39,7 +44,7 @@
 
         <ng-template #body let-rowData let-columns="columns" let-rowIndex="rowIndex">
           <tr [ngClass]="rowIndex % 2 === 0 ? 'gastro-row-even' : 'gastro-row-odd'">
-            <td>
+            <td pFrozenColumn class="gastro-actions-col">
               <div class="flex items-center gap-1">
                 <p-button
                   icon="pi pi-pencil"
@@ -76,6 +81,8 @@
       </p-table>
     </div>
 
+    <ln-gastro-charts [records]="filteredRecords()" [settingsKey]="chartSettingsKey" [defaultCharts]="defaultCharts" />
+
     <ln-error-list [errors]="errors()" />
-  </div>
+  }
 </p-panel>

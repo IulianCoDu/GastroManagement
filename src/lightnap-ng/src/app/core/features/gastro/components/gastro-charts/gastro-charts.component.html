@@ -1,0 +1,69 @@
+<p-panel header="Grafice">
+  <div class="gastro-chart-builder">
+    <div class="text-sm font-bold">Adaugare grafic nou</div>
+    <div class="gastro-chart-controls">
+      <div class="gastro-chart-field">
+        <label for="chartField" class="text-sm font-medium">Camp (coloana folosita)</label>
+        <p-select
+          id="chartField"
+          [options]="fieldOptions()"
+          optionLabel="label"
+          optionValue="value"
+          [ngModel]="newField()"
+          (ngModelChange)="onFieldChange($event)"
+        />
+      </div>
+
+      <div class="gastro-chart-field">
+        <label for="chartMode" class="text-sm font-medium">Grupare (criteriu de grupare)</label>
+        <p-select
+          id="chartMode"
+          [options]="modeOptions()"
+          optionLabel="label"
+          optionValue="value"
+          [ngModel]="newMode()"
+          (ngModelChange)="onModeChange($event)"
+        />
+      </div>
+
+      <div class="gastro-chart-field">
+        <label for="chartTitle" class="text-sm font-medium">Titlu (numele graficului)</label>
+        <input id="chartTitle" pInputText [ngModel]="newTitle()" (ngModelChange)="onTitleChange($event)" placeholder="Titlu grafic (optional)" />
+      </div>
+
+      <div class="gastro-chart-field">
+        <label for="chartMax" class="text-sm font-medium">Max felii (0 = nelimitat)</label>
+        <input id="chartMax" pInputText type="number" min="0" [ngModel]="newMaxItems()" (ngModelChange)="onMaxItemsChange($event)" />
+      </div>
+
+      <div class="gastro-chart-actions">
+        <p-button label="Adauga grafic" icon="pi pi-plus" (onClick)="addChart()" [disabled]="!newField().length" />
+      </div>
+    </div>
+  </div>
+
+  @if (charts().length) {
+    <div class="gastro-chart-grid">
+      @for (chart of charts(); track chart.id) {
+        <div class="gastro-chart-card">
+          <div class="gastro-chart-header">
+            <div class="gastro-chart-title">{{ chart.title }}</div>
+            <p-button
+              icon="pi pi-trash"
+              severity="danger"
+              size="small"
+              class="p-button-text"
+              title="Sterge grafic"
+              (onClick)="removeChart(chart.id)"
+            />
+          </div>
+          <div class="gastro-chart-body">
+            <canvas baseChart [data]="chartDataById().get(chart.id) ?? emptyChartData" [type]="'pie'" [options]="chartOptions"></canvas>
+          </div>
+        </div>
+      }
+    </div>
+  } @else {
+    <div class="text-sm text-slate-500">Nu exista grafice. Adauga unul folosind configuratorul de mai sus.</div>
+  }
+</p-panel>

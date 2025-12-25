@@ -17,15 +17,24 @@
   box-sizing: border-box;
 }
 
+:host ::ng-deep .gastro-actions-col {
+  width: 5.5rem;
+  min-width: 5.5rem;
+}
+
+:host ::ng-deep .p-table .p-frozen-column {
+  background-color: var(--surface-card);
+}
+
 :host ::ng-deep .p-table th,
 :host ::ng-deep .p-table td {
   padding: 0.65rem;
 }
 
 :host ::ng-deep .gastro-row-even td {
-  background-color: #f8fafc;
+  background-color: transparent;
 }
 
 :host ::ng-deep .gastro-row-odd td {
-  background-color: #ffffff;
+  background-color: transparent;
 }

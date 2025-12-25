@@ -1,11 +1,15 @@
-<p-panel header="Buletin EDS" styleClass="shadow-sm">
-  <div *ngIf="loading()" class="flex justify-center py-8">
-    <p-progressSpinner strokeWidth="6"></p-progressSpinner>
-  </div>
-
-  <div *ngIf="!loading()">
+<p-panel header="Buletin EDS" class="shadow-sm">
+  @if (loading()) {
+    <div class="flex justify-center py-8">
+      <p-progressSpinner strokeWidth="6"></p-progressSpinner>
+    </div>
+  } @else {
     <form [formGroup]="form" class="grid gap-4">
       <div class="grid md:grid-cols-3 gap-4">
+        <div>
+          <label class="block mb-1">Nr. reg.</label>
+          <input pInputText formControlName="nr" />
+        </div>
         <div>
           <label class="block mb-1">Nume</label>
           <input pInputText formControlName="nume" />
@@ -113,5 +117,5 @@
     </form>
 
     <ln-error-list [errors]="errors()" />
-  </div>
+  }
 </p-panel>

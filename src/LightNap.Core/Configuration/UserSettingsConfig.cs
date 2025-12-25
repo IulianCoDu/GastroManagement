@@ -24,6 +24,21 @@ namespace LightNap.Core.Configuration
                     "\"\"",
                     UserSettingAccessLevel.UserReadWrite,
                     true),
+                new UserSettingDefinition(
+                    Constants.UserSettingKeys.GastroChartsEco,
+                    "[]",
+                    UserSettingAccessLevel.UserReadWrite,
+                    true),
+                new UserSettingDefinition(
+                    Constants.UserSettingKeys.GastroChartsEds,
+                    "[]",
+                    UserSettingAccessLevel.UserReadWrite,
+                    true),
+                new UserSettingDefinition(
+                    Constants.UserSettingKeys.GastroChartsEdi,
+                    "[]",
+                    UserSettingAccessLevel.UserReadWrite,
+                    true),
             ];
 
         /// <summary>

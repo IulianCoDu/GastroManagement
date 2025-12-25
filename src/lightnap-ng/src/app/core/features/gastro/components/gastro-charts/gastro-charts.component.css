@@ -1,0 +1,52 @@
+.gastro-chart-builder {
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.gastro-chart-controls {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  align-items: end;
+}
+
+.gastro-chart-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.gastro-chart-actions {
+  display: flex;
+  align-items: end;
+  justify-content: flex-start;
+}
+
+.gastro-chart-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.gastro-chart-card {
+  background: transparent;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+  padding: 1rem;
+}
+
+.gastro-chart-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.gastro-chart-title {
+  font-weight: 600;
+}
+
+.gastro-chart-body {
+  height: 320px;
+}

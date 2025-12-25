@@ -15,6 +15,8 @@ import { setApiErrors } from "@core";
 import { ErrorListComponent } from "@core/components/error-list/error-list.component";
 import { ConfirmPopupComponent } from "@core/components/confirm-popup/confirm-popup.component";
 import { ToastService } from "@core/services/toast.service";
+import { UserSettingKeys } from "@core/backend-api";
+import { GastroChartConfig, GastroChartsComponent } from "@core/features/gastro/components/gastro-charts/gastro-charts.component";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { startWith } from "rxjs";
 import { applyGastroFilters, GastroFilters } from "../gastro-table.helpers";
@@ -31,6 +33,7 @@ import { applyGastroFilters, GastroFilters } from "../gastro-table.helpers";
     ProgressSpinnerModule,
     ConfirmPopupComponent,
     ErrorListComponent,
+    GastroChartsComponent,
     RouterLink,
   ],
   templateUrl: "./buletine-edi.component.html",
@@ -47,18 +50,24 @@ export class BuletineEdiComponent {
   readonly loading = signal(true);
   readonly errors = signal(new Array<string>());
   readonly #applyApiErrors = setApiErrors(this.errors);
-  readonly filters = signal<GastroFilters>({ nume: "", prenume: "" });
+  readonly filters = signal<GastroFilters>({ nr: "", nume: "", prenume: "", cnp: "" });
 
   readonly form = this.#fb.group({
+    nr: this.#fb.control(""),
     nume: this.#fb.control(""),
     prenume: this.#fb.control(""),
+    cnp: this.#fb.control(""),
   });
 
   readonly filteredRecords = computed(() => applyGastroFilters(this.records(), this.filters()));
-  readonly tableScrollHeight = "calc(90vh - 260px)";
+  readonly tableScrollHeight = "calc(90vh - 280px)";
+  readonly chartSettingsKey = UserSettingKeys.GastroChartsEdi;
+  readonly defaultCharts: Array<GastroChartConfig> = [
+    { id: "age-range", title: "Distribuitie varsta pacienti", field: "virsta", mode: "age-range", maxItems: 0 },
+  ];
 
   readonly columns: Array<GastroTableColumn> = [
-    { field: "nr", header: "Nr" },
+    { field: "nr", header: "Nr. reg." },
     { field: "nume", header: "Nume" },
     { field: "prenume", header: "Prenume" },
     { field: "virsta", header: "Vârstă" },
@@ -105,8 +114,10 @@ export class BuletineEdiComponent {
   constructor() {
     this.form.valueChanges.pipe(startWith(this.form.value), takeUntilDestroyed()).subscribe(value => {
       this.filters.set({
+        nr: value.nr ?? "",
         nume: value.nume ?? "",
         prenume: value.prenume ?? "",
+        cnp: value.cnp ?? "",
       });
     });
 

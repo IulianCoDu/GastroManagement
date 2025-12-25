@@ -102,6 +102,21 @@
             /// The user's preferred language code for content. Can be empty for auto-detection from browser.
             /// </summary>
             public const string PreferredLanguage = "PreferredLanguage";
+
+            /// <summary>
+            /// Saved chart configurations for Buletine ECO.
+            /// </summary>
+            public const string GastroChartsEco = "GastroChartsEco";
+
+            /// <summary>
+            /// Saved chart configurations for Buletine EDS.
+            /// </summary>
+            public const string GastroChartsEds = "GastroChartsEds";
+
+            /// <summary>
+            /// Saved chart configurations for Buletine EDI.
+            /// </summary>
+            public const string GastroChartsEdi = "GastroChartsEdi";
         }
 
     }

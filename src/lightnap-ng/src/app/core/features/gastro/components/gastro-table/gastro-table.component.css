@@ -12,9 +12,9 @@
 }
 
 :host ::ng-deep .gastro-row-even td {
-  background-color: #f8fafc;
+  background-color: transparent;
 }
 
 :host ::ng-deep .gastro-row-odd td {
-  background-color: white;
+  background-color: transparent;
 }
