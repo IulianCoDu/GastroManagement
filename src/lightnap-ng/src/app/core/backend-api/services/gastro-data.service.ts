@@ -43,6 +43,10 @@ export class GastroDataService {
     return this.#http.get<BuletinEdiDto | null>(`${this.#apiUrlRoot}buletine-edi/${id}`);
   }
 
+  getMedici() {
+    return this.#http.get<Array<string>>(`${this.#apiUrlRoot}medici`);
+  }
+
   createBuletinEco(dto: CreateBuletinEcoDto) {
     return this.#http.post<BuletinEcoDto>(`${this.#apiUrlRoot}buletine-eco`, dto);
   }

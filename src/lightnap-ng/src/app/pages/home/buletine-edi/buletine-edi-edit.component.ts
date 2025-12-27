@@ -12,6 +12,7 @@ import { InputTextModule } from "primeng/inputtext";
 import { PanelModule } from "primeng/panel";
 import { ProgressSpinnerModule } from "primeng/progressspinner";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { BuletineEditBaseComponent } from "../buletine-edit-base.component";
 
 @Component({
   standalone: true,
@@ -27,7 +28,7 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
     RouterLink,
   ],
 })
-export class BuletineEdiEditComponent implements OnInit {
+export class BuletineEdiEditComponent extends BuletineEditBaseComponent implements OnInit {
   readonly #gastroService = inject(GastroDataService);
   readonly #routeAlias = inject(RouteAliasService);
   readonly #toast = inject(ToastService);
@@ -122,15 +123,15 @@ export class BuletineEdiEditComponent implements OnInit {
               nrap: record.nrap ?? null,
               biopsiiR: record.biopsiiR ?? "",
               tratament: record.tratament ?? "",
-              data: this.#formatDate(record.data),
-              ora: this.#formatTime(record.ora),
+              data: this.formatDate(record.data),
+              ora: this.formatTime(record.ora),
               medic: record.medic ?? "",
               biopsiiL1: record.biopsiiL1 ?? "",
               biopsiiN1: record.biopsiiN1 ?? null,
               nrap1: record.nrap1 ?? null,
               biopsiiR1: record.biopsiiR1 ?? "",
-              data1: this.#formatDate(record.data1),
-              ora1: this.#formatTime(record.ora1),
+              data1: this.formatDate(record.data1),
+              ora1: this.formatTime(record.ora1),
               sedareT1: record.sedareT1 ?? "",
               dozaS: record.dozaS ?? null,
               medicatie1: record.medicatie1 ?? "",
@@ -199,15 +200,15 @@ export class BuletineEdiEditComponent implements OnInit {
       nrap: value.nrap ?? undefined,
       biopsiiR: value.biopsiiR || undefined,
       tratament: value.tratament || undefined,
-      data: value.data || undefined,
-      ora: value.ora || undefined,
+      data: this.toIsoDate(value.data),
+      ora: this.toIsoDateTime(value.data, value.ora),
       medic: value.medic || undefined,
       biopsiiL1: value.biopsiiL1 || undefined,
       biopsiiN1: value.biopsiiN1 ?? undefined,
       nrap1: value.nrap1 ?? undefined,
       biopsiiR1: value.biopsiiR1 || undefined,
-      data1: value.data1 || undefined,
-      ora1: value.ora1 || undefined,
+      data1: this.toIsoDate(value.data1),
+      ora1: this.toIsoDateTime(value.data1, value.ora1),
       sedareT1: value.sedareT1 || undefined,
       dozaS: value.dozaS ?? undefined,
       medicatie1: value.medicatie1 || undefined,
@@ -217,39 +218,4 @@ export class BuletineEdiEditComponent implements OnInit {
     };
   }
 
-  #formatDate(value: unknown) {
-    if (value instanceof Date && !Number.isNaN(value.getTime())) {
-      return this.#formatDateParts(value.getDate(), value.getMonth() + 1, value.getFullYear());
-    }
-    const raw = (value ?? "").toString().trim();
-    if (!raw) return "";
-    const isoMatch = raw.match(/^(\d{4})-(\d{2})-(\d{2})/);
-    if (isoMatch) return `${isoMatch[3]}/${isoMatch[2]}/${isoMatch[1]}`;
-    const roMatch = raw.match(/^(\d{2})\/(\d{2})\/(\d{4})/);
-    if (roMatch) return `${roMatch[1]}/${roMatch[2]}/${roMatch[3]}`;
-    return raw;
-  }
-
-  #formatTime(value: unknown) {
-    if (value instanceof Date && !Number.isNaN(value.getTime())) {
-      return `${this.#pad2(value.getHours())}:${this.#pad2(value.getMinutes())}:${this.#pad2(value.getSeconds())}`;
-    }
-    const raw = (value ?? "").toString().trim();
-    if (!raw) return "";
-    const isoDateTime = raw.match(/T(\d{2}:\d{2}:\d{2})/);
-    if (isoDateTime) return isoDateTime[1];
-    const timeMatch = raw.match(/\b(\d{2}:\d{2}:\d{2})\b/);
-    if (timeMatch) return timeMatch[1];
-    const shortMatch = raw.match(/^(\d{2}:\d{2})$/);
-    if (shortMatch) return `${shortMatch[1]}:00`;
-    return raw;
-  }
-
-  #formatDateParts(day: number, month: number, year: number) {
-    return `${this.#pad2(day)}/${this.#pad2(month)}/${year}`;
-  }
-
-  #pad2(value: number) {
-    return value.toString().padStart(2, "0");
-  }
 }

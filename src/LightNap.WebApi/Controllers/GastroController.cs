@@ -68,6 +68,23 @@ namespace LightNap.WebApi.Controllers
             return new ApiResponseDto<IList<BuletinEcoDto>>(items);
         }
 
+        [HttpGet("medici")]
+        public async Task<ApiResponseDto<IList<string>>> GetMediciAsync()
+        {
+            var raw = await this.context.Medici
+                .AsNoTracking()
+                .ToListAsync();
+
+            var items = raw
+                .Select(medic => medic.MedicName?.Trim())
+                .Where(name => !string.IsNullOrWhiteSpace(name))
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .OrderBy(name => name)
+                .ToList();
+
+            return new ApiResponseDto<IList<string>>(items);
+        }
+
         [HttpGet("buletine-eco/{id:int}")]
         public async Task<ApiResponseDto<BuletinEcoDto?>> GetBuletinEcoAsync(int id)
         {

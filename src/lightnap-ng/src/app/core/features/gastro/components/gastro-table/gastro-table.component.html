@@ -23,7 +23,7 @@
       <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
         <tr [ngClass]="rowIndex % 2 === 0 ? 'gastro-row-even' : 'gastro-row-odd'">
           <td *ngFor="let column of columns" class="border-b">
-            {{ rowData[column.field] ?? "-" }}
+            {{ formatCell(column.field, rowData[column.field]) }}
           </td>
         </tr>
       </ng-template>

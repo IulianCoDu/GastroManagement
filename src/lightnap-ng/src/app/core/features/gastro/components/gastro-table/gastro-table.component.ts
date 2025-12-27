@@ -3,6 +3,7 @@ import { Component, Input } from "@angular/core";
 import { PanelModule } from "primeng/panel";
 import { ProgressSpinnerModule } from "primeng/progressspinner";
 import { TableModule } from "primeng/table";
+import { formatGastroCell } from "../../../../../pages/home/gastro-table.helpers";
 
 export interface GastroTableColumn {
   field: string;
@@ -23,4 +24,8 @@ export class GastroTableComponent {
   @Input() data: Array<Record<string, unknown>> = [];
   @Input() loading = false;
   @Input() scrollHeight = "1000px";
+
+  formatCell(field: string, value: unknown) {
+    return formatGastroCell(field, value);
+  }
 }

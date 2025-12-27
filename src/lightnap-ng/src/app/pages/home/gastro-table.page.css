@@ -23,7 +23,8 @@
 }
 
 :host ::ng-deep .p-table .p-frozen-column {
-  background-color: var(--surface-card);
+  background-color: var(--surface-card) !important;
+  z-index: 2;
 }
 
 :host ::ng-deep .p-table th,

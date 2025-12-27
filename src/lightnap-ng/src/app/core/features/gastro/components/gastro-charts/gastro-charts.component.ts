@@ -85,7 +85,12 @@ export class GastroChartsComponent implements OnInit {
     maintainAspectRatio: false,
     plugins: {
       legend: {
-        position: "right",
+        position: "bottom",
+        align: "center",
+        labels: {
+          boxWidth: 10,
+          padding: 12,
+        },
       },
     },
   };
@@ -182,11 +187,14 @@ export class GastroChartsComponent implements OnInit {
   }
 
   #saveCharts() {
-    this.#profileService.setSetting(this.settingsKey(), this.charts()).pipe(takeUntilDestroyed(this.#destroyRef)).subscribe({
-      error: () => {
-        this.#toast.error("Nu s-au putut salva graficele.");
-      },
-    });
+    this.#profileService
+      .setSetting(this.settingsKey(), this.charts())
+      .pipe(takeUntilDestroyed(this.#destroyRef))
+      .subscribe({
+        error: () => {
+          this.#toast.error("Nu s-au putut salva graficele.");
+        },
+      });
   }
 
   #ageRangeLabel(value: unknown) {

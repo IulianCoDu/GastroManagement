@@ -12,22 +12,14 @@ import { InputTextModule } from "primeng/inputtext";
 import { PanelModule } from "primeng/panel";
 import { ProgressSpinnerModule } from "primeng/progressspinner";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { BuletineEditBaseComponent } from "../buletine-edit-base.component";
 
 @Component({
   standalone: true,
   templateUrl: "./buletine-eco-edit.component.html",
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    PanelModule,
-    InputTextModule,
-    ButtonModule,
-    ProgressSpinnerModule,
-    ErrorListComponent,
-    RouterLink,
-  ],
+  imports: [CommonModule, ReactiveFormsModule, PanelModule, InputTextModule, ButtonModule, ProgressSpinnerModule, ErrorListComponent, RouterLink],
 })
-export class BuletineEcoEditComponent implements OnInit {
+export class BuletineEcoEditComponent extends BuletineEditBaseComponent implements OnInit {
   readonly #gastroService = inject(GastroDataService);
   readonly #routeAlias = inject(RouteAliasService);
   readonly #toast = inject(ToastService);
@@ -109,8 +101,8 @@ export class BuletineEcoEditComponent implements OnInit {
               prostata: record.prostata ?? "",
               ogi: record.ogi ?? "",
               obs: record.obs ?? "",
-              data: this.#formatDate(record.data),
-              ora: this.#formatTime(record.ora),
+              data: this.formatDate(record.data),
+              ora: this.formatTime(record.ora),
               medic: record.medic ?? "",
               ceus: record.ceus ?? "",
             });
@@ -174,46 +166,11 @@ export class BuletineEcoEditComponent implements OnInit {
       prostata: value.prostata || undefined,
       ogi: value.ogi || undefined,
       obs: value.obs || undefined,
-      data: value.data || undefined,
-      ora: value.ora || undefined,
+      data: this.toIsoDate(value.data),
+      ora: this.toIsoDateTime(value.data, value.ora),
       medic: value.medic ?? "",
       ceus: value.ceus || undefined,
     };
   }
 
-  #formatDate(value: unknown) {
-    if (value instanceof Date && !Number.isNaN(value.getTime())) {
-      return this.#formatDateParts(value.getDate(), value.getMonth() + 1, value.getFullYear());
-    }
-    const raw = (value ?? "").toString().trim();
-    if (!raw) return "";
-    const isoMatch = raw.match(/^(\d{4})-(\d{2})-(\d{2})/);
-    if (isoMatch) return `${isoMatch[3]}/${isoMatch[2]}/${isoMatch[1]}`;
-    const roMatch = raw.match(/^(\d{2})\/(\d{2})\/(\d{4})/);
-    if (roMatch) return `${roMatch[1]}/${roMatch[2]}/${roMatch[3]}`;
-    return raw;
-  }
-
-  #formatTime(value: unknown) {
-    if (value instanceof Date && !Number.isNaN(value.getTime())) {
-      return `${this.#pad2(value.getHours())}:${this.#pad2(value.getMinutes())}:${this.#pad2(value.getSeconds())}`;
-    }
-    const raw = (value ?? "").toString().trim();
-    if (!raw) return "";
-    const isoDateTime = raw.match(/T(\d{2}:\d{2}:\d{2})/);
-    if (isoDateTime) return isoDateTime[1];
-    const timeMatch = raw.match(/\b(\d{2}:\d{2}:\d{2})\b/);
-    if (timeMatch) return timeMatch[1];
-    const shortMatch = raw.match(/^(\d{2}:\d{2})$/);
-    if (shortMatch) return `${shortMatch[1]}:00`;
-    return raw;
-  }
-
-  #formatDateParts(day: number, month: number, year: number) {
-    return `${this.#pad2(day)}/${this.#pad2(month)}/${year}`;
-  }
-
-  #pad2(value: number) {
-    return value.toString().padStart(2, "0");
-  }
 }
