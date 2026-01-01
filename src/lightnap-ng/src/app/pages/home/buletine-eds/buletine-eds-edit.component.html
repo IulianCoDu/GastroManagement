@@ -5,110 +5,115 @@
     </div>
   } @else {
     <form [formGroup]="form" class="grid gap-4">
-      <div class="grid md:grid-cols-3 gap-4">
-        <div>
-          <label class="block mb-1">Nr. reg.</label>
-          <input pInputText formControlName="nr" />
-        </div>
-        <div>
-          <label class="block mb-1">Nume</label>
-          <input pInputText formControlName="nume" />
-        </div>
-        <div>
-          <label class="block mb-1">Prenume</label>
-          <input pInputText formControlName="prenume" />
-        </div>
-        <div>
-          <label class="block mb-1">Vârsta</label>
-          <input pInputText type="number" formControlName="virsta" />
-        </div>
-        <div>
-          <label class="block mb-1">CNP</label>
-          <input pInputText formControlName="cnp" />
-        </div>
-        <div>
-          <label class="block mb-1">Domiciliu</label>
-          <input pInputText formControlName="domiciliu" />
-        </div>
-        <div>
-          <label class="block mb-1">Diagnostic</label>
-          <input pInputText formControlName="diagnostic" />
-        </div>
-      </div>
-
-      <div class="grid md:grid-cols-2 gap-4">
-        <div>
-          <label class="block mb-1">Sistem</label>
-          <input pInputText formControlName="sistem" />
-        </div>
-        <div>
-          <label class="block mb-1">Sedare</label>
-          <input pInputText formControlName="sedareT" />
-        </div>
-        <div>
-          <label class="block mb-1">Medicație</label>
-          <input pInputText formControlName="medicatie" />
-        </div>
-        <div>
-          <label class="block mb-1">Esofag</label>
-          <input pInputText formControlName="esofag" />
-        </div>
-        <div>
-          <label class="block mb-1">Joncțiune</label>
-          <input pInputText formControlName="jonctiune" />
-        </div>
-        <div>
-          <label class="block mb-1">Stomac</label>
-          <input pInputText formControlName="stomac" />
-        </div>
-        <div>
-          <label class="block mb-1">Pilor</label>
-          <input pInputText formControlName="pilor" />
-        </div>
-        <div>
-          <label class="block mb-1">Bulb</label>
-          <input pInputText formControlName="bulb" />
-        </div>
-        <div>
-          <label class="block mb-1">Duoden</label>
-          <input pInputText formControlName="duoden" />
-        </div>
-      </div>
-
-      <div class="grid md:grid-cols-3 gap-4">
-        <div>
-          <label class="block mb-1">Biopsii L</label>
-          <input pInputText formControlName="biopsiiL" />
-        </div>
-        <div>
-          <label class="block mb-1">Biopsii N</label>
-          <input pInputText type="number" formControlName="biopsiiN" />
-        </div>
-        <div>
-          <label class="block mb-1">Nr AP</label>
-          <input pInputText type="number" formControlName="nrap" />
-        </div>
-        <div>
-          <label class="block mb-1">Rezultate</label>
-          <input pInputText formControlName="biopsiiR" />
-        </div>
-        <div>
-          <label class="block mb-1">Tratament</label>
-          <input pInputText formControlName="tratament" />
-        </div>
-        <div class="grid gap-4 md:grid-cols-2 md:col-span-2">
+      <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+        <div class="grid gap-4">
           <div>
-            <label class="block mb-1">Data</label>
-            <input pInputText type="date" formControlName="data" class="w-full" />
+            <label class="block mb-1">Nr. reg.</label>
+            <input pInputText formControlName="nr" class="w-full" />
           </div>
           <div>
-            <label class="block mb-1">Ora</label>
-            <input pInputText type="time" step="1" formControlName="ora" class="w-full" />
+            <label class="block mb-1">Nume</label>
+            <input pInputText formControlName="nume" class="w-full" />
+          </div>
+          <div>
+            <label class="block mb-1">Prenume</label>
+            <input pInputText formControlName="prenume" class="w-full" />
+          </div>
+          <div>
+            <label class="block mb-1">Vârsta</label>
+            <input pInputText type="number" formControlName="virsta" class="w-full" />
+          </div>
+          <div>
+            <label class="block mb-1">CNP</label>
+            <input pInputText formControlName="cnp" class="w-full" />
+          </div>
+          <div>
+            <label class="block mb-1">Domiciliu</label>
+            <input pInputText formControlName="domiciliu" class="w-full" />
+          </div>
+          <div>
+            <label class="block mb-1">Diagnostic</label>
+            <textarea formControlName="diagnostic" rows="3" class="p-inputtext p-component h-24 overflow-auto w-full"></textarea>
+          </div>
+          <div>
+            <label class="block mb-1">Sistem</label>
+            <input pInputText formControlName="sistem" class="w-full" />
+          </div>
+          <div>
+            <label class="block mb-1">Sedare</label>
+            <input pInputText formControlName="sedareT" class="w-full" />
+          </div>
+          <div>
+            <label class="block mb-1">Medicație</label>
+            <input pInputText formControlName="medicatie" class="w-full" />
           </div>
         </div>
-        <div>
-          <label class="block mb-1">Medic</label>
-          <input pInputText formControlName="medic" class="w-full" />
+
+        <div class="grid gap-4">
+          <div>
+            <label class="block mb-1">Esofag</label>
+            <input pInputText formControlName="esofag" class="w-full" />
+          </div>
+          <div>
+            <label class="block mb-1">Joncțiune</label>
+            <input pInputText formControlName="jonctiune" class="w-full" />
+          </div>
+          <div>
+            <label class="block mb-1">Stomac</label>
+            <input pInputText formControlName="stomac" class="w-full" />
+          </div>
+        </div>
+
+        <div class="grid gap-4">
+          <div>
+            <label class="block mb-1">Pilor</label>
+            <input pInputText formControlName="pilor" class="w-full" />
+          </div>
+          <div>
+            <label class="block mb-1">Bulb</label>
+            <input pInputText formControlName="bulb" class="w-full" />
+          </div>
+          <div>
+            <label class="block mb-1">Duoden</label>
+            <input pInputText formControlName="duoden" class="w-full" />
+          </div>
+          <div>
+            <label class="block mb-1">Biopsii L</label>
+            <input pInputText formControlName="biopsiiL" class="w-full" />
+          </div>
+          <div>
+            <label class="block mb-1">Biopsii N</label>
+            <input pInputText type="number" formControlName="biopsiiN" class="w-full" />
+          </div>
+          <div>
+            <label class="block mb-1">Nr AP</label>
+            <input pInputText type="number" formControlName="nrap" class="w-full" />
+          </div>
+        </div>
+
+        <div class="grid gap-4">
+          <div>
+            <label class="block mb-1">Rezultate</label>
+            <input pInputText formControlName="biopsiiR" class="w-full" />
+          </div>
+          <div>
+            <label class="block mb-1">Tratament</label>
+            <input pInputText formControlName="tratament" class="w-full" />
+          </div>
+          <div class="grid gap-4 md:grid-cols-2">
+            <div>
+              <label class="block mb-1">Data</label>
+              <input pInputText type="date" formControlName="data" class="w-full" />
+            </div>
+            <div>
+              <label class="block mb-1">Ora</label>
+              <input pInputText type="time" step="1" formControlName="ora" class="w-full" />
+            </div>
+          </div>
+          <div>
+            <label class="block mb-1">Medic</label>
+            <input pInputText formControlName="medic" class="w-full" />
+          </div>
         </div>
       </div>
 
