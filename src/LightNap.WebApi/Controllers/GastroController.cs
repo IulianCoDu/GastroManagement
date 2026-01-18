@@ -56,6 +56,7 @@ namespace LightNap.WebApi.Controllers
                     Obs = item.Obs,
                     Data = item.Data,
                     Ora = item.Ora,
+                    MedicId = item.MedicId,
                     Medic = item.Medic,
                     Ceus = item.Ceus,
                     HasFig1 = item.Fig1 != null,
@@ -83,6 +84,22 @@ namespace LightNap.WebApi.Controllers
                 .ToList();
 
             return new ApiResponseDto<IList<string>>(items);
+        }
+
+        [HttpGet("medici-lookup")]
+        public async Task<ApiResponseDto<IList<MedicLookupDto>>> GetMediciLookupAsync()
+        {
+            var items = await this.context.Medici
+                .AsNoTracking()
+                .OrderBy(medic => medic.MedicName)
+                .Select(medic => new MedicLookupDto
+                {
+                    Id = medic.Id,
+                    MedicName = medic.MedicName,
+                })
+                .ToListAsync();
+
+            return new ApiResponseDto<IList<MedicLookupDto>>(items);
         }
 
         [HttpGet("buletine-eco/{id:int}")]
@@ -125,7 +142,8 @@ namespace LightNap.WebApi.Controllers
                 Obs = dto.Obs,
                 Data = dto.Data,
                 Ora = dto.Ora,
-                Medic = dto.Medic,
+                MedicId = dto.MedicId,
+                Medic = await this.ResolveMedicNameAsync(dto.MedicId, dto.Medic) ?? string.Empty,
                 Ceus = dto.Ceus,
             };
 
@@ -170,7 +188,8 @@ namespace LightNap.WebApi.Controllers
             entity.Obs = dto.Obs;
             entity.Data = dto.Data;
             entity.Ora = dto.Ora;
-            entity.Medic = dto.Medic;
+            entity.MedicId = dto.MedicId;
+            entity.Medic = await this.ResolveMedicNameAsync(dto.MedicId, dto.Medic) ?? string.Empty;
             entity.Ceus = dto.Ceus;
 
             await this.context.SaveChangesAsync();
@@ -209,6 +228,7 @@ namespace LightNap.WebApi.Controllers
                     Tratament = item.Tratament,
                     Data = item.Data,
                     Ora = item.Ora,
+                    MedicId = item.MedicId,
                     Medic = item.Medic,
                 })
                 .ToListAsync();
@@ -255,7 +275,8 @@ namespace LightNap.WebApi.Controllers
                 Tratament = dto.Tratament,
                 Data = dto.Data,
                 Ora = dto.Ora,
-                Medic = dto.Medic,
+                MedicId = dto.MedicId,
+                Medic = await this.ResolveMedicNameAsync(dto.MedicId, dto.Medic),
             };
 
             this.context.BuletineEds.Add(entity);
@@ -298,7 +319,8 @@ namespace LightNap.WebApi.Controllers
             entity.Tratament = dto.Tratament;
             entity.Data = dto.Data;
             entity.Ora = dto.Ora;
-            entity.Medic = dto.Medic;
+            entity.MedicId = dto.MedicId;
+            entity.Medic = await this.ResolveMedicNameAsync(dto.MedicId, dto.Medic);
 
             await this.context.SaveChangesAsync();
             return new ApiResponseDto<BuletinEdsDto>(this.MapBuletinEds(entity));
@@ -338,6 +360,7 @@ namespace LightNap.WebApi.Controllers
                     Tratament = item.Tratament,
                     Data = item.Data,
                     Ora = item.Ora,
+                    MedicId = item.MedicId,
                     Medic = item.Medic,
                     BiopsiiL1 = item.BiopsiiL1,
                     BiopsiiN1 = item.BiopsiiN1,
@@ -402,7 +425,8 @@ namespace LightNap.WebApi.Controllers
                 Tratament = dto.Tratament,
                 Data = dto.Data,
                 Ora = dto.Ora,
-                Medic = dto.Medic,
+                MedicId = dto.MedicId,
+                Medic = await this.ResolveMedicNameAsync(dto.MedicId, dto.Medic),
                 BiopsiiL1 = dto.BiopsiiL1,
                 BiopsiiN1 = dto.BiopsiiN1,
                 Nrap1 = dto.Nrap1,
@@ -459,7 +483,8 @@ namespace LightNap.WebApi.Controllers
             entity.Tratament = dto.Tratament;
             entity.Data = dto.Data;
             entity.Ora = dto.Ora;
-            entity.Medic = dto.Medic;
+            entity.MedicId = dto.MedicId;
+            entity.Medic = await this.ResolveMedicNameAsync(dto.MedicId, dto.Medic);
             entity.BiopsiiL1 = dto.BiopsiiL1;
             entity.BiopsiiN1 = dto.BiopsiiN1;
             entity.Nrap1 = dto.Nrap1;
@@ -536,6 +561,7 @@ namespace LightNap.WebApi.Controllers
                 Obs = item.Obs,
                 Data = item.Data,
                 Ora = item.Ora,
+                MedicId = item.MedicId,
                 Medic = item.Medic,
                 Ceus = item.Ceus,
                 HasFig1 = item.Fig1 != null,
@@ -571,6 +597,7 @@ namespace LightNap.WebApi.Controllers
                 Tratament = item.Tratament,
                 Data = item.Data,
                 Ora = item.Ora,
+                MedicId = item.MedicId,
                 Medic = item.Medic,
             };
 
@@ -603,6 +630,7 @@ namespace LightNap.WebApi.Controllers
                 Tratament = item.Tratament,
                 Data = item.Data,
                 Ora = item.Ora,
+                MedicId = item.MedicId,
                 Medic = item.Medic,
                 BiopsiiL1 = item.BiopsiiL1,
                 BiopsiiN1 = item.BiopsiiN1,
@@ -621,5 +649,21 @@ namespace LightNap.WebApi.Controllers
                 Consumabile = item.Consumabile,
                 Materiale = item.Materiale,
             };
+
+        private async Task<string?> ResolveMedicNameAsync(int? medicId, string? fallbackName)
+        {
+            if (!medicId.HasValue)
+            {
+                return fallbackName;
+            }
+
+            var medicName = await this.context.Medici
+                .AsNoTracking()
+                .Where(medic => medic.Id == medicId.Value)
+                .Select(medic => medic.MedicName)
+                .FirstOrDefaultAsync();
+
+            return string.IsNullOrWhiteSpace(medicName) ? fallbackName : medicName;
+        }
     }
 }

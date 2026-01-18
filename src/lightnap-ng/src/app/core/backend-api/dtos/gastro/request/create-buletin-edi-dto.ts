@@ -23,6 +23,7 @@ export interface CreateBuletinEdiDto {
   tratament?: string;
   data?: string;
   ora?: string;
+  medicId?: number;
   medic?: string;
   biopsiiL1?: string;
   biopsiiN1?: number;

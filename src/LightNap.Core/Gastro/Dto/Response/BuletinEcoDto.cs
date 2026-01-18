@@ -29,6 +29,7 @@ namespace LightNap.Core.Gastro.Dto.Response
         public string? Obs { get; set; }
         public DateTime? Data { get; set; }
         public DateTime? Ora { get; set; }
+        public int? MedicId { get; set; }
         public string Medic { get; set; } = string.Empty;
         public string? Ceus { get; set; }
         public bool HasFig1 { get; set; }

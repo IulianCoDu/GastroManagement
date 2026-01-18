@@ -58,7 +58,7 @@ export class BuletineEdsComponent extends BuletineBaseComponent<BuletinEdsDto> {
     { field: "duoden", header: "Duoden" },
     { field: "biopsiiL", header: "Biopsii L" },
     { field: "biopsiiN", header: "Biopsii N" },
-    { field: "nrap", header: "Nr AP" },
+    { field: "nrap", header: "Nr. reg. AP" },
     { field: "biopsiiR", header: "Rezultate" },
     { field: "tratament", header: "Tratament" },
     { field: "data", header: "Data" },

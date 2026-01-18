@@ -23,6 +23,7 @@ export interface BuletinEdsDto {
   tratament?: string;
   data?: string;
   ora?: string;
+  medicId?: number | null;
   medic?: string;
   [key: string]: unknown;
 }

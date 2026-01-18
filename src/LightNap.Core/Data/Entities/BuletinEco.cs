@@ -136,6 +136,11 @@ namespace LightNap.Core.Data.Entities
         public string Medic { get; set; } = string.Empty;
 
         /// <summary>
+        /// Optional reference to the performing doctor (Medici table)
+        /// </summary>
+        public int? MedicId { get; set; }
+
+        /// <summary>
         /// First image attachment
         /// </summary>
         public byte[]? Fig1 { get; set; }

@@ -24,6 +24,7 @@ export interface BuletinEcoDto {
   obs?: string;
   data?: string;
   ora?: string;
+  medicId?: number | null;
   medic: string;
   ceus?: string;
   hasFig1: boolean;

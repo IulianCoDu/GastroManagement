@@ -22,6 +22,7 @@ export interface CreateBuletinEcoDto {
   obs?: string;
   data?: string;
   ora?: string;
+  medicId?: number;
   medic: string;
   ceus?: string;
 }

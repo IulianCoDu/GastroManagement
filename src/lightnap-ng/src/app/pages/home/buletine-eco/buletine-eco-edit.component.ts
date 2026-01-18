@@ -2,7 +2,7 @@ import { CommonModule } from "@angular/common";
 import { Component, DestroyRef, OnInit, computed, inject, input, signal } from "@angular/core";
 import { FormBuilder, ReactiveFormsModule } from "@angular/forms";
 import { RouterLink } from "@angular/router";
-import { CreateBuletinEcoDto, UpdateBuletinEcoDto, setApiErrors } from "@core";
+import { CreateBuletinEcoDto, MedicLookupDto, UpdateBuletinEcoDto, setApiErrors } from "@core";
 import { ErrorListComponent } from "@core/components/error-list/error-list.component";
 import { GastroDataService } from "@core/backend-api/services/gastro-data.service";
 import { RouteAliasService } from "@core/features/routing/services/route-alias-service";
@@ -11,13 +11,25 @@ import { ButtonModule } from "primeng/button";
 import { InputTextModule } from "primeng/inputtext";
 import { PanelModule } from "primeng/panel";
 import { ProgressSpinnerModule } from "primeng/progressspinner";
+import { SelectModule } from "primeng/select";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { forkJoin } from "rxjs";
 import { BuletineEditBaseComponent } from "../buletine-edit-base.component";
 
 @Component({
   standalone: true,
   templateUrl: "./buletine-eco-edit.component.html",
-  imports: [CommonModule, ReactiveFormsModule, PanelModule, InputTextModule, ButtonModule, ProgressSpinnerModule, ErrorListComponent, RouterLink],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    PanelModule,
+    InputTextModule,
+    SelectModule,
+    ButtonModule,
+    ProgressSpinnerModule,
+    ErrorListComponent,
+    RouterLink,
+  ],
 })
 export class BuletineEcoEditComponent extends BuletineEditBaseComponent implements OnInit {
   readonly #gastroService = inject(GastroDataService);
@@ -36,6 +48,7 @@ export class BuletineEcoEditComponent extends BuletineEditBaseComponent implemen
 
   readonly loading = signal(false);
   readonly errors = signal(new Array<string>());
+  readonly medici = signal<Array<MedicLookupDto>>([]);
   readonly #applyApiErrors = setApiErrors(this.errors);
 
   readonly form = this.#fb.group({
@@ -64,20 +77,28 @@ export class BuletineEcoEditComponent extends BuletineEditBaseComponent implemen
     data: this.#fb.control(""),
     ora: this.#fb.control(""),
     medic: this.#fb.control(""),
+    medicId: this.#fb.control<number | null>(null),
     ceus: this.#fb.control(""),
   });
 
   ngOnInit() {
     const id = this.recordId();
-    if (!id) return;
+    if (!id) {
+      this.loadMedici();
+      return;
+    }
 
     this.loading.set(true);
-    this.#gastroService
-      .getBuletinEco(id)
+    forkJoin({
+      medici: this.#gastroService.getMediciLookup(),
+      record: this.#gastroService.getBuletinEco(id),
+    })
       .pipe(takeUntilDestroyed(this.#destroyRef))
       .subscribe({
-        next: record => {
+        next: ({ medici, record }) => {
+          this.medici.set(medici);
           if (record) {
+            const resolvedMedicId = record.medicId ?? this.resolveMedicId(record.medic, medici);
             this.form.patchValue({
               nr: record.nr?.toString() ?? "",
               nume: record.nume ?? "",
@@ -104,6 +125,7 @@ export class BuletineEcoEditComponent extends BuletineEditBaseComponent implemen
               data: this.formatDate(record.data),
               ora: this.formatTime(record.ora),
               medic: record.medic ?? "",
+              medicId: resolvedMedicId,
               ceus: record.ceus ?? "",
             });
           }
@@ -144,6 +166,7 @@ export class BuletineEcoEditComponent extends BuletineEditBaseComponent implemen
 
   private buildPayload(): CreateBuletinEcoDto & UpdateBuletinEcoDto {
     const value = this.form.getRawValue();
+    const resolvedMedic = this.lookupMedicName(value.medicId) ?? value.medic ?? undefined;
     return {
       nume: value.nume ?? "",
       prenume: value.prenume ?? "",
@@ -168,9 +191,31 @@ export class BuletineEcoEditComponent extends BuletineEditBaseComponent implemen
       obs: value.obs || undefined,
       data: this.toIsoDate(value.data),
       ora: this.toIsoDateTime(value.data, value.ora),
-      medic: value.medic ?? "",
+      medicId: value.medicId ?? undefined,
+      medic: resolvedMedic ?? "",
       ceus: value.ceus || undefined,
     };
+  }
+
+  private loadMedici() {
+    this.#gastroService
+      .getMediciLookup()
+      .pipe(takeUntilDestroyed(this.#destroyRef))
+      .subscribe({
+        next: medici => this.medici.set(medici),
+        error: this.#applyApiErrors,
+      });
+  }
+
+  private resolveMedicId(medicName: string | undefined, medici: Array<MedicLookupDto>) {
+    if (!medicName) return null;
+    const match = medici.find(medic => medic.medicName.toLowerCase() === medicName.trim().toLowerCase());
+    return match?.id ?? null;
+  }
+
+  private lookupMedicName(medicId: number | null | undefined) {
+    if (medicId == null) return undefined;
+    return this.medici().find(medic => medic.id === medicId)?.medicName;
   }
 
 }

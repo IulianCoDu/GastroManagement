@@ -20,7 +20,7 @@
             <input pInputText formControlName="prenume" class="w-full" />
           </div>
           <div>
-            <label class="block mb-1">VA›rsta</label>
+            <label class="block mb-1">Varsta</label>
             <input pInputText type="number" formControlName="virsta" class="w-full" />
           </div>
           <div>
@@ -29,42 +29,58 @@
           </div>
           <div>
             <label class="block mb-1">Domiciliu</label>
-            <input pInputText formControlName="domiciliu" class="w-full" />
+            <textarea formControlName="domiciliu" rows="3" class="p-inputtext p-component h-24 overflow-auto w-full"></textarea>
           </div>
           <div>
             <label class="block mb-1">Diagnostic</label>
-            <input pInputText formControlName="diagnostic" class="w-full" />
-          </div>
-        </div>
-
-        <div class="grid gap-4">
-          <div>
-            <label class="block mb-1">Sistem</label>
-            <input pInputText formControlName="sistem" class="w-full" />
+            <textarea formControlName="diagnostic" rows="3" class="p-inputtext p-component h-24 overflow-auto w-full"></textarea>
           </div>
           <div>
             <label class="block mb-1">Sedare</label>
             <input pInputText formControlName="sedareT" class="w-full" />
           </div>
           <div>
-            <label class="block mb-1">MedicaE>ie</label>
+            <label class="block mb-1">Medicatie</label>
             <input pInputText formControlName="medicatie" class="w-full" />
           </div>
+        </div>
+
+        <div class="grid gap-4">
+          <!-- <div>
+            <label class="block mb-1">Sistem</label>
+            <input pInputText formControlName="sistem" class="w-full" />
+          </div>-->
           <div>
-            <label class="block mb-1">Ileon</label>
-            <input pInputText formControlName="ileon" class="w-full" />
+            <label class="block mb-1">Ileon terminal</label>
+            <textarea formControlName="ileon" rows="2" class="p-inputtext p-component h-24 overflow-auto w-full"></textarea>
           </div>
           <div>
             <label class="block mb-1">Cec</label>
-            <input pInputText formControlName="cec" class="w-full" />
+            <textarea formControlName="cec" rows="2" class="p-inputtext p-component h-24 overflow-auto w-full"></textarea>
           </div>
           <div>
             <label class="block mb-1">Ascendent</label>
-            <input pInputText formControlName="ascendent" class="w-full" />
+            <textarea formControlName="ascendent" rows="2" class="p-inputtext p-component h-24 overflow-auto w-full"></textarea>
           </div>
           <div>
             <label class="block mb-1">Transvers</label>
-            <input pInputText formControlName="transvers" class="w-full" />
+            <textarea formControlName="transvers" rows="2" class="p-inputtext p-component h-24 overflow-auto w-full"></textarea>
+          </div>
+          <div>
+            <label class="block mb-1">Biopsii L</label>
+            <input pInputText formControlName="biopsiiL" class="w-full" />
+          </div>
+          <div>
+            <label class="block mb-1">Biopsii N</label>
+            <input pInputText type="number" formControlName="biopsiiN" class="w-full" />
+          </div>
+          <div>
+            <label class="block mb-1">Nr. reg. AP</label>
+            <input pInputText type="number" formControlName="nrap" class="w-full" />
+          </div>
+          <div>
+            <label class="block mb-1">Tratament/Recomandari</label>
+            <textarea formControlName="tratament" rows="4" class="p-inputtext p-component h-24 overflow-auto w-full"></textarea>
           </div>
         </div>
 
@@ -82,31 +98,12 @@
             <input pInputText formControlName="rect" class="w-full" />
           </div>
           <div>
-            <label class="block mb-1">JAR</label>
+            <label class="block mb-1">Jonctiune ano-rectala</label>
             <input pInputText formControlName="jar" class="w-full" />
           </div>
           <div>
-            <label class="block mb-1">Biopsii L</label>
-            <input pInputText formControlName="biopsiiL" class="w-full" />
-          </div>
-          <div>
-            <label class="block mb-1">Biopsii N</label>
-            <input pInputText type="number" formControlName="biopsiiN" class="w-full" />
-          </div>
-          <div>
-            <label class="block mb-1">Nr AP</label>
-            <input pInputText type="number" formControlName="nrap" class="w-full" />
-          </div>
-        </div>
-
-        <div class="grid gap-4">
-          <div>
-            <label class="block mb-1">Rezultate</label>
-            <input pInputText formControlName="biopsiiR" class="w-full" />
-          </div>
-          <div>
-            <label class="block mb-1">Tratament</label>
-            <input pInputText formControlName="tratament" class="w-full" />
+            <label class="block mb-1">Rezultat histo</label>
+            <textarea formControlName="biopsiiR" rows="3" class="p-inputtext p-component h-24 overflow-auto w-full"></textarea>
           </div>
           <div class="grid gap-4 md:grid-cols-2">
             <div>
@@ -120,8 +117,20 @@
           </div>
           <div>
             <label class="block mb-1">Medic</label>
-            <input pInputText formControlName="medic" class="w-full" />
+            <p-select
+              formControlName="medicId"
+              [options]="medici()"
+              optionLabel="medicName"
+              optionValue="id"
+              placeholder="Selecteaza medic"
+              class="w-full"
+            />
           </div>
+        </div>
+      </div>
+
+      <!-- <div class="grid gap-4">
+        <div class="grid gap-4 md:grid-cols-2">
           <div>
             <label class="block mb-1">Biopsii L1</label>
             <input pInputText formControlName="biopsiiL1" class="w-full" />
@@ -173,10 +182,10 @@
             <input pInputText formControlName="materiale" class="w-full" />
           </div>
         </div>
-      </div>
+      </div> -->
 
       <div class="flex items-center gap-2">
-        <p-button label="SalveazŽŸ" icon="pi pi-save" (onClick)="onSave()" />
+        <p-button label="Salvează" icon="pi pi-save" (onClick)="onSave()" />
         <a routerLink="/home/buletine-edi" class="p-button p-button-secondary">Inapoi</a>
       </div>
     </form>

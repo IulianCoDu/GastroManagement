@@ -21,5 +21,6 @@ export interface CreateBuletinEdsDto {
   tratament?: string;
   data?: string;
   ora?: string;
+  medicId?: number;
   medic?: string;
 }

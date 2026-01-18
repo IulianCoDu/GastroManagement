@@ -51,11 +51,7 @@
             <textarea formControlName="ficat" rows="3" class="p-inputtext p-component h-24 overflow-auto w-full"></textarea>
           </div>
           <div>
-            <label class="block mb-1">Colecist</label>
-            <textarea formControlName="colecist" rows="3" class="p-inputtext p-component h-24 overflow-auto w-full"></textarea>
-          </div>
-          <div>
-            <label class="block mb-1">Vena Portă</label>
+            <label class="block mb-1">Vena Porta</label>
             <input pInputText type="number" formControlName="vp" class="w-full" />
           </div>
           <div>
@@ -63,7 +59,11 @@
             <input pInputText type="number" formControlName="cbp" class="w-full" />
           </div>
           <div>
-            <label class="block mb-1">Vena Splenică</label>
+            <label class="block mb-1">Colecist</label>
+            <textarea formControlName="colecist" rows="3" class="p-inputtext p-component h-24 overflow-auto w-full"></textarea>
+          </div>
+          <div>
+            <label class="block mb-1">Vena Splenica</label>
             <input pInputText type="number" formControlName="vs" class="w-full" />
           </div>
           <div>
@@ -71,7 +71,7 @@
             <input pInputText formControlName="ogi" class="w-full" />
           </div>
           <div>
-            <label class="block mb-1">Prostată</label>
+            <label class="block mb-1">Prostata</label>
             <input pInputText formControlName="prostata" class="w-full" />
           </div>
         </div>
@@ -83,7 +83,7 @@
           </div>
           <div>
             <label class="block mb-1">Splina</label>
-            <input pInputText formControlName="splina" class="w-full" />
+            <textarea formControlName="splina" rows="3" class="p-inputtext p-component h-24 overflow-auto w-full"></textarea>
           </div>
           <div>
             <label class="block mb-1">Rinichi Drept</label>
@@ -104,6 +104,10 @@
             <label class="block mb-1">Observatii</label>
             <textarea formControlName="obs" rows="3" class="p-inputtext p-component h-24 overflow-auto w-full"></textarea>
           </div>
+          <div>
+            <label class="block mb-1">CE-US</label>
+            <textarea formControlName="ceus" rows="3" class="p-inputtext p-component h-24 overflow-auto w-full"></textarea>
+          </div>
           <div class="grid gap-4 md:grid-cols-2">
             <div>
               <label class="block mb-1">Data</label>
@@ -116,11 +120,14 @@
           </div>
           <div>
             <label class="block mb-1">Medic</label>
-            <input pInputText formControlName="medic" class="w-full" />
-          </div>
-          <div>
-            <label class="block mb-1">CE-US</label>
-            <textarea formControlName="ceus" rows="3" class="p-inputtext p-component h-24 overflow-auto w-full"></textarea>
+            <p-select
+              formControlName="medicId"
+              [options]="medici()"
+              optionLabel="medicName"
+              optionValue="id"
+              placeholder="Selecteaza medic"
+              class="w-full"
+            />
           </div>
         </div>
       </div>

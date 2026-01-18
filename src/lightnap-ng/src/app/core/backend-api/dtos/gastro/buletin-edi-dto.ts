@@ -25,6 +25,7 @@ export interface BuletinEdiDto {
   tratament?: string;
   data?: string;
   ora?: string;
+  medicId?: number | null;
   medic?: string;
   biopsiiL1?: string;
   biopsiiN1?: number;

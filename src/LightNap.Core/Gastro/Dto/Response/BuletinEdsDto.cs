@@ -28,6 +28,7 @@ namespace LightNap.Core.Gastro.Dto.Response
         public string? Tratament { get; set; }
         public DateTime? Data { get; set; }
         public DateTime? Ora { get; set; }
+        public int? MedicId { get; set; }
         public string? Medic { get; set; }
     }
 }

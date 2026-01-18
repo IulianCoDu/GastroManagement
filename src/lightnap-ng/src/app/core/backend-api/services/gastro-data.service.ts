@@ -7,6 +7,7 @@ import {
   CreateBuletinEcoDto,
   CreateBuletinEdsDto,
   CreateBuletinEdiDto,
+  MedicLookupDto,
   UpdateBuletinEcoDto,
   UpdateBuletinEdsDto,
   UpdateBuletinEdiDto,
@@ -45,6 +46,10 @@ export class GastroDataService {
 
   getMedici() {
     return this.#http.get<Array<string>>(`${this.#apiUrlRoot}medici`);
+  }
+
+  getMediciLookup() {
+    return this.#http.get<Array<MedicLookupDto>>(`${this.#apiUrlRoot}medici-lookup`);
   }
 
   createBuletinEco(dto: CreateBuletinEcoDto) {

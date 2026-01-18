@@ -278,6 +278,15 @@ namespace LightNap.Core.Data
                 .IsRequired();
 
             builder.Entity<BuletinEco>()
+                .Property(b => b.MedicId)
+                .HasColumnName("MedicId");
+
+            builder.Entity<BuletinEco>()
+                .HasOne<Medic>()
+                .WithMany(m => m.BuletineEco)
+                .HasForeignKey(b => b.MedicId);
+
+            builder.Entity<BuletinEco>()
                 .Property(b => b.Fig1)
                 .HasColumnName("Fig1");
 
@@ -432,6 +441,15 @@ namespace LightNap.Core.Data
                 .HasMaxLength(50);
 
             builder.Entity<BuletinEds>()
+                .Property(b => b.MedicId)
+                .HasColumnName("MedicId");
+
+            builder.Entity<BuletinEds>()
+                .HasOne<Medic>()
+                .WithMany(m => m.BuletineEds)
+                .HasForeignKey(b => b.MedicId);
+
+            builder.Entity<BuletinEds>()
                 .Property(b => b.SsmaTimeStamp)
                 .HasColumnName("SSMA_TimeStamp")
                 .IsRowVersion();
@@ -572,6 +590,15 @@ namespace LightNap.Core.Data
                 .Property(b => b.Medic)
                 .HasColumnName("medic")
                 .HasMaxLength(50);
+
+            builder.Entity<BuletinEdi>()
+                .Property(b => b.MedicId)
+                .HasColumnName("MedicId");
+
+            builder.Entity<BuletinEdi>()
+                .HasOne<Medic>()
+                .WithMany(m => m.BuletineEdi)
+                .HasForeignKey(b => b.MedicId);
 
             builder.Entity<BuletinEdi>()
                 .Property(b => b.BiopsiiL1)

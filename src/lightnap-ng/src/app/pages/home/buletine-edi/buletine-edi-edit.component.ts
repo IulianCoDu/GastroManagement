@@ -2,7 +2,7 @@ import { CommonModule } from "@angular/common";
 import { Component, DestroyRef, OnInit, computed, inject, input, signal } from "@angular/core";
 import { FormBuilder, ReactiveFormsModule } from "@angular/forms";
 import { RouterLink } from "@angular/router";
-import { CreateBuletinEdiDto, UpdateBuletinEdiDto, setApiErrors } from "@core";
+import { CreateBuletinEdiDto, MedicLookupDto, UpdateBuletinEdiDto, setApiErrors } from "@core";
 import { ErrorListComponent } from "@core/components/error-list/error-list.component";
 import { GastroDataService } from "@core/backend-api/services/gastro-data.service";
 import { RouteAliasService } from "@core/features/routing/services/route-alias-service";
@@ -11,7 +11,9 @@ import { ButtonModule } from "primeng/button";
 import { InputTextModule } from "primeng/inputtext";
 import { PanelModule } from "primeng/panel";
 import { ProgressSpinnerModule } from "primeng/progressspinner";
+import { SelectModule } from "primeng/select";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { forkJoin } from "rxjs";
 import { BuletineEditBaseComponent } from "../buletine-edit-base.component";
 
 @Component({
@@ -22,6 +24,7 @@ import { BuletineEditBaseComponent } from "../buletine-edit-base.component";
     ReactiveFormsModule,
     PanelModule,
     InputTextModule,
+    SelectModule,
     ButtonModule,
     ProgressSpinnerModule,
     ErrorListComponent,
@@ -45,6 +48,7 @@ export class BuletineEdiEditComponent extends BuletineEditBaseComponent implemen
 
   readonly loading = signal(false);
   readonly errors = signal(new Array<string>());
+  readonly medici = signal<Array<MedicLookupDto>>([]);
   readonly #applyApiErrors = setApiErrors(this.errors);
 
   readonly form = this.#fb.group({
@@ -74,6 +78,7 @@ export class BuletineEdiEditComponent extends BuletineEditBaseComponent implemen
     data: this.#fb.control(""),
     ora: this.#fb.control(""),
     medic: this.#fb.control(""),
+    medicId: this.#fb.control<number | null>(null),
     biopsiiL1: this.#fb.control(""),
     biopsiiN1: this.#fb.control<number | null>(null),
     nrap1: this.#fb.control<number | null>(null),
@@ -90,15 +95,22 @@ export class BuletineEdiEditComponent extends BuletineEditBaseComponent implemen
 
   ngOnInit() {
     const id = this.recordId();
-    if (!id) return;
+    if (!id) {
+      this.loadMedici();
+      return;
+    }
 
     this.loading.set(true);
-    this.#gastroService
-      .getBuletinEdi(id)
+    forkJoin({
+      medici: this.#gastroService.getMediciLookup(),
+      record: this.#gastroService.getBuletinEdi(id),
+    })
       .pipe(takeUntilDestroyed(this.#destroyRef))
       .subscribe({
-        next: record => {
+        next: ({ medici, record }) => {
+          this.medici.set(medici);
           if (record) {
+            const resolvedMedicId = record.medicId ?? this.resolveMedicId(record.medic, medici);
             this.form.patchValue({
               nr: record.nr?.toString() ?? "",
               nume: record.nume ?? "",
@@ -126,6 +138,7 @@ export class BuletineEdiEditComponent extends BuletineEditBaseComponent implemen
               data: this.formatDate(record.data),
               ora: this.formatTime(record.ora),
               medic: record.medic ?? "",
+              medicId: resolvedMedicId,
               biopsiiL1: record.biopsiiL1 ?? "",
               biopsiiN1: record.biopsiiN1 ?? null,
               nrap1: record.nrap1 ?? null,
@@ -177,6 +190,7 @@ export class BuletineEdiEditComponent extends BuletineEditBaseComponent implemen
 
   private buildPayload(): CreateBuletinEdiDto & UpdateBuletinEdiDto {
     const value = this.form.getRawValue();
+    const resolvedMedic = this.lookupMedicName(value.medicId) ?? value.medic ?? undefined;
     return {
       nume: value.nume || undefined,
       prenume: value.prenume || undefined,
@@ -202,7 +216,8 @@ export class BuletineEdiEditComponent extends BuletineEditBaseComponent implemen
       tratament: value.tratament || undefined,
       data: this.toIsoDate(value.data),
       ora: this.toIsoDateTime(value.data, value.ora),
-      medic: value.medic || undefined,
+      medicId: value.medicId ?? undefined,
+      medic: resolvedMedic,
       biopsiiL1: value.biopsiiL1 || undefined,
       biopsiiN1: value.biopsiiN1 ?? undefined,
       nrap1: value.nrap1 ?? undefined,
@@ -216,6 +231,27 @@ export class BuletineEdiEditComponent extends BuletineEditBaseComponent implemen
       consumabile: value.consumabile || undefined,
       materiale: value.materiale || undefined,
     };
+  }
+
+  private loadMedici() {
+    this.#gastroService
+      .getMediciLookup()
+      .pipe(takeUntilDestroyed(this.#destroyRef))
+      .subscribe({
+        next: medici => this.medici.set(medici),
+        error: this.#applyApiErrors,
+      });
+  }
+
+  private resolveMedicId(medicName: string | undefined, medici: Array<MedicLookupDto>) {
+    if (!medicName) return null;
+    const match = medici.find(medic => medic.medicName.toLowerCase() === medicName.trim().toLowerCase());
+    return match?.id ?? null;
+  }
+
+  private lookupMedicName(medicId: number | null | undefined) {
+    if (medicId == null) return undefined;
+    return this.medici().find(medic => medic.id === medicId)?.medicName;
   }
 
 }

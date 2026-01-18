@@ -5,7 +5,7 @@
     </div>
   } @else {
     <form [formGroup]="form" class="grid gap-4">
-      <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+      <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
         <div class="grid gap-4">
           <div>
             <label class="block mb-1">Nr. reg.</label>
@@ -35,10 +35,10 @@
             <label class="block mb-1">Diagnostic</label>
             <textarea formControlName="diagnostic" rows="3" class="p-inputtext p-component h-24 overflow-auto w-full"></textarea>
           </div>
-          <div>
+          <!-- <div>
             <label class="block mb-1">Sistem</label>
             <input pInputText formControlName="sistem" class="w-full" />
-          </div>
+          </div> -->
           <div>
             <label class="block mb-1">Sedare</label>
             <input pInputText formControlName="sedareT" class="w-full" />
@@ -52,30 +52,15 @@
         <div class="grid gap-4">
           <div>
             <label class="block mb-1">Esofag</label>
-            <input pInputText formControlName="esofag" class="w-full" />
+            <textarea formControlName="esofag" rows="3" class="p-inputtext p-component h-24 overflow-auto w-full"></textarea>
           </div>
           <div>
             <label class="block mb-1">Joncțiune</label>
-            <input pInputText formControlName="jonctiune" class="w-full" />
+            <textarea formControlName="jonctiune" rows="3" class="p-inputtext p-component h-24 overflow-auto w-full"></textarea>
           </div>
           <div>
             <label class="block mb-1">Stomac</label>
-            <input pInputText formControlName="stomac" class="w-full" />
-          </div>
-        </div>
-
-        <div class="grid gap-4">
-          <div>
-            <label class="block mb-1">Pilor</label>
-            <input pInputText formControlName="pilor" class="w-full" />
-          </div>
-          <div>
-            <label class="block mb-1">Bulb</label>
-            <input pInputText formControlName="bulb" class="w-full" />
-          </div>
-          <div>
-            <label class="block mb-1">Duoden</label>
-            <input pInputText formControlName="duoden" class="w-full" />
+            <textarea formControlName="stomac" rows="3" class="p-inputtext p-component h-24 overflow-auto w-full"></textarea>
           </div>
           <div>
             <label class="block mb-1">Biopsii L</label>
@@ -86,19 +71,31 @@
             <input pInputText type="number" formControlName="biopsiiN" class="w-full" />
           </div>
           <div>
-            <label class="block mb-1">Nr AP</label>
+            <label class="block mb-1">Nr. reg. AP</label>
             <input pInputText type="number" formControlName="nrap" class="w-full" />
+          </div>
+          <div>
+            <label class="block mb-1">Tratament/Recomandări</label>
+            <textarea formControlName="tratament" rows="3" class="p-inputtext p-component h-24 overflow-auto w-full"></textarea>
           </div>
         </div>
 
         <div class="grid gap-4">
           <div>
-            <label class="block mb-1">Rezultate</label>
-            <input pInputText formControlName="biopsiiR" class="w-full" />
+            <label class="block mb-1">Pilor</label>
+            <textarea formControlName="pilor" rows="3" class="p-inputtext p-component h-24 overflow-auto w-full"></textarea>
           </div>
           <div>
-            <label class="block mb-1">Tratament</label>
-            <input pInputText formControlName="tratament" class="w-full" />
+            <label class="block mb-1">Bulb</label>
+            <textarea formControlName="bulb" rows="3" class="p-inputtext p-component h-24 overflow-auto w-full"></textarea>
+          </div>
+          <div>
+            <label class="block mb-1">Duoden II</label>
+            <textarea formControlName="duoden" rows="3" class="p-inputtext p-component h-24 overflow-auto w-full"></textarea>
+          </div>
+          <div>
+            <label class="block mb-1">Rezultat histo</label>
+            <input pInputText formControlName="biopsiiR" class="w-full" />
           </div>
           <div class="grid gap-4 md:grid-cols-2">
             <div>
@@ -112,7 +109,14 @@
           </div>
           <div>
             <label class="block mb-1">Medic</label>
-            <input pInputText formControlName="medic" class="w-full" />
+            <p-select
+              formControlName="medicId"
+              [options]="medici()"
+              optionLabel="medicName"
+              optionValue="id"
+              placeholder="Selecteaza medic"
+              class="w-full"
+            />
           </div>
         </div>
       </div>
