@@ -306,10 +306,6 @@ namespace LightNap.Core.Data
                 .Property(b => b.Ceus)
                 .HasColumnName("CEUS");
 
-            builder.Entity<BuletinEco>()
-                .Property(b => b.SsmaTimeStamp)
-                .HasColumnName("SSMA_TimeStamp")
-                .IsRowVersion();
 
             // Configure BuletinEds entity
             builder.Entity<BuletinEds>()
@@ -449,10 +445,6 @@ namespace LightNap.Core.Data
                 .WithMany(m => m.BuletineEds)
                 .HasForeignKey(b => b.MedicId);
 
-            builder.Entity<BuletinEds>()
-                .Property(b => b.SsmaTimeStamp)
-                .HasColumnName("SSMA_TimeStamp")
-                .IsRowVersion();
 
             // Configure BuletinEdi entity
             builder.Entity<BuletinEdi>()
@@ -669,10 +661,6 @@ namespace LightNap.Core.Data
                 .Property(b => b.Materiale)
                 .HasColumnName("Materiale");
 
-            builder.Entity<BuletinEdi>()
-                .Property(b => b.SsmaTimeStamp)
-                .HasColumnName("SSMA_TimeStamp")
-                .IsRowVersion();
         }
 
         /// <inheritdoc />

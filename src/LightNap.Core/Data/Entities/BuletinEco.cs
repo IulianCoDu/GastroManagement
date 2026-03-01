@@ -165,9 +165,5 @@ namespace LightNap.Core.Data.Entities
         /// </summary>
         public string? Ceus { get; set; }
 
-        /// <summary>
-        /// Row version for concurrency
-        /// </summary>
-        public byte[] SsmaTimeStamp { get; set; } = [];
     }
 }

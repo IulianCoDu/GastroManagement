@@ -225,9 +225,5 @@ namespace LightNap.Core.Data.Entities
         /// </summary>
         public string? Materiale { get; set; }
 
-        /// <summary>
-        /// Row version for concurrency
-        /// </summary>
-        public byte[] SsmaTimeStamp { get; set; } = [];
     }
 }

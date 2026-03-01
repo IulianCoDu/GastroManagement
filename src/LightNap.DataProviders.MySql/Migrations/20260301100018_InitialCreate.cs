@@ -355,9 +355,7 @@ namespace LightNap.DataProviders.MySql.Migrations
                     Fig2 = table.Column<byte[]>(type: "longblob", nullable: true),
                     Fig3 = table.Column<byte[]>(type: "longblob", nullable: true),
                     Film1 = table.Column<byte[]>(type: "longblob", nullable: true),
-                    CEUS = table.Column<string>(type: "longtext", nullable: true),
-                    SSMA_TimeStamp = table.Column<byte[]>(type: "longblob", rowVersion: true, nullable: false)
-                        .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.ComputedColumn)
+                    CEUS = table.Column<string>(type: "longtext", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -419,8 +417,6 @@ namespace LightNap.DataProviders.MySql.Migrations
                     Film1 = table.Column<byte[]>(type: "longblob", nullable: true),
                     Consumabile = table.Column<string>(type: "longtext", nullable: true),
                     Materiale = table.Column<string>(type: "longtext", nullable: true),
-                    SSMA_TimeStamp = table.Column<byte[]>(type: "longblob", rowVersion: true, nullable: false)
-                        .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.ComputedColumn),
                     SistemNumarsistem = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
@@ -470,8 +466,6 @@ namespace LightNap.DataProviders.MySql.Migrations
                     ora = table.Column<DateTime>(type: "datetime(6)", nullable: true),
                     medic = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: true),
                     MedicId = table.Column<int>(type: "int", nullable: true),
-                    SSMA_TimeStamp = table.Column<byte[]>(type: "longblob", rowVersion: true, nullable: false)
-                        .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.ComputedColumn),
                     SistemNumarsistem = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
