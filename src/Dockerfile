@@ -1,3 +1,10 @@
+FROM node:22-alpine AS angular-build
+WORKDIR /app
+COPY lightnap-ng/package*.json ./
+RUN npm ci
+COPY lightnap-ng/ ./
+RUN npm run build
+
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS base
 WORKDIR /app
 EXPOSE 8080
@@ -10,4 +17,5 @@ RUN dotnet publish "LightNap.WebApi/LightNap.WebApi.csproj" -c Release -o /app/p
 FROM base AS final
 WORKDIR /app
 COPY --from=build /app/publish .
+COPY --from=angular-build /app/dist/lightnap-ng/browser ./wwwroot
 ENTRYPOINT ["dotnet", "LightNap.WebApi.dll"]
