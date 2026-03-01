@@ -9,5 +9,5 @@ RUN dotnet publish "LightNap.WebApi/LightNap.WebApi.csproj" -c Release -o /app/p
 
 FROM base AS final
 WORKDIR /app
-COPY --from=publish /app/publish .
+COPY --from=build /app/publish .
 ENTRYPOINT ["dotnet", "LightNap.WebApi.dll"]
