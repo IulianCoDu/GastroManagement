@@ -7,6 +7,7 @@ using LightNap.Core.StaticContents.Dto.Request;
 using LightNap.Core.StaticContents.Enums;
 using LightNap.Core.StaticContents.Interfaces;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using System.Data;
 using System.Text.RegularExpressions;
@@ -207,7 +208,8 @@ namespace LightNap.WebApi.Configuration
 
             var roleSet = new HashSet<string>(ApplicationRoles.All.Select(role => role.Name!), StringComparer.OrdinalIgnoreCase);
 
-            foreach (var role in roleManager.Roles.Where(role => role.Name != null && !roleSet.Contains(role.Name)))
+            var allRoles = await roleManager.Roles.ToListAsync();
+            foreach (var role in allRoles.Where(role => role.Name != null && !roleSet.Contains(role.Name)))
             {
                 var result = await roleManager.DeleteAsync(role);
                 if (!result.Succeeded)
