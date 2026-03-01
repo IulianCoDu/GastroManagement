@@ -1,6 +1,6 @@
 const PROXY_CONFIG = {
   "/api": {
-    target: "https://lightnap.azurewebsites.net",
+    target: "https://gastromanagement.up.railway.app",
     secure: true,
     changeOrigin: true,
     ws: true,
