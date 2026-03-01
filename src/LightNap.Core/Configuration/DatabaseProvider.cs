@@ -16,6 +16,10 @@ namespace LightNap.Core.Configuration
         /// <summary>
         /// SQL Server database provider.
         /// </summary>
-        SqlServer
+        SqlServer,
+        /// <summary>
+        /// MySQL/MariaDB database provider.
+        /// </summary>
+        MySql
     }
 }

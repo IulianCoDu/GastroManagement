@@ -26,6 +26,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\LightNap.Core\LightNap.Core.csproj" />
+    <ProjectReference Include="..\LightNap.DataProviders.MySql\LightNap.DataProviders.MySql.csproj" />
     <ProjectReference Include="..\LightNap.DataProviders.Sqlite\LightNap.DataProviders.Sqlite.csproj" />
     <ProjectReference Include="..\LightNap.DataProviders.SqlServer\LightNap.DataProviders.SqlServer.csproj" />
   </ItemGroup>

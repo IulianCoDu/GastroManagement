@@ -21,6 +21,7 @@ using LightNap.Core.Users.Interfaces;
 using LightNap.Core.Users.Services;
 using LightNap.Core.UserSettings.Interfaces;
 using LightNap.Core.UserSettings.Services;
+using LightNap.DataProviders.MySql.Extensions;
 using LightNap.DataProviders.Sqlite.Extensions;
 using LightNap.DataProviders.SqlServer.Extensions;
 using LightNap.WebApi.Authorization;
@@ -91,6 +92,9 @@ namespace LightNap.WebApi.Extensions
                     break;
                 case DatabaseProvider.SqlServer:
                     services.AddLightNapSqlServer(configuration.GetConnectionString("DefaultConnection") ?? throw new ArgumentException($"A 'DefaultConnection' connection string is required for '{databaseSettings.Provider}'"));
+                    break;
+                case DatabaseProvider.MySql:
+                    services.AddLightNapMySql(configuration.GetConnectionString("DefaultConnection") ?? throw new ArgumentException($"A 'DefaultConnection' connection string is required for '{databaseSettings.Provider}'"));
                     break;
                 default: throw new ArgumentException($"Unsupported 'Database:Provider' setting: '{databaseSettings.Provider}'");
             }
