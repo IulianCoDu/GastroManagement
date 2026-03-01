@@ -94,7 +94,17 @@ namespace LightNap.WebApi.Extensions
                     services.AddLightNapSqlServer(configuration.GetConnectionString("DefaultConnection") ?? throw new ArgumentException($"A 'DefaultConnection' connection string is required for '{databaseSettings.Provider}'"));
                     break;
                 case DatabaseProvider.MySql:
-                    services.AddLightNapMySql(configuration.GetConnectionString("DefaultConnection") ?? throw new ArgumentException($"A 'DefaultConnection' connection string is required for '{databaseSettings.Provider}'"));
+                    var mySqlConnection = configuration.GetConnectionString("DefaultConnection");
+                    if (string.IsNullOrEmpty(mySqlConnection))
+                    {
+                        // Fall back to individual Railway MySQL environment variables
+                        var host = configuration["MYSQLHOST"] ?? throw new ArgumentException("MYSQLHOST environment variable is required for MySql provider");
+                        var database = configuration["MYSQLDATABASE"] ?? "railway";
+                        var user = configuration["MYSQLUSER"] ?? "root";
+                        var password = configuration["MYSQLPASSWORD"] ?? throw new ArgumentException("MYSQLPASSWORD environment variable is required for MySql provider");
+                        mySqlConnection = $"Server={host};Database={database};Uid={user};Pwd={password};";
+                    }
+                    services.AddLightNapMySql(mySqlConnection);
                     break;
                 default: throw new ArgumentException($"Unsupported 'Database:Provider' setting: '{databaseSettings.Provider}'");
             }
