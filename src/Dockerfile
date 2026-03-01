@@ -17,5 +17,5 @@ RUN dotnet publish "LightNap.WebApi/LightNap.WebApi.csproj" -c Release -o /app/p
 FROM base AS final
 WORKDIR /app
 COPY --from=build /app/publish .
-COPY --from=angular-build /app/dist/lightnap-ng/browser ./wwwroot
+COPY --from=angular-build /LightNap.WebApi/wwwroot ./wwwroot
 ENTRYPOINT ["dotnet", "LightNap.WebApi.dll"]
