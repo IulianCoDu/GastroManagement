@@ -154,7 +154,7 @@ namespace LightNap.DataProviders.MySql.Migrations
                         .HasColumnName("colecist");
 
                     b.Property<DateTime?>("Data")
-                        .HasColumnType("datetime2(0)")
+                        .HasColumnType("datetime(6)")
                         .HasColumnName("data");
 
                     b.Property<string>("Diagnostic")
@@ -221,7 +221,7 @@ namespace LightNap.DataProviders.MySql.Migrations
                         .HasColumnName("ogi");
 
                     b.Property<DateTime?>("Ora")
-                        .HasColumnType("datetime2(0)")
+                        .HasColumnType("datetime(6)")
                         .HasColumnName("ora");
 
                     b.Property<string>("Pancreas")
@@ -357,11 +357,11 @@ namespace LightNap.DataProviders.MySql.Migrations
                         .HasColumnName("Consumabile");
 
                     b.Property<DateTime?>("Data")
-                        .HasColumnType("datetime2(0)")
+                        .HasColumnType("datetime(6)")
                         .HasColumnName("data");
 
                     b.Property<DateTime?>("Data1")
-                        .HasColumnType("datetime2(0)")
+                        .HasColumnType("datetime(6)")
                         .HasColumnName("data1");
 
                     b.Property<string>("Descendent")
@@ -459,11 +459,11 @@ namespace LightNap.DataProviders.MySql.Migrations
                         .HasColumnName("nume");
 
                     b.Property<DateTime?>("Ora")
-                        .HasColumnType("datetime2(0)")
+                        .HasColumnType("datetime(6)")
                         .HasColumnName("ora");
 
                     b.Property<DateTime?>("Ora1")
-                        .HasColumnType("datetime2(0)")
+                        .HasColumnType("datetime(6)")
                         .HasColumnName("ora1");
 
                     b.Property<string>("Prenume")
@@ -567,7 +567,7 @@ namespace LightNap.DataProviders.MySql.Migrations
                         .HasColumnName("CNP");
 
                     b.Property<DateTime?>("Data")
-                        .HasColumnType("datetime2(0)")
+                        .HasColumnType("datetime(6)")
                         .HasColumnName("data");
 
                     b.Property<string>("Diagnostic")
@@ -628,7 +628,7 @@ namespace LightNap.DataProviders.MySql.Migrations
                         .HasColumnName("nume");
 
                     b.Property<DateTime?>("Ora")
-                        .HasColumnType("datetime2(0)")
+                        .HasColumnType("datetime(6)")
                         .HasColumnName("ora");
 
                     b.Property<string>("Pilor")
