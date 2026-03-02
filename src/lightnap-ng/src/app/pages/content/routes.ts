@@ -13,7 +13,7 @@ export const Routes: AppRoute[] = [
     children: [
       {
         path: "",
-        canActivate: [permissionsGuard([RoleNames.Administrator, RoleNames.ContentEditor], [])],
+        canActivate: [permissionsGuard([RoleNames.Administrator, RoleNames.MedicEditor], [])],
         data: { alias: "manage-content", breadcrumb: "" },
         title: "Gestioneaza continutul",
         loadComponent: () => import("./manage/manage.component").then(m => m.ManageComponent),

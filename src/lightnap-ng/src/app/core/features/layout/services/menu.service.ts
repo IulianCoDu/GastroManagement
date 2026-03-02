@@ -44,12 +44,12 @@ export class MenuService {
       items: [
         { label: "Profil", icon: "pi pi-fw pi-user", routerLink: this.#routeAlias.getRoute("profile"), routerLinkActiveOptions: { exact: true } },
         { label: "Dispozitive", icon: "pi pi-fw pi-mobile", routerLink: this.#routeAlias.getRoute("devices") },
-        { label: "Schimbă parola", icon: "pi pi-fw pi-lock", routerLink: this.#routeAlias.getRoute("change-password") },
+        { label: "Schimba parola", icon: "pi pi-fw pi-lock", routerLink: this.#routeAlias.getRoute("change-password") },
       ],
     },
   ];
 
-  readonly #contentMenuItems: MenuItem[] = [
+  readonly #medicMenuItems: MenuItem[] = [
     {
       label: "Conținut",
       expanded: true,
@@ -62,7 +62,7 @@ export class MenuService {
       label: "Administrare",
       expanded: true,
       items: [
-        { label: "Acasă", icon: "pi pi-fw pi-home", routerLink: this.#routeAlias.getRoute("admin-home"), routerLinkActiveOptions: { exact: true } },
+        { label: "Acasa", icon: "pi pi-fw pi-home", routerLink: this.#routeAlias.getRoute("admin-home"), routerLinkActiveOptions: { exact: true } },
         { label: "Utilizatori", icon: "pi pi-fw pi-users", routerLink: this.#routeAlias.getRoute("admin-users") },
         { label: "Roluri", icon: "pi pi-fw pi-lock", routerLink: this.#routeAlias.getRoute("admin-roles") },
         { label: "Permisiuni", icon: "pi pi-fw pi-shield", routerLink: this.#routeAlias.getRoute("admin-claims") },
@@ -71,9 +71,7 @@ export class MenuService {
   ];
 
   readonly #isLoggedIn = toSignal(this.#identityService.watchLoggedIn$(), { initialValue: false });
-  readonly #isContentEditorLoggedIn = toSignal(this.#identityService.watchAnyUserRole$([RoleNames.Administrator, RoleNames.ContentEditor]), {
-    initialValue: false,
-  });
+  readonly #isMedicLoggedIn = toSignal(this.#identityService.watchAnyUserRole$([RoleNames.Administrator, RoleNames.MedicEditor]), { initialValue: false });
   readonly #isAdminLoggedIn = toSignal(this.#identityService.watchUserRole$(RoleNames.Administrator), { initialValue: false });
 
   readonly menuItems = computed(() => {
@@ -87,8 +85,8 @@ export class MenuService {
       items.push(...this.#loggedInMenuItems);
     }
 
-    if (this.#isContentEditorLoggedIn()) {
-      items.push(...this.#contentMenuItems);
+    if (this.#isMedicLoggedIn()) {
+      items.push(...this.#medicMenuItems);
     }
 
     if (this.#isAdminLoggedIn()) {

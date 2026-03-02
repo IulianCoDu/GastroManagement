@@ -69,7 +69,7 @@ namespace LightNap.Core.StaticContents.Services
             }
 
             // Check for claim explicitly added to user for this content.
-            if (userContext.HasClaim(Constants.Claims.ContentEditor, staticContent.Id.ToString()))
+            if (userContext.HasClaim(Constants.Claims.MedicEditor, staticContent.Id.ToString()))
             {
                 return true;
             }
@@ -149,7 +149,7 @@ namespace LightNap.Core.StaticContents.Services
 
             if (staticContent.ReadAccess == StaticContentReadAccess.Authenticated) { return StaticContentUserVisibility.Reader; }
 
-            if (userContext.HasClaim(Constants.Claims.ContentReader, staticContent.Id.ToString())) { return StaticContentUserVisibility.Reader; }
+            if (userContext.HasClaim(Constants.Claims.MedicReader, staticContent.Id.ToString())) { return StaticContentUserVisibility.Reader; }
 
             var ReaderRoles = staticContent.GetExplicitReaderRoles();
             if (ReaderRoles is not null && ReaderRoles.Any(userContext.IsInRole)) { return StaticContentUserVisibility.Reader; }

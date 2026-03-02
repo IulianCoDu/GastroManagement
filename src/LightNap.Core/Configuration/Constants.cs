@@ -33,9 +33,10 @@
             public const string Administrator = "Administrator";
 
             /// <summary>
-            /// The name of the content editor role.
+            /// The name of the medic editor role.
             /// </summary>
-            public const string ContentEditor = "ContentEditor";
+            public const string MedicEditor = "MedicEditor";
+
         }
 
         /// <summary>
@@ -44,14 +45,14 @@
         public static class Claims
         {
             /// <summary>
-            /// The name of the static content editor claim.
+            /// The name of the medic editor claim.
             /// </summary>
-            public const string ContentEditor = "Content:Editor";
+            public const string MedicEditor = "Medic:Editor";
 
             /// <summary>
-            /// The name of the static content reader claim.
+            /// The name of the medic reader claim.
             /// </summary>
-            public const string ContentReader = "Content:Reader";
+            public const string MedicReader = "Medic:Reader";
         }
 
         /// <summary>

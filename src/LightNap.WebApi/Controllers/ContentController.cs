@@ -32,7 +32,7 @@ namespace LightNap.WebApi.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = $"{Constants.Roles.Administrator},{Constants.Roles.ContentEditor}")]
+        [Authorize(Roles = $"{Constants.Roles.Administrator},{Constants.Roles.MedicEditor}")]
         public async Task<ApiResponseDto<StaticContentDto>> CreateStaticContentAsync(CreateStaticContentDto createDto)
         {
             return new ApiResponseDto<StaticContentDto>(await staticContentService.CreateStaticContentAsync(createDto));
@@ -45,7 +45,7 @@ namespace LightNap.WebApi.Controllers
         }
 
         [HttpPost("search")]
-        [Authorize(Roles = $"{Constants.Roles.Administrator},{Constants.Roles.ContentEditor}")]
+        [Authorize(Roles = $"{Constants.Roles.Administrator},{Constants.Roles.MedicEditor}")]
         public async Task<ApiResponseDto<PagedResponseDto<StaticContentDto>>> SearchStaticContentAsync(SearchStaticContentRequestDto searchDto)
         {
             return new ApiResponseDto<PagedResponseDto<StaticContentDto>>(await staticContentService.SearchStaticContentAsync(searchDto));

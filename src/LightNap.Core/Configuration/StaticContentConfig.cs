@@ -19,7 +19,7 @@ namespace LightNap.Core.Configuration
         public static IReadOnlyList<string> ContentAdministratorRoles =>
         [
             Constants.Roles.Administrator,
-            Constants.Roles.ContentEditor,
+            Constants.Roles.MedicEditor,
         ];
 
         /// <summary>

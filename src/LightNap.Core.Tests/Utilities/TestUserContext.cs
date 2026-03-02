@@ -99,7 +99,7 @@ namespace LightNap.Core.Tests.Utilities
         public void LogInContentEditor(string? userId = null)
         {
             this.LogIn(userId);
-            this.AddRole(Constants.Roles.ContentEditor);
+            this.AddRole(Constants.Roles.MedicEditor);
         }
 
         /// <summary>

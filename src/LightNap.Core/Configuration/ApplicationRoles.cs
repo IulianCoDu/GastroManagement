@@ -13,9 +13,9 @@ namespace LightNap.Core.Configuration
         public static readonly ApplicationRole Administrator = new(Constants.Roles.Administrator, "Administrator", "Access to all administrative features");
 
         /// <summary>
-        /// Gets the content editor role with access to all content editing features.
+        /// Gets the medic role with access to medical record features.
         /// </summary>
-        public static readonly ApplicationRole ContentEditor = new(Constants.Roles.ContentEditor, "Content Editor", "Access to all content editing features");
+        public static readonly ApplicationRole MedicEditor = new(Constants.Roles.MedicEditor, "MedicEditor", "Access to medical record features");
 
         /// <summary>
         /// Gets a read-only list of all predefined application roles.
@@ -23,7 +23,7 @@ namespace LightNap.Core.Configuration
         public static IReadOnlyList<ApplicationRole> All =>
         [
             Administrator,
-            ContentEditor,
+            MedicEditor,
         ];
     }
 }

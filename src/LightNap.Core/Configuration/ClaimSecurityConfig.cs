@@ -11,7 +11,7 @@ namespace LightNap.Core.Configuration
         /// Gets the comma-separated list of roles authorized to manage user claims. This is used to secure the claim management endpoints.
         /// If you add new roles that need to be able to manage user claims, include them here so that they update the controller authorization.
         /// </summary>
-        public const string ClaimManagementRoles = $"{Constants.Roles.Administrator},{Constants.Roles.ContentEditor}";
+        public const string ClaimManagementRoles = $"{Constants.Roles.Administrator},{Constants.Roles.MedicEditor}";
 
         /// <summary>
         /// The claim security rules that define which roles grant which claims. Any claims not listed here require an admin. If you add
@@ -19,8 +19,8 @@ namespace LightNap.Core.Configuration
         /// </summary>
         internal static IReadOnlyList<ClaimSecurityRule> AllRules =>
         [
-            new ClaimSecurityRule(Constants.Claims.ContentEditor, [ApplicationRoles.ContentEditor]),
-            new ClaimSecurityRule(Constants.Claims.ContentReader, [ApplicationRoles.ContentEditor]),
+            new ClaimSecurityRule(Constants.Claims.MedicEditor, [ApplicationRoles.MedicEditor]),
+            new ClaimSecurityRule(Constants.Claims.MedicReader, [ApplicationRoles.MedicEditor]),
         ];
 
         /// <summary>

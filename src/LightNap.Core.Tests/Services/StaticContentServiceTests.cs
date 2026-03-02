@@ -305,7 +305,7 @@ namespace LightNap.Core.Tests.Services
 
             this._userContext.LogIn();
             var content = await this._dbContext.StaticContents.FirstAsync(c => c.Key == "claim-content");
-            this._userContext.AddClaim(Constants.Claims.ContentReader, content.Id.ToString());
+            this._userContext.AddClaim(Constants.Claims.MedicReader, content.Id.ToString());
 
             // Act
             var result = await this._staticContentService.GetPublishedStaticContentAsync("claim-content", "en");
@@ -338,7 +338,7 @@ namespace LightNap.Core.Tests.Services
 
             this._userContext.LogIn();
             var content = await this._dbContext.StaticContents.FirstAsync(c => c.Key == "editor-content");
-            this._userContext.AddClaim(Constants.Claims.ContentEditor, content.Id.ToString());
+            this._userContext.AddClaim(Constants.Claims.MedicEditor, content.Id.ToString());
 
             // Act
             var result = await this._staticContentService.GetPublishedStaticContentAsync("editor-content", "en");
