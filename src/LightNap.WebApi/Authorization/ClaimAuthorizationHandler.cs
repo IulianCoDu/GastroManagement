@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Routing.Template;
 
 namespace LightNap.WebApi.Authorization
@@ -31,7 +31,7 @@ namespace LightNap.WebApi.Authorization
             if (attributes is null || attributes.Count == 0)
             {
 #if DEBUG
-                throw new InvalidOperationException($"No ClaimAuthorizeAttribute found for endpoint {endpoint?.DisplayName}.");
+                throw new InvalidOperationException($"Nu a fost gasit niciun ClaimAuthorizeAttribute pentru endpoint-ul {endpoint?.DisplayName}.");
 #else
                 context.Fail();
                 return Task.CompletedTask;
@@ -64,8 +64,8 @@ namespace LightNap.WebApi.Authorization
         /// <returns>True if the requirement is satisfied; otherwise, false.</returns>
         private bool EvaluateAttribute(ClaimAuthorizeAttribute attribute, AuthorizationHandlerContext context)
         {
-            var typeTemplate = TemplateParser.Parse(attribute.TypeTemplate) ?? throw new ArgumentNullException(nameof(attribute), "Claim type template cannot be null.");
-            var valueTemplate = TemplateParser.Parse(attribute.ValueTemplate) ?? throw new ArgumentNullException(nameof(attribute), "Claim value template cannot be null.");
+            var typeTemplate = TemplateParser.Parse(attribute.TypeTemplate) ?? throw new ArgumentNullException(nameof(attribute), "Sablonul pentru tipul de claim nu poate fi null.");
+            var valueTemplate = TemplateParser.Parse(attribute.ValueTemplate) ?? throw new ArgumentNullException(nameof(attribute), "Sablonul pentru valoarea claim-ului nu poate fi null.");
 
             if (!string.IsNullOrWhiteSpace(attribute.OverrideRoles))
             {
@@ -117,7 +117,7 @@ namespace LightNap.WebApi.Authorization
                         }
                         else
                         {
-                            throw new Exception($"Parameter '{part.Name}' not found in route values or query string.");
+                            throw new Exception($"Parametrul '{part.Name}' nu a fost gasit in valorile rutei sau in query string.");
                         }
                     }
                 }

@@ -56,8 +56,8 @@ namespace LightNap.Core.Services
         {
             userContext.AssertAuthenticated();
 
-            var token = await db.RefreshTokens.FindAsync(deviceId) ?? throw new UserFriendlyApiException("Device not found.");
-            if (token.UserId != userContext.GetUserId()) { throw new UserFriendlyApiException("Device not found."); }
+            var token = await db.RefreshTokens.FindAsync(deviceId) ?? throw new UserFriendlyApiException("Dispozitivul nu a fost gasit.");
+            if (token.UserId != userContext.GetUserId()) { throw new UserFriendlyApiException("Dispozitivul nu a fost gasit."); }
 
             token.IsRevoked = true;
             await db.SaveChangesAsync();

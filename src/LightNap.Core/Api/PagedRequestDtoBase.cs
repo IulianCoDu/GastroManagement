@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace LightNap.Core.Api
 {
@@ -13,14 +13,14 @@ namespace LightNap.Core.Api
         /// Gets or sets the page number. Must be greater than 0.
         /// </summary>
         /// <value>The page number.</value>
-        [Range(1, int.MaxValue, ErrorMessage = "Page number must be greater than 0.")]
+        [Range(1, int.MaxValue, ErrorMessage = "Numarul paginii trebuie sa fie mai mare decat 0.")]
         public int PageNumber { get; set; } = 1;
 
         /// <summary>
         /// Gets or sets the page size. Must be between 1 and 50.
         /// </summary>
         /// <value>The page size.</value>
-        [Range(1, PagedRequestDtoBase._maxPageSize, ErrorMessage = "Page size must be between 1 and 50.")]
+        [Range(1, PagedRequestDtoBase._maxPageSize, ErrorMessage = "Dimensiunea paginii trebuie sa fie intre 1 si 50.")]
         public int PageSize { get; set; } = 10;
     }
 }

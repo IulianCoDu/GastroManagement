@@ -1,38 +1,38 @@
 <ln-branded-card>
-  <span title>Register</span>
-  <span subtitle>Let's get started!</span>
+  <span title>Inregistrare</span>
+  <span subtitle>Hai sa incepem!</span>
 
   <form [formGroup]="form" (ngSubmit)="register()" autocomplete="off">
     <div>
       <div class="flex flex-col gap-5">
         <div class="flex flex-col gap-2">
-          <label for="userName" class="text-xl">User Name</label>
-          <input id="userName" data-cy="register-username" type="text" placeholder="User Name" pInputText formControlName="userName" />
+          <label for="userName" class="text-xl">Nume de utilizator</label>
+          <input id="userName" data-cy="register-username" type="text" placeholder="Nume de utilizator" pInputText formControlName="userName" />
         </div>
 
         <div class="flex flex-col gap-2">
           <label for="email" class="text-xl">Email</label>
-          <input id="email" data-cy="register-email" type="text" placeholder="Email address" pInputText formControlName="email" />
+          <input id="email" data-cy="register-email" type="text" placeholder="Adresa de email" pInputText formControlName="email" />
         </div>
 
         <div class="flex flex-col gap-2">
-          <label for="medicName" class="text-xl">Medic Name (Optional)</label>
-          <input id="medicName" data-cy="register-medic-name" type="text" placeholder="Dr. Name (for medical staff only)" pInputText formControlName="medicName" />
+          <label for="medicName" class="text-xl">Nume medic (optional)</label>
+          <input id="medicName" data-cy="register-medic-name" type="text" placeholder="Dr. Nume (doar pentru personalul medical)" pInputText formControlName="medicName" />
         </div>
 
         <div class="flex flex-col gap-2">
-          <label for="password" class="text-xl">Password</label>
-          <p-password data-cy="register-password" formControlName="password" class="w-full" inputStyleClass="w-full" placeholder="Password" [toggleMask]="true" />
+          <label for="password" class="text-xl">Parola</label>
+          <p-password data-cy="register-password" formControlName="password" class="w-full" inputStyleClass="w-full" placeholder="Parola" [toggleMask]="true" />
         </div>
 
         <div class="flex flex-col gap-2">
-          <label for="confirmPassword" class="text-xl">Confirm Password</label>
+          <label for="confirmPassword" class="text-xl">Confirma parola</label>
           <p-password
             data-cy="register-confirm-password"
             formControlName="confirmPassword"
             styleClass="w-full"
             inputStyleClass="w-full"
-            placeholder="Confirm Password"
+            placeholder="Confirma parola"
             [toggleMask]="true"
             [feedback]="false"
           />
@@ -41,25 +41,25 @@
         <div class="flex items-center justify-between">
           <div class="flex gap-2">
             <p-checkbox data-cy="register-remember-me" inputId="rememberMe" formControlName="rememberMe" [binary]="true" />
-            <label for="rememberMe">Remember Me</label>
+            <label for="rememberMe">Tine-ma minte</label>
           </div>
-          <a [routerLink]="'reset-password' | route">Forgot password?</a>
+          <a [routerLink]="'reset-password' | route">Ai uitat parola?</a>
         </div>
 
         <div class="flex items-center gap-1">
           <p-checkbox data-cy="register-agreed-to-terms" inputId="agreedToTerms" formControlName="agreedToTerms" class="mr-2" [binary]="true" />
-          <label for="agreedToTerms">I agree to the</label>
-          <a [routerLink]="'view-content' | route: 'terms-and-conditions'" target="_blank">Terms and Conditions</a>
-          <span>and</span>
-          <a [routerLink]="'view-content' | route: 'privacy-policy'" target="_blank">Privacy Policy</a>
+          <label for="agreedToTerms">Sunt de acord cu</label>
+          <a [routerLink]="'view-content' | route: 'terms-and-conditions'" target="_blank">Termenii si Conditiile</a>
+          <span>si</span>
+          <a [routerLink]="'view-content' | route: 'privacy-policy'" target="_blank">Politica de Confidentialitate</a>
         </div>
 
         <ln-error-list data-cy="register-errors" [errors]="errors()" />
       </div>
 
-      <p-button data-cy="register-submit" type="submit" label="Register" styleClass="w-full text-xl mt-2" [disabled]="!form.valid" pRipple />
+      <p-button data-cy="register-submit" type="submit" label="Inregistreaza-te" styleClass="w-full text-xl mt-2" [disabled]="!form.valid" pRipple />
       <div class="flex flex-col mt-6">
-        <a data-cy="register-login-link" [routerLink]="'login' | route">I already have an account</a>
+        <a data-cy="register-login-link" [routerLink]="'login' | route">Am deja un cont</a>
       </div>
     </div>
   </form>

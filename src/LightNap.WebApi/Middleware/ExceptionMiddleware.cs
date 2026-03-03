@@ -33,7 +33,7 @@ namespace LightNap.WebApi.Middleware
             {
                 context.Response.Clear();
                 context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
-                await context.Response.WriteAsync("Unauthorized");
+                await context.Response.WriteAsync("Neautorizat");
             }
             catch (UserFriendlyApiException ex)
             {
@@ -81,7 +81,7 @@ namespace LightNap.WebApi.Middleware
                     error = new ApiResponseDto<string>()
                     {
                         Type = ApiResponseType.UnexpectedError,
-                        ErrorMessages = ["Internal Server Error"]
+                        ErrorMessages = ["Eroare interna de server"]
                     };
 
                 }

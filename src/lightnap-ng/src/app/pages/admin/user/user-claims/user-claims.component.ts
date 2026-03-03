@@ -79,8 +79,8 @@ export class UserClaimsComponent {
 
   removeClaimClicked(event: any, claim: ClaimDto) {
     this.#confirmationService.confirm({
-      header: "Confirm Claim Removal",
-      message: `Are you sure you want to remove this claim?`,
+      header: "Confirmare eliminare permisiune",
+      message: `Sigur doriti sa eliminati aceasta permisiune?`,
       target: event.target,
       key: claim.type + "=" + claim.value,
       accept: () => {

@@ -47,7 +47,7 @@ export class ChangePasswordComponent {
 
   changePassword() {
     this.errors.set([]);
-    this.#blockUi.show({ message: "Changing password..." });
+    this.#blockUi.show({ message: "Se schimba parola..." });
     this.#identityService
       .changePassword({
         confirmNewPassword: this.form.value.confirmNewPassword!,
@@ -57,7 +57,7 @@ export class ChangePasswordComponent {
       .pipe(finalize(() => this.#blockUi.hide()))
       .subscribe({
         next: () => {
-          this.#toast.success("Password changed successfully.");
+          this.#toast.success("Parola a fost schimbata cu succes.");
           this.form.reset();
         },
         error: setApiErrors(this.errors),

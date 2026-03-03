@@ -10,7 +10,7 @@ namespace LightNap.Core.Configuration
         /// <summary>
         /// Gets or sets the SMTP host URL.
         /// </summary>
-        [Required(ErrorMessage = "SMTP host is required")]
+        [Required(ErrorMessage = "Hostul SMTP este obligatoriu")]
         [MinLength(1)]
         public required string Host { get; set; }
 

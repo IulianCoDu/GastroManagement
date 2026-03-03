@@ -1,4 +1,4 @@
-﻿using LightNap.Core.Configuration;
+using LightNap.Core.Configuration;
 using LightNap.Core.Data;
 using LightNap.Core.Data.Entities;
 using LightNap.Core.Extensions;
@@ -62,7 +62,7 @@ namespace LightNap.WebApi.Configuration
             string basePath = Path.Combine(AppContext.BaseDirectory, "StaticContent");
             if (!Directory.Exists(basePath))
             {
-                logger.LogWarning("Static content directory not found: '{basePath}'", basePath);
+                logger.LogWarning("Directorul de continut static nu a fost gasit: '{basePath}'", basePath);
                 return;
             }
 
@@ -80,7 +80,7 @@ namespace LightNap.WebApi.Configuration
                 {
                     "zones" => StaticContentType.Zone,
                     "pages" => StaticContentType.Page,
-                    _ => throw new InvalidOperationException($"Invalid static content type directory: '{typeDir}'")
+                    _ => throw new InvalidOperationException($"Director invalid pentru tipul continutului static: '{typeDir}'")
                 };
 
                 // Iterate through read access folders (public, authenticated, explicit)
@@ -92,7 +92,7 @@ namespace LightNap.WebApi.Configuration
                         "public" => StaticContentReadAccess.Public,
                         "authenticated" => StaticContentReadAccess.Authenticated,
                         "explicit" => StaticContentReadAccess.Explicit,
-                        _ => throw new InvalidOperationException($"Invalid static content read access directory: '{accessDir}'")
+                        _ => throw new InvalidOperationException($"Director invalid pentru accesul de citire al continutului static: '{accessDir}'")
                     };
 
                     // Iterate through key folders
@@ -103,17 +103,17 @@ namespace LightNap.WebApi.Configuration
                         // Validate key format (kebab-case)
                         if (!Regex.IsMatch(key, @"^[a-z0-9]+(-[a-z0-9]+)*$"))
                         {
-                            throw new InvalidOperationException($"Invalid static content key directory name: '{key}'. Must be kebab-case.");
+                            throw new InvalidOperationException($"Nume invalid pentru directorul cheii continutului static: '{key}'. Trebuie sa fie kebab-case.");
                         }
 
                         // Check for duplicate keys in the file system
                         if (keyRegistry.TryGetValue(key, out var existing))
                         {
                             throw new InvalidOperationException(
-                                $"Duplicate static content key '{key}' found in file system.\n" +
-                                $"  First location: {existing.Path} (Type: {existing.Type}, Access: {existing.ReadAccess})\n" +
-                                $"  Second location: {keyDir} (Type: {type}, Access: {readAccess})\n" +
-                                $"Each key must appear in exactly one location.");
+                                $"Cheie duplicata de continut static '{key}' gasita in sistemul de fisiere.\n" +
+                                $"  Prima locatie: {existing.Path} (Tip: {existing.Type}, Acces: {existing.ReadAccess})\n" +
+                                $"  A doua locatie: {keyDir} (Tip: {type}, Acces: {readAccess})\n" +
+                                $"Fiecare cheie trebuie sa apara intr-o singura locatie.");
                         }
 
                         // Register this key
@@ -127,7 +127,7 @@ namespace LightNap.WebApi.Configuration
 
                             if (!match.Success)
                             {
-                                logger.LogWarning("Skipping invalid static content file: '{filePath}'. Expected format: {{languageCode}}.{{extension}}", filePath);
+                                logger.LogWarning("Se omite fisierul de continut static invalid: '{filePath}'. Format asteptat: {{languageCode}}.{{extension}}", filePath);
                                 continue;
                             }
 
@@ -139,7 +139,7 @@ namespace LightNap.WebApi.Configuration
                                 "html" => StaticContentFormat.Html,
                                 "md" => StaticContentFormat.Markdown,
                                 "txt" => StaticContentFormat.PlainText,
-                                _ => throw new InvalidOperationException($"Invalid static content format in file: '{filePath}'")
+                                _ => throw new InvalidOperationException($"Format invalid de continut static in fisierul: '{filePath}'")
                             };
 
                             string content = await File.ReadAllTextAsync(filePath);
@@ -150,7 +150,7 @@ namespace LightNap.WebApi.Configuration
                 }
             }
 
-            logger.LogInformation("Seeded {count} static content keys from file system", keyRegistry.Count);
+            logger.LogInformation("Au fost initializate {count} chei de continut static din sistemul de fisiere", keyRegistry.Count);
         }
 
         private async Task SeedStaticContentLanguageAsync(string key, StaticContentType type, StaticContentReadAccess readAccess,
@@ -168,7 +168,7 @@ namespace LightNap.WebApi.Configuration
                         ReadAccess = readAccess
                     });
 
-                logger.LogInformation("Created static content with key '{key}'", key);
+                logger.LogInformation("A fost creat continutul static cu cheia '{key}'", key);
             }
 
             var existingLanguage = await contentService.GetStaticContentLanguageAsync(key, languageCode);
@@ -183,7 +183,7 @@ namespace LightNap.WebApi.Configuration
                         Format = format,
                     });
 
-                logger.LogInformation("Created static content language '{languageCode}' for key '{key}'", languageCode, key);
+                logger.LogInformation("A fost creata limba '{languageCode}' pentru continutul static cu cheia '{key}'", languageCode, key);
             }
         }
 
@@ -200,9 +200,9 @@ namespace LightNap.WebApi.Configuration
                     var result = await roleManager.CreateAsync(role);
                     if (!result.Succeeded)
                     {
-                        throw new ArgumentException($"Unable to create role '{role.Name}': {string.Join("; ", result.Errors.Select(error => error.Description))}");
+                        throw new ArgumentException($"Nu s-a putut crea rolul '{role.Name}': {string.Join("; ", result.Errors.Select(error => error.Description))}");
                     }
-                    logger.LogInformation("Added role '{roleName}'", role.Name);
+                    logger.LogInformation("A fost adaugat rolul '{roleName}'", role.Name);
                 }
             }
 
@@ -214,9 +214,9 @@ namespace LightNap.WebApi.Configuration
                 var result = await roleManager.DeleteAsync(role);
                 if (!result.Succeeded)
                 {
-                    throw new ArgumentException($"Unable to remove role '{role.Name}': {string.Join("; ", result.Errors.Select(error => error.Description))}");
+                    throw new ArgumentException($"Nu s-a putut elimina rolul '{role.Name}': {string.Join("; ", result.Errors.Select(error => error.Description))}");
                 }
-                logger.LogInformation("Removed role '{roleName}'", role.Name);
+                logger.LogInformation("A fost eliminat rolul '{roleName}'", role.Name);
             }
         }
 
@@ -235,7 +235,7 @@ namespace LightNap.WebApi.Configuration
             {
                 if (!string.IsNullOrWhiteSpace(roleToUsers.Role))
                 {
-                    if (!await roleManager.RoleExistsAsync(roleToUsers.Role)) { throw new ArgumentException($"Unable to find role '{roleToUsers.Role}' to seed users."); }
+                    if (!await roleManager.RoleExistsAsync(roleToUsers.Role)) { throw new ArgumentException($"Nu s-a putut gasi rolul '{roleToUsers.Role}' pentru initializarea utilizatorilor."); }
                 }
 
                 foreach (var seededUser in roleToUsers.Users)
@@ -280,10 +280,10 @@ namespace LightNap.WebApi.Configuration
                 var result = await userManager.CreateAsync(user, passwordToSet);
                 if (!result.Succeeded)
                 {
-                    throw new ArgumentException($"Unable to create user '{userName}' ('{email}'): {string.Join("; ", result.Errors.Select(error => error.Description))}");
+                    throw new ArgumentException($"Nu s-a putut crea utilizatorul '{userName}' ('{email}'): {string.Join("; ", result.Errors.Select(error => error.Description))}");
                 }
 
-                logger.LogInformation("Created user '{userName}' ('{email}')", userName, email);
+                logger.LogInformation("A fost creat utilizatorul '{userName}' ('{email}')", userName, email);
             }
 
             return user;
@@ -303,9 +303,9 @@ namespace LightNap.WebApi.Configuration
             if (!result.Succeeded)
             {
                 throw new ArgumentException(
-                    $"Unable to add user '{user.UserName}' ('{user.Email}') to role '{role}': {string.Join("; ", result.Errors.Select(error => error.Description))}");
+                    $"Nu s-a putut adauga utilizatorul '{user.UserName}' ('{user.Email}') in rolul '{role}': {string.Join("; ", result.Errors.Select(error => error.Description))}");
             }
-            logger.LogInformation("Added user '{userName}' ('{email}') to role '{roleName}'", user.UserName, user.Email, role);
+            logger.LogInformation("A fost adaugat utilizatorul '{userName}' ('{email}') in rolul '{roleName}'", user.UserName, user.Email, role);
         }
 
         /// <summary>
@@ -348,45 +348,45 @@ namespace LightNap.WebApi.Configuration
             }
             else
             {
-                logger.LogWarning("No environment-specific seeding defined for environment '{environmentName}'", environment.EnvironmentName);
+                logger.LogWarning("Nu este definita initializare specifica pentru mediul '{environmentName}'", environment.EnvironmentName);
             }
             // Add more environments as needed
         }
 
         private async Task SeedE2eContentAsync()
         {
-            logger.LogInformation("Seeding E2E test content");
+            logger.LogInformation("Se initializeaza continutul de test E2E");
             
-            logger.LogInformation("Seeded E2E test content");
+            logger.LogInformation("A fost initializat continutul de test E2E");
         }
 
         private async Task SeedDevelopmentContentAsync()
         {
-            logger.LogInformation("Seeding Development environment content");
+            logger.LogInformation("Se initializeaza continutul mediului Development");
 
             // Add Development-specific seeding logic here. Note that this is intended to be Development environment content
             // that is committed to source control and useful for most/all developers working on this project. For local-only
             // seeding important for the task at hand, consider implementing a Seeder.Local.cs, which is run after environment seeding.
 
-            logger.LogInformation("Seeded Development environment content");
+            logger.LogInformation("A fost initializat continutul mediului Development");
         }
 
         private async Task SeedStagingContentAsync()
         {
-            logger.LogInformation("Seeding Staging environment content");
+            logger.LogInformation("Se initializeaza continutul mediului Staging");
 
             // Add Staging-specific seeding logic here
 
-            logger.LogInformation("Seeded Staging environment content");
+            logger.LogInformation("A fost initializat continutul mediului Staging");
         }
 
         private async Task SeedProductionContentAsync()
         {
-            logger.LogInformation("Seeding Production environment content");
+            logger.LogInformation("Se initializeaza continutul mediului Production");
 
             // Add Production-specific seeding logic here
 
-            logger.LogInformation("Seeded Production environment content");
+            logger.LogInformation("A fost initializat continutul mediului Production");
         }
 
         /// <summary>

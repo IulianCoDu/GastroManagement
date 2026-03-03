@@ -26,7 +26,7 @@ export class ConfirmEmailChangeComponent implements OnInit {
   errors = signal(new Array<string>());
 
   ngOnInit() {
-    this.#blockUi.show({ message: "Confirming email change..." });
+    this.#blockUi.show({ message: "Se confirma schimbarea email-ului..." });
     this.#identityService
       .confirmEmailChange({
         newEmail: this.newEmail(),

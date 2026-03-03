@@ -48,14 +48,14 @@ export class IndexComponent {
   asProfile = TypeHelpers.cast<ProfileDto>;
 
   updateProfile() {
-    this.#blockUi.show({ message: "Updating profile..." });
+    this.#blockUi.show({ message: "Se actualizeaza profilul..." });
 
     this.#profileService
       .updateProfile(this.form.value)
       .pipe(finalize(() => this.#blockUi.hide()))
       .subscribe({
         next: () => {
-          this.#toast.success("Profile updated successfully.");
+          this.#toast.success("Profilul a fost actualizat cu succes.");
           this.form.markAsPristine();
         },
         error: setApiErrors(this.errors),
@@ -63,7 +63,7 @@ export class IndexComponent {
   }
 
   logOut() {
-    this.#blockUi.show({ message: "Logging out..." });
+    this.#blockUi.show({ message: "Se deconecteaza..." });
     this.#identityService
       .logOut()
       .pipe(finalize(() => this.#blockUi.hide()))

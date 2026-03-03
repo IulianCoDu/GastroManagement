@@ -1,4 +1,4 @@
-﻿using LightNap.Core.Api;
+using LightNap.Core.Api;
 using LightNap.Core.Configuration;
 using LightNap.Core.Data;
 using LightNap.Core.Data.Entities;
@@ -110,7 +110,7 @@ namespace LightNap.Core.Identity.Services
             catch (Exception e)
             {
                 logger.LogError(e, "An error occurred while sending an email verification link to '{email}': {e}", user.Email, e);
-                throw new UserFriendlyApiException("An unexpected error occurred while sending the email verification link.");
+                throw new UserFriendlyApiException("A aparut o eroare neasteptata la trimiterea linkului de verificare email.");
             }
         }
 
@@ -123,15 +123,15 @@ namespace LightNap.Core.Identity.Services
         {
             ApplicationUser user = requestDto.Type switch
             {
-                LoginType.Email or LoginType.MagicLink => await userManager.FindByEmailAsync(requestDto.Login) ?? throw new UserFriendlyApiException("Invalid email/password combination."),
-                LoginType.UserName => await userManager.FindByNameAsync(requestDto.Login) ?? throw new UserFriendlyApiException("Invalid username/password combination."),
+                LoginType.Email or LoginType.MagicLink => await userManager.FindByEmailAsync(requestDto.Login) ?? throw new UserFriendlyApiException("Combinatia email/parola invalida."),
+                LoginType.UserName => await userManager.FindByNameAsync(requestDto.Login) ?? throw new UserFriendlyApiException("Combinatia utilizator/parola invalida."),
                 _ => await userManager.FindByEmailAsync(requestDto.Login) ??
                                         await userManager.FindByNameAsync(requestDto.Login) ??
-                                        throw new UserFriendlyApiException("Invalid login/password combination."),
+                                        throw new UserFriendlyApiException("Combinatia autentificare/parola invalida."),
             };
             if (await userManager.IsLockedOutAsync(user))
             {
-                throw new UserFriendlyApiException("This account is locked.");
+                throw new UserFriendlyApiException("Acest cont este blocat.");
             }
 
             if (requestDto.Type == LoginType.MagicLink)
@@ -139,7 +139,7 @@ namespace LightNap.Core.Identity.Services
                 bool isValid = await userManager.VerifyUserTokenAsync(user, TokenOptions.DefaultProvider, Constants.Identity.MagicLinkTokenPurpose, requestDto.Password);
                 if (!isValid)
                 {
-                    throw new UserFriendlyApiException("Invalid email/token combination.");
+                    throw new UserFriendlyApiException("Combinatie email/token invalida.");
                 }
             }
             else
@@ -149,9 +149,9 @@ namespace LightNap.Core.Identity.Services
                 {
                     if (signInResult.IsNotAllowed)
                     {
-                        throw new UserFriendlyApiException("This account is not allowed to log in.");
+                        throw new UserFriendlyApiException("Acest cont nu are permisiunea sa se autentifice.");
                     }
-                    throw new UserFriendlyApiException("Invalid login/password combination.");
+                    throw new UserFriendlyApiException("Combinatie autentificare/parola invalida.");
                 }
             }
 
@@ -170,7 +170,7 @@ namespace LightNap.Core.Identity.Services
             if (!result.Succeeded)
             {
                 if (result.Errors.Any()) { throw new UserFriendlyApiException(result.Errors.Select(error => error.Description)); }
-                throw new UserFriendlyApiException("Unable to create user.");
+                throw new UserFriendlyApiException("Utilizatorul nu a putut fi creat.");
             }
 
             // Create Medic record if MedicName was provided
@@ -216,8 +216,8 @@ namespace LightNap.Core.Identity.Services
         /// <returns>The success of the operation.</returns>
         public async Task LogOutAsync()
         {
-            string? refreshTokenCookie = cookieManager.GetCookie(Constants.Cookies.RefreshToken) ?? throw new UserFriendlyApiException("You are not logged in");
-            RefreshToken? refreshToken = await db.RefreshTokens.FirstOrDefaultAsync(token => token.Token == refreshTokenCookie) ?? throw new UserFriendlyApiException("You are not logged in");
+            string? refreshTokenCookie = cookieManager.GetCookie(Constants.Cookies.RefreshToken) ?? throw new UserFriendlyApiException("Nu sunteti autentificat");
+            RefreshToken? refreshToken = await db.RefreshTokens.FirstOrDefaultAsync(token => token.Token == refreshTokenCookie) ?? throw new UserFriendlyApiException("Nu sunteti autentificat");
             db.RefreshTokens.Remove(refreshToken);
             await db.SaveChangesAsync();
             cookieManager.RemoveCookie(Constants.Cookies.RefreshToken);
@@ -231,15 +231,15 @@ namespace LightNap.Core.Identity.Services
         /// <exception cref="UserFriendlyApiException">Thrown when the new password does not match the confirmation password or if the password change fails.</exception>  
         public async Task ChangePasswordAsync(ChangePasswordRequestDto requestDto)
         {
-            if (requestDto.NewPassword != requestDto.ConfirmNewPassword) { throw new UserFriendlyApiException("New password does not match confirmation password."); }
+            if (requestDto.NewPassword != requestDto.ConfirmNewPassword) { throw new UserFriendlyApiException("Parola noua nu corespunde cu parola de confirmare."); }
 
-            ApplicationUser user = await userManager.FindByIdAsync(userContext.GetUserId()) ?? throw new UserFriendlyApiException("Unable to change password.");
+            ApplicationUser user = await userManager.FindByIdAsync(userContext.GetUserId()) ?? throw new UserFriendlyApiException("Parola nu a putut fi schimbata.");
 
             var result = await userManager.ChangePasswordAsync(user, requestDto.CurrentPassword, requestDto.NewPassword);
             if (!result.Succeeded)
             {
                 if (result.Errors.Any()) { throw new UserFriendlyApiException(result.Errors.Select(error => error.Description)); }
-                throw new UserFriendlyApiException("Unable to change password.");
+                throw new UserFriendlyApiException("Parola nu a putut fi schimbata.");
             }
         }
 
@@ -251,7 +251,7 @@ namespace LightNap.Core.Identity.Services
         /// <exception cref="UserFriendlyApiException">Thrown when the email change fails.</exception>
         public async Task ChangeEmailAsync(ChangeEmailRequestDto requestDto)
         {
-            var user = await userManager.FindByIdAsync(userContext.GetUserId()) ?? throw new UserFriendlyApiException("Unable to change email.");
+            var user = await userManager.FindByIdAsync(userContext.GetUserId()) ?? throw new UserFriendlyApiException("Emailul nu a putut fi schimbat.");
             var token = await userManager.GenerateChangeEmailTokenAsync(user, requestDto.NewEmail);
 
             try
@@ -261,7 +261,7 @@ namespace LightNap.Core.Identity.Services
             catch (Exception e)
             {
                 logger.LogError(e, "An error occurred while sending an email change link to '{email}': {e}", user.Email, e);
-                throw new UserFriendlyApiException("An unexpected error occurred while sending the email change link.");
+                throw new UserFriendlyApiException("A aparut o eroare neasteptata la trimiterea linkului de schimbare email.");
             }
         }
 
@@ -273,13 +273,13 @@ namespace LightNap.Core.Identity.Services
         /// <exception cref="UserFriendlyApiException">Thrown when the email confirmation fails.</exception>
         public async Task ConfirmEmailChangeAsync(ConfirmEmailChangeRequestDto requestDto)
         {
-            var user = await userManager.FindByIdAsync(userContext.GetUserId()) ?? throw new UserFriendlyApiException("Unable to confirm email change.");
+            var user = await userManager.FindByIdAsync(userContext.GetUserId()) ?? throw new UserFriendlyApiException("Schimbarea emailului nu a putut fi confirmata.");
 
             var result = await userManager.ChangeEmailAsync(user, requestDto.NewEmail, requestDto.Code);
             if (!result.Succeeded)
             {
                 if (result.Errors.Any()) { throw new UserFriendlyApiException(result.Errors.Select(error => error.Description)); }
-                throw new UserFriendlyApiException("Unable to confirm email change.");
+                throw new UserFriendlyApiException("Schimbarea emailului nu a putut fi confirmata.");
             }
 
             user.EmailConfirmed = true;
@@ -294,7 +294,7 @@ namespace LightNap.Core.Identity.Services
         /// <returns>The success of the operation.</returns>
         public async Task ResetPasswordAsync(ResetPasswordRequestDto requestDto)
         {
-            ApplicationUser? user = await userManager.FindByEmailAsync(requestDto.Email) ?? throw new UserFriendlyApiException("An account with this email was not found.");
+            ApplicationUser? user = await userManager.FindByEmailAsync(requestDto.Email) ?? throw new UserFriendlyApiException("Nu a fost gasit niciun cont cu acest email.");
 
             string token = await userManager.GeneratePasswordResetTokenAsync(user);
 
@@ -305,7 +305,7 @@ namespace LightNap.Core.Identity.Services
             catch (Exception e)
             {
                 logger.LogError(e, "An error occurred while sending a password reset link to '{email}': {e}", user.Email, e);
-                throw new UserFriendlyApiException("An unexpected error occurred while sending the password reset link.");
+                throw new UserFriendlyApiException("A aparut o eroare neasteptata la trimiterea linkului de resetare parola.");
             }
         }
 
@@ -316,13 +316,13 @@ namespace LightNap.Core.Identity.Services
         /// <returns>The login result.</returns>
         public async Task<LoginSuccessDto> NewPasswordAsync(NewPasswordRequestDto requestDto)
         {
-            ApplicationUser user = await userManager.FindByEmailAsync(requestDto.Email) ?? throw new UserFriendlyApiException("An account with this email was not found.");
+            ApplicationUser user = await userManager.FindByEmailAsync(requestDto.Email) ?? throw new UserFriendlyApiException("Nu a fost gasit niciun cont cu acest email.");
 
             IdentityResult result = await userManager.ResetPasswordAsync(user, requestDto.Token, requestDto.Password);
             if (!result.Succeeded)
             {
                 if (result.Errors.Any()) { throw new UserFriendlyApiException(result.Errors.Select(error => error.Description)); }
-                throw new UserFriendlyApiException("Unable to set new password.");
+                throw new UserFriendlyApiException("Parola noua nu a putut fi setata.");
             }
 
             if (!user.EmailConfirmed)
@@ -341,10 +341,10 @@ namespace LightNap.Core.Identity.Services
         /// <returns>The access token.</returns>
         public async Task<string> VerifyCodeAsync(VerifyCodeRequestDto requestDto)
         {
-            ApplicationUser user = await userManager.FindByEmailAsync(requestDto.Login) ?? await userManager.FindByNameAsync(requestDto.Login) ?? throw new UserFriendlyApiException("An account with this email was not found.");
+            ApplicationUser user = await userManager.FindByEmailAsync(requestDto.Login) ?? await userManager.FindByNameAsync(requestDto.Login) ?? throw new UserFriendlyApiException("Nu a fost gasit niciun cont cu acest email.");
             if (!await userManager.VerifyTwoFactorTokenAsync(user, TokenOptions.DefaultEmailProvider, requestDto.Code))
             {
-                throw new UserFriendlyApiException("Unable to verify code. Please try again or log in again to resend a new code.");
+                throw new UserFriendlyApiException("Codul nu a putut fi verificat. Incercati din nou sau autentificati-va din nou pentru a retrimite un cod nou.");
             }
 
             if (!user.EmailConfirmed)
@@ -368,7 +368,7 @@ namespace LightNap.Core.Identity.Services
             var user = await this.GetUserFromCookieAsync();
             if (user is null) { return string.Empty; }
 
-            if (!await signInManager.CanSignInAsync(user)) { throw new UserFriendlyApiException("This account may not sign in."); }
+            if (!await signInManager.CanSignInAsync(user)) { throw new UserFriendlyApiException("Acest cont nu se poate autentifica."); }
 
             return await tokenService.GenerateAccessTokenAsync(user);
         }
@@ -380,8 +380,8 @@ namespace LightNap.Core.Identity.Services
         /// <returns>A task that represents the asynchronous operation.</returns>
         public async Task RequestVerificationEmailAsync(SendVerificationEmailRequestDto requestDto)
         {
-            ApplicationUser user = await userManager.FindByEmailAsync(requestDto.Email) ?? throw new UserFriendlyApiException("An account with this email was not found.");
-            if (user.EmailConfirmed) { throw new UserFriendlyApiException("This email is already verified."); }
+            ApplicationUser user = await userManager.FindByEmailAsync(requestDto.Email) ?? throw new UserFriendlyApiException("Nu a fost gasit niciun cont cu acest email.");
+            if (user.EmailConfirmed) { throw new UserFriendlyApiException("Acest email este deja verificat."); }
             await this.SendVerificationEmailAsync(user);
         }
 
@@ -392,13 +392,13 @@ namespace LightNap.Core.Identity.Services
         /// <returns>A task that represents the asynchronous operation.</returns>
         public async Task VerifyEmailAsync(VerifyEmailRequestDto requestDto)
         {
-            ApplicationUser user = await userManager.FindByEmailAsync(requestDto.Email) ?? throw new UserFriendlyApiException("An account with this email was not found.");
-            if (user.EmailConfirmed) { throw new UserFriendlyApiException("This email is already verified."); }
+            ApplicationUser user = await userManager.FindByEmailAsync(requestDto.Email) ?? throw new UserFriendlyApiException("Nu a fost gasit niciun cont cu acest email.");
+            if (user.EmailConfirmed) { throw new UserFriendlyApiException("Acest email este deja verificat."); }
             IdentityResult result = await userManager.ConfirmEmailAsync(user, requestDto.Code);
             if (!result.Succeeded)
             {
                 if (result.Errors.Any()) { throw new UserFriendlyApiException(result.Errors.Select(error => error.Description)); }
-                throw new UserFriendlyApiException("Unable to verify email.");
+                throw new UserFriendlyApiException("Emailul nu a putut fi verificat.");
             }
         }
 
@@ -409,7 +409,7 @@ namespace LightNap.Core.Identity.Services
         /// <returns>A task that represents the asynchronous operation.</returns>
         public async Task RequestMagicLinkEmailAsync(SendMagicLinkRequestDto requestDto)
         {
-            ApplicationUser user = await userManager.FindByEmailAsync(requestDto.Email) ?? throw new UserFriendlyApiException("An account with this email was not found.");
+            ApplicationUser user = await userManager.FindByEmailAsync(requestDto.Email) ?? throw new UserFriendlyApiException("Nu a fost gasit niciun cont cu acest email.");
 
             string token = await userManager.GenerateUserTokenAsync(user, TokenOptions.DefaultProvider, Constants.Identity.MagicLinkTokenPurpose);
 

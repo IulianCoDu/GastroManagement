@@ -86,7 +86,7 @@ export class ClaimUsersManagerComponent {
       })
       .subscribe({
         next: () => {
-          this.#toast.success("User claim added successfully.");
+          this.#toast.success("Permisiunea utilizatorului a fost adaugata cu succes.");
           this.addUserForm.reset();
           this.#lazyLoadEventSubject.next({ first: 0, rows: this.pageSize() });
         },
@@ -98,8 +98,8 @@ export class ClaimUsersManagerComponent {
     this.errors.set([]);
 
     this.#confirmationService.confirm({
-      header: "Confirm User Claim Removal",
-      message: `Are you sure that you want to remove this user claim?`,
+      header: "Confirmare eliminare permisiune",
+      message: `Sigur doriti sa eliminati aceasta permisiune?`,
       target: event.target,
       key: userId,
       accept: () => {
@@ -110,7 +110,7 @@ export class ClaimUsersManagerComponent {
           })
           .subscribe({
             next: () => {
-              this.#toast.success("User claim removed successfully.");
+              this.#toast.success("Permisiunea utilizatorului a fost eliminata cu succes.");
               this.#lazyLoadEventSubject.next({ first: 0, rows: this.pageSize() });
             },
             error: setApiErrors(this.errors),

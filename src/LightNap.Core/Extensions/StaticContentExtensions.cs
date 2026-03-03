@@ -1,4 +1,4 @@
-﻿using LightNap.Core.Configuration;
+using LightNap.Core.Configuration;
 using LightNap.Core.Data.Entities;
 using LightNap.Core.StaticContents.Dto.Request;
 using LightNap.Core.StaticContents.Dto.Response;
@@ -32,7 +32,7 @@ namespace LightNap.Core.Extensions
         {
             if (dto.ReaderRoles != null && dto.ReadAccess != StaticContentReadAccess.Explicit)
             {
-                throw new InvalidOperationException($"ReadAccess must be set to Explicit when {nameof(dto.ReaderRoles)} is not null.");
+                throw new InvalidOperationException($"ReadAccess trebuie setat la Explicit cand {nameof(dto.ReaderRoles)} nu este null.");
             }
 
             var staticContent = new StaticContent()
@@ -53,7 +53,7 @@ namespace LightNap.Core.Extensions
         {
             if (dto.ReaderRoles != null && dto.ReadAccess != StaticContentReadAccess.Explicit)
             {
-                throw new InvalidOperationException($"ReadAccess must be set to Explicit when {nameof(dto.ReaderRoles)} is not null.");
+                throw new InvalidOperationException($"ReadAccess trebuie setat la Explicit cand {nameof(dto.ReaderRoles)} nu este null.");
             }
 
             staticContent.Key = dto.Key;

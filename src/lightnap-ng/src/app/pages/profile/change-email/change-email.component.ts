@@ -29,7 +29,7 @@ export class ChangeEmailComponent {
   });
 
   changeEmail() {
-    this.#blockUi.show({ message: "Changing email..." });
+    this.#blockUi.show({ message: "Se schimba email-ul..." });
     this.#identityService
       .changeEmail({
         newEmail: this.form.value.newEmail!,

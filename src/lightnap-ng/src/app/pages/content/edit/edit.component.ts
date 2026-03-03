@@ -121,7 +121,7 @@ export class EditComponent {
     this.#contentService.updateStaticContent(this.key(), value).subscribe({
       next: sc => {
         this.form.reset();
-        this.#toast.success("Content updated successfully.");
+        this.#toast.success("Continutul a fost actualizat cu succes.");
         if (sc.key !== this.key()) {
           this.#routeAlias.navigate("edit-content", sc.key);
         } else {
@@ -134,7 +134,7 @@ export class EditComponent {
 
   onTabChanged(tabName: any) {
     if (this.#previousTabName === "settings" && this.form.dirty) {
-      this.#toast.info("You have unsaved changes in the Settings tab.");
+      this.#toast.info("Aveti modificari nesalvate in tabul Setari.");
     }
     this.#previousTabName = tabName;
   }
@@ -143,10 +143,10 @@ export class EditComponent {
     navigator.clipboard
       .writeText(this.pageUrl())
       .then(() => {
-        this.#toast.success("Page URL copied to clipboard.");
+        this.#toast.success("URL-ul paginii a fost copiat.");
       })
       .catch(() => {
-        this.#toast.error("Failed to copy URL to clipboard.");
+        this.#toast.error("Nu s-a putut copia URL-ul.");
       });
   }
 }

@@ -28,7 +28,7 @@ export class ConfirmEmailComponent implements OnInit {
   errors = signal(new Array<string>());
 
   ngOnInit() {
-    this.#blockUi.show({ message: "Verifying email..." });
+    this.#blockUi.show({ message: "Se verifica email-ul..." });
     this.#identityService
       .verifyEmail({
         code: this.code(),

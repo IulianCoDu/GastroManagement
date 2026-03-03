@@ -29,8 +29,8 @@ export class UserRolesComponent {
 
   removeRoleClicked(event: any, role: string) {
     this.#confirmationService.confirm({
-      header: "Confirm Role Removal",
-      message: `Are you sure that you want to remove this role membership?`,
+      header: "Confirmare eliminare rol",
+      message: `Sigur doriti sa eliminati apartenenta la acest rol?`,
       target: event.target,
       key: role,
       accept: () => this.removeRole.emit(role),

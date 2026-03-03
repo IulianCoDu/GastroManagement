@@ -1,4 +1,4 @@
-﻿using LightNap.Core.Api;
+using LightNap.Core.Api;
 using LightNap.Core.Configuration;
 using LightNap.Core.Data;
 using LightNap.Core.Data.Entities;
@@ -109,7 +109,7 @@ namespace LightNap.Core.Users.Services
                 ApplicationUserSortBy.UserName => adminSearchUsersRequest.ReverseSort ? query.OrderByDescending(user => user.UserName) : query.OrderBy(user => user.UserName),
                 ApplicationUserSortBy.CreatedDate => adminSearchUsersRequest.ReverseSort ? query.OrderByDescending(user => user.CreatedDate) : query.OrderBy(user => user.CreatedDate),
                 ApplicationUserSortBy.LastModifiedDate => adminSearchUsersRequest.ReverseSort ? query.OrderByDescending(user => user.LastModifiedDate) : query.OrderBy(user => user.LastModifiedDate),
-                _ => throw new ArgumentException("Invalid sort field: '{sortBy}'", adminSearchUsersRequest.SortBy.ToString()),
+                _ => throw new ArgumentException("Camp de sortare invalid: '{sortBy}'", adminSearchUsersRequest.SortBy.ToString()),
             };
             int totalCount = await query.CountAsync();
 
@@ -170,7 +170,7 @@ namespace LightNap.Core.Users.Services
         {
             userContext.AssertAdministrator();
 
-            var user = await db.Users.FindAsync(userId) ?? throw new UserFriendlyApiException("The specified user was not found.");
+            var user = await db.Users.FindAsync(userId) ?? throw new UserFriendlyApiException("Utilizatorul specificat nu a fost gasit.");
 
             user.UpdateAdminUserDto(adminUpdateUserRequest);
 
@@ -187,9 +187,9 @@ namespace LightNap.Core.Users.Services
         {
             userContext.AssertAdministrator();
 
-            var user = await db.Users.FindAsync(userId) ?? throw new UserFriendlyApiException("The specified user was not found.");
+            var user = await db.Users.FindAsync(userId) ?? throw new UserFriendlyApiException("Utilizatorul specificat nu a fost gasit.");
 
-            if (await userManager.IsInRoleAsync(user, ApplicationRoles.Administrator.Name!)) { throw new UserFriendlyApiException("You may not delete an Administrator."); }
+            if (await userManager.IsInRoleAsync(user, ApplicationRoles.Administrator.Name!)) { throw new UserFriendlyApiException("Nu puteti sterge un Administrator."); }
 
             db.Users.Remove(user);
 
@@ -204,9 +204,9 @@ namespace LightNap.Core.Users.Services
         {
             userContext.AssertAdministrator();
 
-            var user = await db.Users.FindAsync(userId) ?? throw new UserFriendlyApiException("The specified user was not found.");
+            var user = await db.Users.FindAsync(userId) ?? throw new UserFriendlyApiException("Utilizatorul specificat nu a fost gasit.");
 
-            if (await userManager.IsInRoleAsync(user, ApplicationRoles.Administrator.Name!)) { throw new UserFriendlyApiException("You may not lock an Administrator account."); }
+            if (await userManager.IsInRoleAsync(user, ApplicationRoles.Administrator.Name!)) { throw new UserFriendlyApiException("Nu puteti bloca un cont de Administrator."); }
 
             user.LockoutEnd = DateTimeOffset.MaxValue;
 
@@ -221,7 +221,7 @@ namespace LightNap.Core.Users.Services
         {
             userContext.AssertAdministrator();
 
-            var user = await db.Users.FindAsync(userId) ?? throw new UserFriendlyApiException("The specified user was not found.");
+            var user = await db.Users.FindAsync(userId) ?? throw new UserFriendlyApiException("Utilizatorul specificat nu a fost gasit.");
 
             user.LockoutEnd = null;
 

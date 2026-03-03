@@ -58,7 +58,7 @@ export class LoginComponent {
   }
 
   logIn() {
-    this.#blockUi.show({ message: "Logging in..." });
+    this.#blockUi.show({ message: "Se autentifica..." });
     this.#identityService
       .logIn({
         login: this.form.value.login!,
@@ -88,7 +88,7 @@ export class LoginComponent {
   }
 
   sendMagicLink() {
-    this.#blockUi.show({ message: "Sending magic link..." });
+    this.#blockUi.show({ message: "Se trimite link-ul magic..." });
 
     this.#identityService
       .requestMagicLinkEmail({

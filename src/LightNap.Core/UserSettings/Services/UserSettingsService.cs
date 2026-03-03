@@ -38,7 +38,7 @@ namespace LightNap.Core.UserSettings.Services
                 {
                     return value;
                 }
-                throw new Exception($"The setting '{key}' for user '{userId}' could not be deserialized to type '{typeof(T).FullName}'");
+                throw new Exception($"Setarea '{key}' pentru utilizatorul '{userId}' nu a putut fi deserializata la tipul '{typeof(T).FullName}'");
             }
 
             var definition = UserSettingsConfig.GetActiveSetting(key);
@@ -138,11 +138,11 @@ namespace LightNap.Core.UserSettings.Services
             var definition = UserSettingsConfig.GetActiveSetting(setSettingDto.Key);
             if (!definition.IsUserReadable)
             {
-                throw new Exception($"The setting '{setSettingDto.Key}' is not supported or not accessible to users");
+                throw new Exception($"Setarea '{setSettingDto.Key}' nu este suportata sau nu este accesibila utilizatorilor");
             }
             if (!definition.IsUserWriteable)
             {
-                throw new Exception($"The setting '{setSettingDto.Key}' is not user-editable");
+                throw new Exception($"Setarea '{setSettingDto.Key}' nu poate fi editata de utilizator");
             }
 
             return await this.UpdateSettingInternalAsync(userContext.GetUserId(), definition, setSettingDto.Value);

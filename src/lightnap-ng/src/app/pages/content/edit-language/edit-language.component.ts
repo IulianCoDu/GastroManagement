@@ -64,7 +64,7 @@ export class EditLanguageComponent {
 
   onUpdate() {
     this.#contentService.updateStaticContentLanguage(this.key(), this.languageCode(), this.form.getRawValue()).subscribe({
-      next: _ => this.#toast.success("Language updated successfully."),
+      next: _ => this.#toast.success("Limba a fost actualizata cu succes."),
       error: setApiErrors(this.errors),
     });
   }
@@ -72,7 +72,7 @@ export class EditLanguageComponent {
   onCreate() {
     this.#contentService.createStaticContentLanguage(this.key(), this.languageCode(), this.form.getRawValue()).subscribe({
       next: _ => {
-        this.#toast.success("Language created successfully.");
+        this.#toast.success("Limba a fost creata cu succes.");
         this.triggerUpdate.set(!this.triggerUpdate());
       },
       error: setApiErrors(this.errors),

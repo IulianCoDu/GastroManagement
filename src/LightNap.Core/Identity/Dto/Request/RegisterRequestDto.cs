@@ -1,4 +1,4 @@
-﻿using LightNap.Core.Configuration;
+using LightNap.Core.Configuration;
 using System.ComponentModel.DataAnnotations;
 
 namespace LightNap.Core.Identity.Dto.Request
@@ -28,7 +28,7 @@ namespace LightNap.Core.Identity.Dto.Request
         /// </summary>
         [Required]
         [StringLength(Constants.Dto.MaxPasswordLength)]
-        [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
+        [Compare("Password", ErrorMessage = "Parola si parola de confirmare nu coincid.")]
         public required string ConfirmPassword { get; set; }
 
         /// <summary>

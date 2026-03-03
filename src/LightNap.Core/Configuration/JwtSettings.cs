@@ -10,21 +10,21 @@ namespace LightNap.Core.Configuration
         /// <summary>
         /// Gets or sets the JWT key. This must be a string between 32 and 100 characters.
         /// </summary>
-        [Required(ErrorMessage = "JWT key is required")]
+        [Required(ErrorMessage = "Cheia JWT este obligatorie")]
         [StringLength(100, MinimumLength = 32)]
         public required string Key { get; set; }
 
         /// <summary>
         /// Gets or sets the JWT issuer URL.
         /// </summary>
-        [Required(ErrorMessage = "JWT issuer is required")]
+        [Required(ErrorMessage = "Issuer-ul JWT este obligatoriu")]
         [MinLength(1)]
         public required string Issuer { get; set; }
 
         /// <summary>
         /// Gets or sets the JWT audience URL.
         /// </summary>
-        [Required(ErrorMessage = "JWT audience is required")]
+        [Required(ErrorMessage = "Audierea JWT este obligatorie")]
         [MinLength(1)]
         public required string Audience { get; set; }
 

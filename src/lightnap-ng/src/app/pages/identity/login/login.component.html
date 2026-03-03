@@ -1,28 +1,28 @@
 <ln-branded-card>
-  <span title>Welcome!</span>
-  <span subtitle>Sign in to continue</span>
+  <span title>Bun venit!</span>
+  <span subtitle>Autentificati-va pentru a continua</span>
 
   <form [formGroup]="form" (ngSubmit)="logIn()" autocomplete="off">
     <div class="w-96">
       <div class="flex flex-col gap-5">
         <div class="flex flex-col gap-2">
-          <label for="login" class="text-xl font-medium">Email/User Name</label>
+          <label for="login" class="text-xl font-medium">Email/Nume de utilizator</label>
           <p-inputGroup>
-            <input id="login" data-cy="login-username" type="text" placeholder="Email/User Name" pInputText formControlName="login" />
+            <input id="login" data-cy="login-username" type="text" placeholder="Email/Nume de utilizator" pInputText formControlName="login" />
             <p-inputgroup-addon>
-              <p-button data-cy="login-magic-link" icon="pi pi-sparkles" title="Send Magic Link" pRipple (onClick)="sendMagicLink()" [disabled]="!showMagicLink.valid" />
+              <p-button data-cy="login-magic-link" icon="pi pi-sparkles" title="Trimite link magic" pRipple (onClick)="sendMagicLink()" [disabled]="!showMagicLink.valid" />
             </p-inputgroup-addon>
           </p-inputGroup>
         </div>
 
         <div class="flex flex-col gap-2">
-          <label for="password" class="font-medium text-xl">Password</label>
+          <label for="password" class="font-medium text-xl">Parola</label>
           <p-password
             data-cy="login-password"
             formControlName="password"
             styleClass="w-full"
             inputStyleClass="w-full"
-            placeholder="Password"
+            placeholder="Parola"
             [toggleMask]="true"
             [feedback]="false"
           />
@@ -31,18 +31,18 @@
         <div class="flex items-center justify-between">
           <div class="flex gap-2">
             <p-checkbox data-cy="login-remember-me" inputId="rememberMe" formControlName="rememberMe" [binary]="true" />
-            <label for="rememberMe">Remember Me</label>
+            <label for="rememberMe">Tine-ma minte</label>
           </div>
-          <a data-cy="login-forgot-password" [routerLink]="'reset-password' | route">Forgot password?</a>
+          <a data-cy="login-forgot-password" [routerLink]="'reset-password' | route">Ai uitat parola?</a>
         </div>
 
         <ln-error-list data-cy="login-errors" [errors]="errors()" />
       </div>
 
-      <p-button data-cy="login-submit" type="submit" label="Sign In" styleClass="w-full text-xl mt-2" [disabled]="!form.valid" pRipple />
+      <p-button data-cy="login-submit" type="submit" label="Autentificare" styleClass="w-full text-xl mt-2" [disabled]="!form.valid" pRipple />
 
       <div class="mt-4">
-        <a data-cy="login-register-link" [routerLink]="'register' | route">I need to create an account</a>
+        <a data-cy="login-register-link" [routerLink]="'register' | route">Vreau sa creez un cont</a>
       </div>
     </div>
   </form>

@@ -35,7 +35,7 @@ export class VerifyCodeComponent {
   onVerifyClicked() {
     const value = this.form.value;
 
-    this.#blockUi.show({ message: "Verifying code..." });
+    this.#blockUi.show({ message: "Se verifica codul..." });
     this.#identityService
       .verifyCode({
         code: value.code!,

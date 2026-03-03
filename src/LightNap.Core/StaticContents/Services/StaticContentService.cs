@@ -47,7 +47,7 @@ namespace LightNap.Core.StaticContents.Services
             if (!this.IsContentAdministrator())
             {
                 logger.LogWarning("User '{UserId}' attempted to create static content without permission.", userContext.GetUserId());
-                throw new UserFriendlyApiException("You do not have permission to create static content.");
+                throw new UserFriendlyApiException("Nu aveti permisiunea sa creati continut static.");
             }
         }
 
@@ -86,7 +86,7 @@ namespace LightNap.Core.StaticContents.Services
             if (!this.CanEdit(staticContent))
             {
                 logger.LogWarning("User '{UserId}' attempted to edit static content '{StaticContentId}' without permission.", userContext.GetUserId(), staticContent.Id);
-                throw new UserFriendlyApiException("You do not have permission to edit this static content.");
+                throw new UserFriendlyApiException("Nu aveti permisiunea sa editati acest continut static.");
             }
         }
 
@@ -238,7 +238,7 @@ namespace LightNap.Core.StaticContents.Services
                 StaticContentSortBy.ReadAccess => searchDto.ReverseSort ? query.OrderByDescending(sc => sc.ReadAccess) : query.OrderBy(sc => sc.ReadAccess),
                 StaticContentSortBy.Status => searchDto.ReverseSort ? query.OrderByDescending(sc => sc.Status) : query.OrderBy(sc => sc.Status),
                 StaticContentSortBy.Type => searchDto.ReverseSort ? query.OrderByDescending(sc => sc.Type) : query.OrderBy(sc => sc.Type),
-                _ => throw new ArgumentException("Invalid sort field: '{sortBy}'", searchDto.SortBy.ToString()),
+                _ => throw new ArgumentException("Camp de sortare invalid: '{sortBy}'", searchDto.SortBy.ToString()),
             };
 
             var totalCount = await query.CountAsync();
@@ -265,7 +265,7 @@ namespace LightNap.Core.StaticContents.Services
 
             if (await db.StaticContents.AnyAsync(sc => sc.Key == createDto.Key))
             {
-                throw new UserFriendlyApiException($"Static content with key '{createDto.Key}' already exists.");
+                throw new UserFriendlyApiException($"Continutul static cu cheia '{createDto.Key}' exista deja.");
             }
 
             var staticContent = createDto.ToEntity(userContext.GetUserId());
@@ -282,7 +282,7 @@ namespace LightNap.Core.StaticContents.Services
 
             userContext.AssertAuthenticated();
 
-            var staticContent = await db.StaticContents.FirstOrDefaultAsync(sc => sc.Key == key) ?? throw new UserFriendlyApiException($"Static content with key '{key}' not found.");
+            var staticContent = await db.StaticContents.FirstOrDefaultAsync(sc => sc.Key == key) ?? throw new UserFriendlyApiException($"Continutul static cu cheia '{key}' nu a fost gasit.");
 
             this.AssertCanEdit(staticContent);
 
@@ -303,7 +303,7 @@ namespace LightNap.Core.StaticContents.Services
 
             this.AssertContentAdministrator();
 
-            var staticContent = await db.StaticContents.FirstOrDefaultAsync(sc => sc.Key == key) ?? throw new UserFriendlyApiException($"Static content with key '{key}' not found.");
+            var staticContent = await db.StaticContents.FirstOrDefaultAsync(sc => sc.Key == key) ?? throw new UserFriendlyApiException($"Continutul static cu cheia '{key}' nu a fost gasit.");
 
             // Invalidate cache for all language variants before deletion
             await this.InvalidatePublishedContentCacheAsync(staticContent.Id, key);
@@ -319,7 +319,7 @@ namespace LightNap.Core.StaticContents.Services
             ArgumentException.ThrowIfNullOrEmpty(languageCode);
             userContext.AssertAuthenticated();
 
-            var staticContent = await db.StaticContents.Where(sc => sc.Key == key).FirstOrDefaultAsync() ?? throw new UserFriendlyApiException($"Static content with key '{key}' not found.");
+            var staticContent = await db.StaticContents.Where(sc => sc.Key == key).FirstOrDefaultAsync() ?? throw new UserFriendlyApiException($"Continutul static cu cheia '{key}' nu a fost gasit.");
 
             this.AssertCanEdit(staticContent);
 
@@ -335,7 +335,7 @@ namespace LightNap.Core.StaticContents.Services
         {
             ArgumentException.ThrowIfNullOrEmpty(key);
             userContext.AssertAuthenticated();
-            var staticContent = await db.StaticContents.Where(sc => sc.Key == key).FirstOrDefaultAsync() ?? throw new UserFriendlyApiException($"Static content with key '{key}' not found.");
+            var staticContent = await db.StaticContents.Where(sc => sc.Key == key).FirstOrDefaultAsync() ?? throw new UserFriendlyApiException($"Continutul static cu cheia '{key}' nu a fost gasit.");
             this.AssertCanEdit(staticContent);
             var staticContentLanguages = await db.StaticContentLanguages
                 .Where(scl => scl.StaticContentId == staticContent.Id)
@@ -354,15 +354,15 @@ namespace LightNap.Core.StaticContents.Services
 
             if (!StaticContentConfig.SupportedLanguagesLookup.ContainsKey(languageCode))
             {
-                throw new UserFriendlyApiException($"Unsupported language code '{languageCode}'.");
+                throw new UserFriendlyApiException($"Codul de limba '{languageCode}' nu este suportat.");
             }
 
             if (await db.StaticContentLanguages.AnyAsync(scl => scl.StaticContent!.Key == key && scl.LanguageCode == languageCode))
             {
-                throw new UserFriendlyApiException($"Static content language with key '{key}' and language '{languageCode}' already exists.");
+                throw new UserFriendlyApiException($"Limba pentru continutul static cu cheia '{key}' si limba '{languageCode}' exista deja.");
             }
 
-            var staticContent = await db.StaticContents.Where(sc => sc.Key == key).FirstOrDefaultAsync() ?? throw new UserFriendlyApiException($"Static content with key '{key}' not found.");
+            var staticContent = await db.StaticContents.Where(sc => sc.Key == key).FirstOrDefaultAsync() ?? throw new UserFriendlyApiException($"Continutul static cu cheia '{key}' nu a fost gasit.");
             this.AssertCanEdit(staticContent);
 
             var staticContentLanguage = createDto.ToEntity(staticContent.Id, languageCode);
@@ -379,12 +379,12 @@ namespace LightNap.Core.StaticContents.Services
             Validator.ValidateObject(updateDto, new ValidationContext(updateDto), true);
             userContext.AssertAuthenticated();
 
-            var staticContent = await db.StaticContents.Where(sc => sc.Key == key).FirstOrDefaultAsync() ?? throw new UserFriendlyApiException($"Static content with key '{key}' not found.");
+            var staticContent = await db.StaticContents.Where(sc => sc.Key == key).FirstOrDefaultAsync() ?? throw new UserFriendlyApiException($"Continutul static cu cheia '{key}' nu a fost gasit.");
             this.AssertCanEdit(staticContent);
 
             var staticContentLanguage =
                 await db.StaticContentLanguages.FirstOrDefaultAsync(scl => scl.StaticContentId == staticContent.Id && scl.LanguageCode == languageCode)
-                    ?? throw new UserFriendlyApiException($"Static content language with key '{key}' and language '{languageCode}' not found.");
+                    ?? throw new UserFriendlyApiException($"Limba pentru continutul static cu cheia '{key}' si limba '{languageCode}' nu a fost gasita.");
 
             updateDto.UpdateEntity(staticContentLanguage);
             db.StaticContentLanguages.Update(staticContentLanguage);
@@ -403,12 +403,12 @@ namespace LightNap.Core.StaticContents.Services
             ArgumentException.ThrowIfNullOrEmpty(languageCode);
             userContext.AssertAuthenticated();
 
-            var staticContent = await db.StaticContents.Where(sc => sc.Key == key).FirstOrDefaultAsync() ?? throw new UserFriendlyApiException($"Static content with key '{key}' not found.");
+            var staticContent = await db.StaticContents.Where(sc => sc.Key == key).FirstOrDefaultAsync() ?? throw new UserFriendlyApiException($"Continutul static cu cheia '{key}' nu a fost gasit.");
             this.AssertCanEdit(staticContent);
 
             var staticContentLanguage =
                 await db.StaticContentLanguages.FirstOrDefaultAsync(scl => scl.StaticContentId == staticContent.Id && scl.LanguageCode == languageCode)
-                    ?? throw new UserFriendlyApiException($"Static content language with key '{key}' and language '{languageCode}' not found.");
+                    ?? throw new UserFriendlyApiException($"Limba pentru continutul static cu cheia '{key}' si limba '{languageCode}' nu a fost gasita.");
 
             // Invalidate cache for this language variant
             await cache.RemoveAsync($"published-content-internal:{key}:{languageCode}");

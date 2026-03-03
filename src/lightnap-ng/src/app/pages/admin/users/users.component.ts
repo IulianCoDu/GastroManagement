@@ -91,14 +91,14 @@ export class UsersComponent {
 
   deleteUser(event: any, userId: string) {
     this.#confirmationService.confirm({
-      header: "Confirm Delete",
-      message: `Are you sure that you want to delete this user?`,
+      header: "Confirmare stergere",
+      message: `Sigur doriti sa stergeti acest utilizator?`,
       key: userId,
       target: event.target,
       accept: () => {
         this.#adminService.deleteUser(userId).subscribe({
           next: () => {
-            this.#toast.success("User deleted successfully.");
+            this.#toast.success("Utilizatorul a fost sters cu succes.");
             this.#lazyLoadEventSubject.next({ first: 0 });
           },
           error: setApiErrors(this.errors),

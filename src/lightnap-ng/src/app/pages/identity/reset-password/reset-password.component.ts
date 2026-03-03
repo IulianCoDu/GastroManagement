@@ -30,7 +30,7 @@ export class ResetPasswordComponent {
   errors = signal(new Array<string>());
 
   resetPassword() {
-    this.#blockUi.show({ message: "Resetting password..." });
+    this.#blockUi.show({ message: "Se reseteaza parola..." });
     this.#identityService
       .resetPassword({ email: this.form.value.email! })
       .pipe(finalize(() => this.#blockUi.hide()))

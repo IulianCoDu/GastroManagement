@@ -71,8 +71,8 @@ export class RoleComponent implements OnInit {
     this.errors.set([]);
 
     this.#confirmationService.confirm({
-      header: "Confirm Role Removal",
-      message: `Are you sure that you want to remove this role membership?`,
+      header: "Confirmare eliminare rol",
+      message: `Sigur doriti sa eliminati apartenenta la acest rol?`,
       target: event.target,
       key: userId,
       accept: () => {

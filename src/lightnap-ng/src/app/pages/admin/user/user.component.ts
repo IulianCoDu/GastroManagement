@@ -79,8 +79,8 @@ export class UserComponent implements OnChanges {
     this.errors.set([]);
 
     this.#confirmationService.confirm({
-      header: "Confirm Lock Account",
-      message: `Are you sure that you want to lock this user account?`,
+      header: "Confirmare blocare cont",
+      message: `Sigur doriti sa blocati acest cont de utilizator?`,
       target: event.target,
       key: "lock",
       accept: () => {
@@ -96,8 +96,8 @@ export class UserComponent implements OnChanges {
     this.errors.set([]);
 
     this.#confirmationService.confirm({
-      header: "Confirm Unlock Account",
-      message: `Are you sure that you want to unlock this user account?`,
+      header: "Confirmare deblocare cont",
+      message: `Sigur doriti sa deblocati acest cont de utilizator?`,
       target: event.target,
       key: "unlock",
       accept: () => {
@@ -113,14 +113,14 @@ export class UserComponent implements OnChanges {
     this.errors.set([]);
 
     this.#confirmationService.confirm({
-      header: "Confirm Delete User",
-      message: `Are you sure that you want to delete this user?`,
+      header: "Confirmare stergere utilizator",
+      message: `Sigur doriti sa stergeti acest utilizator?`,
       target: event.target,
       key: "delete",
       accept: () => {
         this.adminService.deleteUser(this.#userId).subscribe({
           next: () => {
-            this.#toast.success("User deleted successfully.");
+            this.#toast.success("Utilizatorul a fost sters cu succes.");
             this.#routeAlias.navigate("admin-users");
           },
           error: setApiErrors(this.errors),

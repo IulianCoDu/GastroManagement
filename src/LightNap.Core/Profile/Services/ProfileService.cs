@@ -1,4 +1,4 @@
-﻿using LightNap.Core.Api;
+using LightNap.Core.Api;
 using LightNap.Core.Data;
 using LightNap.Core.Extensions;
 using LightNap.Core.Interfaces;
@@ -19,7 +19,7 @@ namespace LightNap.Core.Profile.Services
         /// <returns>A <see cref="ProfileDto"/> containing the user's profile.</returns>  
         public async Task<ProfileDto> GetProfileAsync()
         {
-            var user = await db.Users.FindAsync(userContext.GetUserId()) ?? throw new UserFriendlyApiException("Please log in");
+            var user = await db.Users.FindAsync(userContext.GetUserId()) ?? throw new UserFriendlyApiException("Te rugam sa te autentifici");
             return user.ToLoggedInUserDto();
         }
 
@@ -30,7 +30,7 @@ namespace LightNap.Core.Profile.Services
         /// <returns>A <see cref="ProfileDto"/> with the updated profile.</returns>  
         public async Task<ProfileDto> UpdateProfileAsync(UpdateProfileRequestDto requestDto)
         {
-            var user = await db.Users.FindAsync(userContext.GetUserId()) ?? throw new UserFriendlyApiException("Unable to update profile.");
+            var user = await db.Users.FindAsync(userContext.GetUserId()) ?? throw new UserFriendlyApiException("Profilul nu a putut fi actualizat.");
 
             user.UpdateLoggedInUser(requestDto);
 

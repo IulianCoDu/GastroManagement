@@ -1,4 +1,4 @@
-﻿using LightNap.Core.Api;
+using LightNap.Core.Api;
 using LightNap.Core.Interfaces;
 
 namespace LightNap.Core.Extensions
@@ -12,7 +12,7 @@ namespace LightNap.Core.Extensions
         /// <exception cref="UserFriendlyApiException">Thrown if the user is not authenticated.</exception>
         public static void AssertAuthenticated(this IUserContext userContext)
         {
-            if (!userContext.IsAuthenticated) { throw new UserFriendlyApiException($"You must be authenticated to perform this action."); }
+            if (!userContext.IsAuthenticated) { throw new UserFriendlyApiException($"Trebuie sa fiti autentificat pentru a efectua aceasta actiune."); }
         }
 
         /// <summary>
@@ -23,7 +23,7 @@ namespace LightNap.Core.Extensions
         /// <exception cref="UserFriendlyApiException">Thrown if the user is not in the specified role.</exception>
         public static void AssertRole(this IUserContext userContext, string role)
         {
-            if (!userContext.IsInRole(role)) { throw new UserFriendlyApiException($"You must be in the '{role}' role to perform this action."); }
+            if (!userContext.IsInRole(role)) { throw new UserFriendlyApiException($"Trebuie sa aveti rolul '{role}' pentru a efectua aceasta actiune."); }
         }
 
         /// <summary>
@@ -33,7 +33,7 @@ namespace LightNap.Core.Extensions
         /// <exception cref="UserFriendlyApiException">Thrown if the user is not an administrator.</exception>
         public static void AssertAdministrator(this IUserContext userContext)
         {
-            if (!userContext.IsAdministrator) { throw new UserFriendlyApiException($"You must be an administrator to perform this action."); }
+            if (!userContext.IsAdministrator) { throw new UserFriendlyApiException($"Trebuie sa fiti administrator pentru a efectua aceasta actiune."); }
         }
 
         /// <summary>
@@ -45,7 +45,7 @@ namespace LightNap.Core.Extensions
         /// <exception cref="UserFriendlyApiException">Thrown if the user does not have the specified claim.</exception>
         public static void AssertClaim(this IUserContext userContext, string claimType, string claimValue)
         {
-            if (!userContext.HasClaim(claimType, claimValue)) { throw new UserFriendlyApiException($"You do not have permission to perform this action."); }
+            if (!userContext.HasClaim(claimType, claimValue)) { throw new UserFriendlyApiException($"Nu aveti permisiunea sa efectuati aceasta actiune."); }
         }
     }
 }

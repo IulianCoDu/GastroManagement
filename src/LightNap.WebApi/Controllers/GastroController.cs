@@ -504,15 +504,15 @@ namespace LightNap.WebApi.Controllers
 
         [HttpDelete("buletine-eco/{id:int}")]
         public Task<ApiResponseDto<bool>> DeleteBuletinEcoAsync(int id)
-            => this.DeleteBuletineAsync(this.context.BuletineEco, id, "Buletin ECO nu a fost găsit.");
+            => this.DeleteBuletineAsync(this.context.BuletineEco, id, "Buletin ECO nu a fost gasit.");
 
         [HttpDelete("buletine-eds/{id:int}")]
         public Task<ApiResponseDto<bool>> DeleteBuletinEdsAsync(int id)
-            => this.DeleteBuletineAsync(this.context.BuletineEds, id, "Buletin EDS nu a fost găsit.");
+            => this.DeleteBuletineAsync(this.context.BuletineEds, id, "Buletin EDS nu a fost gasit.");
 
         [HttpDelete("buletine-edi/{id:int}")]
         public Task<ApiResponseDto<bool>> DeleteBuletinEdiAsync(int id)
-            => this.DeleteBuletineAsync(this.context.BuletineEdi, id, "Buletin EDI nu a fost găsit.");
+            => this.DeleteBuletineAsync(this.context.BuletineEdi, id, "Buletin EDI nu a fost gasit.");
 
         private async Task<ApiResponseDto<bool>> DeleteBuletineAsync<TEntity>(DbSet<TEntity> set, int id, string notFoundMessage)
             where TEntity : class

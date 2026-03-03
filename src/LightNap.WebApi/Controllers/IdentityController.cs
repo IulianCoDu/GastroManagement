@@ -230,7 +230,7 @@ namespace LightNap.WebApi.Controllers
         /// <returns>A response indicating whether the device was successfully revoked.</returns>
         /// <response code="200">Device successfully revoked.</response>
         /// <response code="401">Unauthorized access.</response>
-        /// <response code="404">Device not found.</response>
+        /// <response code="404">Dispozitivul nu a fost gasit.</response>
         [HttpDelete("devices/{deviceId}")]
         [Authorize]
         [ProducesResponseType(typeof(ApiResponseDto<bool>), 200)]

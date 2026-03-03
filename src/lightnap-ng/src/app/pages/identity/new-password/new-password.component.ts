@@ -39,7 +39,7 @@ export class NewPasswordComponent {
   );
 
   newPassword() {
-    this.#blockUi.show({ message: "Setting new password..." });
+    this.#blockUi.show({ message: "Se seteaza parola noua..." });
     this.#identityService
       .newPassword({
         email: this.email(),

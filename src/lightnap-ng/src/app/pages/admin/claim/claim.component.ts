@@ -86,8 +86,8 @@ export class ClaimComponent {
     this.errors.set([]);
 
     this.#confirmationService.confirm({
-      header: "Confirm User Claim Removal",
-      message: `Are you sure that you want to remove this user claim?`,
+      header: "Confirmare eliminare permisiune",
+      message: `Sigur doriti sa eliminati aceasta permisiune?`,
       target: event.target,
       key: userId,
       accept: () => {

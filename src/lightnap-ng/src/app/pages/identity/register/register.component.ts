@@ -51,7 +51,7 @@ export class RegisterComponent {
   errors = signal(new Array<string>());
 
   register() {
-    this.#blockUi.show({ message: "Registering..." });
+    this.#blockUi.show({ message: "Se inregistreaza..." });
 
     this.#identityService
       .register({

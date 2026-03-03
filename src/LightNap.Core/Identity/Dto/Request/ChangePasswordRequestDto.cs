@@ -1,4 +1,4 @@
-﻿using LightNap.Core.Configuration;
+using LightNap.Core.Configuration;
 using System.ComponentModel.DataAnnotations;
 
 namespace LightNap.Core.Identity.Dto.Request
@@ -26,7 +26,7 @@ namespace LightNap.Core.Identity.Dto.Request
         /// Gets or sets the confirmation of the new password.
         /// </summary>
         [Required]
-        [Compare("NewPassword", ErrorMessage = "The new password and confirmation password do not match.")]
+        [Compare("NewPassword", ErrorMessage = "Parola noua si parola de confirmare nu coincid.")]
         [StringLength(Constants.Dto.MaxPasswordLength)]
         public required string ConfirmNewPassword { get; set; }
     }

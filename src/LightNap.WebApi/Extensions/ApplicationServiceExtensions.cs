@@ -1,4 +1,4 @@
-﻿using LightNap.Core.Api;
+using LightNap.Core.Api;
 using LightNap.Core.Configuration;
 using LightNap.Core.Data;
 using LightNap.Core.Data.Entities;
@@ -88,25 +88,25 @@ namespace LightNap.WebApi.Extensions
                     services.AddLightNapInMemoryDatabase();
                     break;
                 case DatabaseProvider.Sqlite:
-                    services.AddLightNapSqlite(configuration.GetConnectionString("DefaultConnection") ?? throw new ArgumentException($"A 'DefaultConnection' connection string is required for '{databaseSettings.Provider}'"));
+                    services.AddLightNapSqlite(configuration.GetConnectionString("DefaultConnection") ?? throw new ArgumentException($"Un connection string 'DefaultConnection' este obligatoriu pentru '{databaseSettings.Provider}'"));
                     break;
                 case DatabaseProvider.SqlServer:
-                    services.AddLightNapSqlServer(configuration.GetConnectionString("DefaultConnection") ?? throw new ArgumentException($"A 'DefaultConnection' connection string is required for '{databaseSettings.Provider}'"));
+                    services.AddLightNapSqlServer(configuration.GetConnectionString("DefaultConnection") ?? throw new ArgumentException($"Un connection string 'DefaultConnection' este obligatoriu pentru '{databaseSettings.Provider}'"));
                     break;
                 case DatabaseProvider.MySql:
                     var mySqlConnection = configuration.GetConnectionString("DefaultConnection");
                     if (string.IsNullOrEmpty(mySqlConnection))
                     {
                         // Fall back to individual Railway MySQL environment variables
-                        var host = configuration["MYSQLHOST"] ?? throw new ArgumentException("MYSQLHOST environment variable is required for MySql provider");
+                        var host = configuration["MYSQLHOST"] ?? throw new ArgumentException("Variabila de mediu MYSQLHOST este obligatorie pentru providerul MySql");
                         var database = configuration["MYSQLDATABASE"] ?? "railway";
                         var user = configuration["MYSQLUSER"] ?? "root";
-                        var password = configuration["MYSQLPASSWORD"] ?? throw new ArgumentException("MYSQLPASSWORD environment variable is required for MySql provider");
+                        var password = configuration["MYSQLPASSWORD"] ?? throw new ArgumentException("Variabila de mediu MYSQLPASSWORD este obligatorie pentru providerul MySql");
                         mySqlConnection = $"Server={host};Database={database};Uid={user};Pwd={password};";
                     }
                     services.AddLightNapMySql(mySqlConnection);
                     break;
-                default: throw new ArgumentException($"Unsupported 'Database:Provider' setting: '{databaseSettings.Provider}'");
+                default: throw new ArgumentException($"Setarea 'Database:Provider' nu este suportata: '{databaseSettings.Provider}'");
             }
             return services;
         }
@@ -126,11 +126,11 @@ namespace LightNap.WebApi.Extensions
                     services.AddLogToConsoleEmailSender();
                     break;
                 case EmailProvider.Smtp:
-                    if (emailSettings.Smtp is null) { throw new ArgumentNullException($"SMTP settings are required if '{emailSettings.Provider}' email option is set"); }
+                    if (emailSettings.Smtp is null) { throw new ArgumentNullException($"Setarile SMTP sunt obligatorii daca optiunea de email '{emailSettings.Provider}' este setata"); }
                     Validator.ValidateObject(emailSettings.Smtp, new ValidationContext(emailSettings.Smtp), validateAllProperties: true);
                     services.AddSmtpEmailSender(emailSettings.Smtp);
                     break;
-                default: throw new ArgumentException($"Unsupported email provider setting: '{emailSettings.Provider}'");
+                default: throw new ArgumentException($"Setarea providerului de email nu este suportata: '{emailSettings.Provider}'");
             }
 
             services.AddScoped<IEmailService, DefaultEmailService>();
@@ -351,7 +351,7 @@ namespace LightNap.WebApi.Extensions
                 options.OnRejected = async (context, token) =>
                 {
                     context.HttpContext.Response.StatusCode = StatusCodes.Status429TooManyRequests;
-                    await context.HttpContext.Response.WriteAsync("Too many requests. Please try again later.", token);
+                    await context.HttpContext.Response.WriteAsync("Prea multe cereri. Va rugam sa incercati din nou mai tarziu.", token);
                 };
             });
 

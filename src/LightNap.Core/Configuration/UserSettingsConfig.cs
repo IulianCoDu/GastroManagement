@@ -1,4 +1,4 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 
 namespace LightNap.Core.Configuration
 {
@@ -71,7 +71,7 @@ namespace LightNap.Core.Configuration
         public static UserSettingDefinition GetActiveSetting(string key)
         {
             var setting = UserSettingsConfig.AllSettingsLookup[key];
-            if (!setting.IsActive) { throw new Exception($"Setting '{key}' is no longer active"); }
+            if (!setting.IsActive) { throw new Exception($"Setarea '{key}' nu mai este activa"); }
             return setting;
         }
     }

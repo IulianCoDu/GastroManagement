@@ -189,7 +189,7 @@ if (Directory.Exists(angularAppPath))
 using var scope = app.Services.CreateScope();
 var services = scope.ServiceProvider;
 
-var logger = services.GetService<ILogger<Program>>() ?? throw new Exception($"Logging is not configured, so there may be deeper configuration issues");
+var logger = services.GetService<ILogger<Program>>() ?? throw new Exception($"Logging-ul nu este configurat, deci pot exista probleme de configurare mai profunde");
 
 try
 {
@@ -197,7 +197,7 @@ try
 }
 catch (Exception ex)
 {
-    logger.LogError(ex, "An error occurred during database initialization");
+    logger.LogError(ex, "A aparut o eroare in timpul initializarii bazei de date");
     throw;
 }
 

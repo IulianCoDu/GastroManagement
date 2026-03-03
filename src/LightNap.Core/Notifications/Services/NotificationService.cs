@@ -105,7 +105,7 @@ namespace LightNap.Core.Notifications.Services
         /// <param name="id">The ID of the notification to mark as read.</param>
         public async Task MarkAsReadAsync(int id)
         {
-            Notification notification = db.Notifications.Find(id) ?? throw new UserFriendlyApiException("Notification not found");
+            Notification notification = db.Notifications.Find(id) ?? throw new UserFriendlyApiException("Notificarea nu a fost gasita");
             notification.Status = NotificationStatus.Read;
             await db.SaveChangesAsync();
         }
@@ -185,7 +185,7 @@ namespace LightNap.Core.Notifications.Services
         /// <exception cref="UserFriendlyApiException">Thrown when the notification is not found.</exception>
         public async Task MarkMyNotificationAsReadAsync(int id)
         {
-            Notification notification = await db.Notifications.FirstOrDefaultAsync(n => n.Id == id && n.UserId == userContext.GetUserId()) ?? throw new UserFriendlyApiException("Notification not found.");
+            Notification notification = await db.Notifications.FirstOrDefaultAsync(n => n.Id == id && n.UserId == userContext.GetUserId()) ?? throw new UserFriendlyApiException("Notificarea nu a fost gasita.");
             await this.MarkAsReadAsync(id);
         }
     }

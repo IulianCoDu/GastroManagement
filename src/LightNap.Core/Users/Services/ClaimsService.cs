@@ -1,4 +1,4 @@
-﻿using LightNap.Core.Api;
+using LightNap.Core.Api;
 using LightNap.Core.Configuration;
 using LightNap.Core.Data;
 using LightNap.Core.Data.Entities;
@@ -39,7 +39,7 @@ namespace LightNap.Core.Users.Services
 
             logger.LogWarning("User '{UserId}' attempted to manage claim type '{ClaimType}' without sufficient permissions.",
                 userContext.GetUserId(), claimType);
-            throw new UserFriendlyApiException("You do not have permission to manage this claim type.");
+            throw new UserFriendlyApiException("Nu aveti permisiunea sa gestionati acest tip de claim.");
         }
 
         /// <inheritdoc />
@@ -207,10 +207,10 @@ namespace LightNap.Core.Users.Services
 
             if (await db.UserClaims.AnyAsync(c => c.UserId == userId && c.ClaimType == claim.Type && c.ClaimValue == claim.Value))
             {
-                throw new UserFriendlyApiException("This user already has this claim.");
+                throw new UserFriendlyApiException("Acest utilizator are deja acest claim.");
             }
 
-            var user = await db.Users.FindAsync(userId) ?? throw new UserFriendlyApiException("The specified user was not found.");
+            var user = await db.Users.FindAsync(userId) ?? throw new UserFriendlyApiException("Utilizatorul specificat nu a fost gasit.");
             var result = await userManager.AddClaimAsync(user, claim.ToClaim());
             if (!result.Succeeded) { throw new UserFriendlyApiException(result.Errors.Select(error => error.Description)); }
         }
@@ -222,7 +222,7 @@ namespace LightNap.Core.Users.Services
             Validator.ValidateObject(claim, new ValidationContext(claim), true);
             this.AssertClaimSecurity(claim.Type);
 
-            var user = await db.Users.FindAsync(userId) ?? throw new UserFriendlyApiException("The specified user was not found.");
+            var user = await db.Users.FindAsync(userId) ?? throw new UserFriendlyApiException("Utilizatorul specificat nu a fost gasit.");
             var result = await userManager.RemoveClaimAsync(user, claim.ToClaim());
             if (!result.Succeeded) { throw new UserFriendlyApiException(result.Errors.Select(error => error.Description)); }
         }

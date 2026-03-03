@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration;
 using System.ComponentModel.DataAnnotations; // Add this using directive
 
 namespace LightNap.Core.Extensions
@@ -17,7 +17,7 @@ namespace LightNap.Core.Extensions
         /// <exception cref="ArgumentException">Thrown when the required setting is missing.</exception>
         public static string GetRequiredSetting(this IConfiguration configuration, string key)
         {
-            return configuration[key] ?? throw new ArgumentException($"Required setting '{key}' is missing");
+            return configuration[key] ?? throw new ArgumentException($"Lipseste setarea obligatorie '{key}'");
         }
 
         /// <summary>
@@ -32,7 +32,7 @@ namespace LightNap.Core.Extensions
         public static T GetRequiredSection<T>(this IConfiguration configuration, string key) where T : class
         {
             var section = configuration.GetSection(key);
-            var value = section.Get<T>() ?? throw new ArgumentException($"Required section '{key}' is missing or invalid");
+            var value = section.Get<T>() ?? throw new ArgumentException($"Sectiunea obligatorie '{key}' lipseste sau este invalida");
             // Validate based on attributes
             Validator.ValidateObject(value, new ValidationContext(value), validateAllProperties: true);
             return value;

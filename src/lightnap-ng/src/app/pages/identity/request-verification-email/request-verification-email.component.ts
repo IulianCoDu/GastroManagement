@@ -30,7 +30,7 @@ export class RequestVerificationEmailComponent {
   errors = signal(new Array<string>());
 
   resendVerificationEmail() {
-    this.#blockUi.show({ message: "Resending verification email..." });
+    this.#blockUi.show({ message: "Se retrimite email-ul de verificare..." });
     this.#identityService
       .requestVerificationEmail({ email: this.form.value.email! })
       .pipe(finalize(() => this.#blockUi.hide()))

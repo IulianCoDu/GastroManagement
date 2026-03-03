@@ -2,10 +2,10 @@
   <ng-template #success let-resultsAny>
     @let results = asNotifications(resultsAny);
 
-    <p-panel header="Notification Center">
+    <p-panel header="Centrul de notificari">
       <div class="flex justify-end">
         @if (results.unreadCount > 0) {
-          <p-button icon="pi pi-folder-open" label="Mark all as read" (onClick)="markAllAsRead()" />
+          <p-button icon="pi pi-folder-open" label="Marcheaza toate ca citite" (onClick)="markAllAsRead()" />
         }
       </div>
 
@@ -30,7 +30,7 @@
         </ng-template>
         <ng-template #emptymessage>
           <tr>
-            <td>You have no notifications.</td>
+            <td>Nu aveti notificari.</td>
           </tr>
         </ng-template>
       </p-table>

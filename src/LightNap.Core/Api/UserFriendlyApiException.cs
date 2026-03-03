@@ -1,4 +1,4 @@
-﻿namespace LightNap.Core.Api
+namespace LightNap.Core.Api
 {
     /// <summary>
     /// Represents an exception that is user-friendly and contains a list of error messages. The provided string/s will be
@@ -18,7 +18,7 @@
         /// </summary>
         /// <param name="errors">The collection of error messages to be returned to the end user.</param>
         /// <param name="innerException">The optional inner exception to be logged but not returned to the end user.</param>
-        public UserFriendlyApiException(IEnumerable<string> errors, Exception? innerException = null) : this(errors?.FirstOrDefault() ?? "No error messages provided", innerException)
+        public UserFriendlyApiException(IEnumerable<string> errors, Exception? innerException = null) : this(errors?.FirstOrDefault() ?? "Nu au fost furnizate mesaje de eroare", innerException)
         {
             this.Errors = errors ?? [this.Message];
         }

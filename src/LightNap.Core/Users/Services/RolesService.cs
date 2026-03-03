@@ -1,4 +1,4 @@
-﻿using LightNap.Core.Api;
+using LightNap.Core.Api;
 using LightNap.Core.Configuration;
 using LightNap.Core.Data;
 using LightNap.Core.Data.Entities;
@@ -36,7 +36,7 @@ namespace LightNap.Core.Users.Services
         {
             userContext.AssertAdministrator();
 
-            var user = await db.Users.FindAsync(userId) ?? throw new UserFriendlyApiException("The specified user was not found.");
+            var user = await db.Users.FindAsync(userId) ?? throw new UserFriendlyApiException("Utilizatorul specificat nu a fost gasit.");
 
             var roles = await userManager.GetRolesAsync(user);
 
@@ -65,7 +65,7 @@ namespace LightNap.Core.Users.Services
         {
             userContext.AssertAdministrator();
 
-            var user = await db.Users.FindAsync(userId) ?? throw new UserFriendlyApiException("The specified user was not found.");
+            var user = await db.Users.FindAsync(userId) ?? throw new UserFriendlyApiException("Utilizatorul specificat nu a fost gasit.");
 
             var result = await userManager.AddToRoleAsync(user, role);
             if (!result.Succeeded) { throw new UserFriendlyApiException(result.Errors.Select(error => error.Description)); }
@@ -80,9 +80,9 @@ namespace LightNap.Core.Users.Services
         {
             userContext.AssertAdministrator();
 
-            if ((userId == userContext.GetUserId()) && (role == ApplicationRoles.Administrator.Name)) { throw new UserFriendlyApiException("You may not remove yourself from the Administrator role."); }
+            if ((userId == userContext.GetUserId()) && (role == ApplicationRoles.Administrator.Name)) { throw new UserFriendlyApiException("Nu va puteti elimina din rolul de Administrator."); }
 
-            var user = await db.Users.FindAsync(userId) ?? throw new UserFriendlyApiException("The specified user was not found.");
+            var user = await db.Users.FindAsync(userId) ?? throw new UserFriendlyApiException("Utilizatorul specificat nu a fost gasit.");
             var result = await userManager.RemoveFromRoleAsync(user, role);
             if (!result.Succeeded) { throw new UserFriendlyApiException(result.Errors.Select(error => error.Description)); }
         }

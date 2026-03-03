@@ -28,7 +28,7 @@ export class MagicLinkLoginComponent implements OnInit {
   errors = signal(new Array<string>());
 
   ngOnInit() {
-    this.#blockUi.show({ message: "Verifying login..." });
+    this.#blockUi.show({ message: "Se verifica autentificarea..." });
     this.#identityService
       .logIn({
         type: LoginTypes.MagicLink,

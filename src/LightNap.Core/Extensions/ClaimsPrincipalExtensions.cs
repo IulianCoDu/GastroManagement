@@ -1,4 +1,4 @@
-﻿using System.Security.Claims;
+using System.Security.Claims;
 
 namespace LightNap.Core.Extensions
 {
@@ -15,7 +15,7 @@ namespace LightNap.Core.Extensions
         /// <exception cref="Exception">Thrown when the JWT does not include the required ID claim.</exception>
         public static string GetUserId(this ClaimsPrincipal user)
         {
-            return user.TryGetUserId() ?? throw new Exception("JWT did not include required ID claim");
+            return user.TryGetUserId() ?? throw new Exception("JWT nu a inclus claim-ul ID obligatoriu");
         }
 
         /// <summary>

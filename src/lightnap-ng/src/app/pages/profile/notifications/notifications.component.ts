@@ -56,7 +56,7 @@ export class NotificationsComponent {
   markAllAsRead() {
     this.#notificationService.markAllNotificationsAsRead().subscribe({
       next: () => {
-        this.#toast.success("All notifications marked as read.");
+        this.#toast.success("Toate notificarile au fost marcate ca citite.");
         this.#lazyLoadEventSubject.next({ first: 0 });
       },
       error: setApiErrors(this.errors),
