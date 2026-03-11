@@ -18,8 +18,10 @@
 }
 
 :host ::ng-deep .gastro-actions-col {
-  width: 5.5rem;
-  min-width: 5.5rem;
+  width: 8rem;
+  min-width: 8rem;
+  background-color: var(--surface-card) !important;
+  z-index: 2;
 }
 
 :host ::ng-deep .p-table .p-frozen-column {

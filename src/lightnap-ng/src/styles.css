@@ -21,3 +21,170 @@ a:hover {
 .p-panel-title {
   @apply text-2xl;
 }
+
+/* =============================================
+   PRINT TEMPLATE
+   ============================================= */
+.bp-page {
+  display: none;
+}
+
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 0; /* Removes browser's default URL, title, and page decorations */
+  }
+
+  body[data-printing] > *:not(.bp-page) {
+    display: none !important;
+  }
+
+  body[data-printing] > .bp-page {
+    display: block !important;
+    width: 100%;
+    background: #fff;
+    color: #000;
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 11pt;
+    padding: 15mm 20mm;
+    box-sizing: border-box;
+  }
+
+  .bp-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 6px;
+  }
+
+  .bp-logo {
+    height: 56px;
+    width: auto;
+  }
+
+  .bp-clinic-name {
+    font-size: 13pt;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+  }
+
+  .bp-clinic-sub {
+    font-size: 9pt;
+    color: #444;
+    margin-top: 2px;
+  }
+
+  .bp-header-date {
+    margin-left: auto;
+    font-size: 9pt;
+    color: #444;
+    white-space: nowrap;
+    align-self: flex-end;
+  }
+
+  .bp-divider {
+    border: none;
+    border-top: 1.5px solid #000;
+    margin: 6px 0;
+  }
+
+  .bp-divider-thin {
+    border: none;
+    border-top: 0.5px solid #888;
+    margin: 5px 0;
+  }
+
+  .bp-title {
+    text-align: center;
+    font-size: 14pt;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin: 8px 0 2px;
+  }
+
+  .bp-meta {
+    text-align: center;
+    font-size: 10pt;
+    margin-bottom: 8px;
+    color: #333;
+  }
+
+  .bp-table-patient {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 6px;
+    font-size: 10.5pt;
+  }
+
+  .bp-table-patient td {
+    padding: 2px 8px 2px 0;
+    vertical-align: top;
+  }
+
+  .bp-label {
+    font-weight: bold;
+    white-space: nowrap;
+    width: 130px;
+  }
+
+  .bp-value {
+    min-width: 100px;
+  }
+
+  .bp-section-title {
+    font-size: 11pt;
+    font-weight: bold;
+    text-transform: uppercase;
+    border-bottom: 1px solid #000;
+    padding-bottom: 1px;
+    margin: 8px 0 4px;
+  }
+
+  .bp-finding {
+    display: flex;
+    gap: 6px;
+    margin: 3px 0;
+    font-size: 10.5pt;
+  }
+
+  .bp-finding-row {
+    display: flex;
+    gap: 24px;
+    margin: 3px 0;
+    font-size: 10.5pt;
+  }
+
+  .bp-finding-row .bp-finding {
+    margin: 0;
+  }
+
+  .bp-fl {
+    font-weight: bold;
+    white-space: nowrap;
+    min-width: 170px;
+    flex-shrink: 0;
+  }
+
+  .bp-fv {
+    flex: 1;
+  }
+
+  .bp-footer {
+    margin-top: 24px;
+    display: flex;
+    justify-content: flex-end;
+    font-size: 10.5pt;
+  }
+
+  .bp-signature {
+    text-align: center;
+    min-width: 220px;
+  }
+
+  .bp-sig-line {
+    margin-top: 32px;
+    border-top: 1px solid #000;
+    padding-top: 4px;
+  }
+}

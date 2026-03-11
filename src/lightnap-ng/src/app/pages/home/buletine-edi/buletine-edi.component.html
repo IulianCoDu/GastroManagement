@@ -32,6 +32,7 @@
           <tr>
             <th pFrozenColumn class="gastro-actions-col">
               <div class="flex items-center gap-1">
+                <i class="pi pi-print"></i>
                 <i class="pi pi-pencil"></i>
                 <i class="pi pi-trash"></i>
               </div>
@@ -46,6 +47,14 @@
           <tr [ngClass]="rowIndex % 2 === 0 ? 'gastro-row-even' : 'gastro-row-odd'">
             <td pFrozenColumn class="gastro-actions-col">
               <div class="flex items-center gap-1">
+                <p-button
+                  icon="pi pi-print"
+                  severity="info"
+                  size="small"
+                  class="p-button-text p-button-sm"
+                  title="Printeaza buletin"
+                  (onClick)="printRecord(rowData)"
+                />
                 <p-button
                   icon="pi pi-pencil"
                   severity="warn"

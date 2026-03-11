@@ -95,4 +95,38 @@ export abstract class BuletineBaseComponent<
   protected abstract getRecordsRequest(): Observable<Array<T>>;
   protected abstract deleteRecordRequest(recordId: number): Observable<boolean>;
   protected abstract getDeleteConfirmKey(recordId: number): string;
+
+  protected fmtDate(v: unknown): string {
+    if (!v) return '';
+    const m = String(v).match(/^(\d{4})-(\d{2})-(\d{2})/);
+    return m ? `${m[1]}-${m[2]}-${m[3]}` : String(v);
+  }
+
+  protected fmtTime(v: unknown): string {
+    if (!v) return '';
+    const m = String(v).match(/T(\d{2}:\d{2})/);
+    return m ? m[1] : String(v);
+  }
+
+  protected doPrint(html: string) {
+    const div = document.createElement('div');
+    div.className = 'bp-page';
+    div.innerHTML = html;
+    document.body.appendChild(div);
+    document.body.dataset['printing'] = 'true';
+
+    const trigger = () => {
+      window.print();
+      delete document.body.dataset['printing'];
+      document.body.removeChild(div);
+    };
+
+    const img = div.querySelector<HTMLImageElement>('img');
+    if (img && !img.complete) {
+      img.onload = trigger;
+      img.onerror = trigger;
+    } else {
+      trigger();
+    }
+  }
 }

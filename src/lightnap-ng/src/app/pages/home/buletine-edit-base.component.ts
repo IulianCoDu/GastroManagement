@@ -1,4 +1,20 @@
 export abstract class BuletineEditBaseComponent {
+  onPrint() {
+    const printEl = document.querySelector<HTMLElement>('.bp-page');
+    if (!printEl) return;
+
+    const parent = printEl.parentElement!;
+    const nextSibling = printEl.nextSibling;
+
+    document.body.appendChild(printEl);
+    document.body.dataset['printing'] = 'true';
+
+    window.print();
+
+    delete document.body.dataset['printing'];
+    parent.insertBefore(printEl, nextSibling);
+  }
+
   protected toIsoDate(value: unknown) {
     const raw = (value ?? "").toString().trim();
     if (!raw) return undefined;

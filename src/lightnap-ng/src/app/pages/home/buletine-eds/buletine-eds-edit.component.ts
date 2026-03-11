@@ -5,7 +5,6 @@ import { RouterLink } from "@angular/router";
 import { CreateBuletinEdsDto, MedicLookupDto, UpdateBuletinEdsDto, setApiErrors } from "@core";
 import { ErrorListComponent } from "@core/components/error-list/error-list.component";
 import { GastroDataService } from "@core/backend-api/services/gastro-data.service";
-import { RouteAliasService } from "@core/features/routing/services/route-alias-service";
 import { ToastService } from "@core/services/toast.service";
 import { ButtonModule } from "primeng/button";
 import { InputTextModule } from "primeng/inputtext";
@@ -33,7 +32,6 @@ import { BuletineEditBaseComponent } from "../buletine-edit-base.component";
 })
 export class BuletineEdsEditComponent extends BuletineEditBaseComponent implements OnInit {
   readonly #gastroService = inject(GastroDataService);
-  readonly #routeAlias = inject(RouteAliasService);
   readonly #toast = inject(ToastService);
   readonly #fb = inject(FormBuilder);
   readonly #destroyRef = inject(DestroyRef);
@@ -50,6 +48,7 @@ export class BuletineEdsEditComponent extends BuletineEditBaseComponent implemen
   readonly errors = signal(new Array<string>());
   readonly medici = signal<Array<MedicLookupDto>>([]);
   readonly #applyApiErrors = setApiErrors(this.errors);
+  get printDate() { return new Date().toLocaleDateString('ro-RO', { day: '2-digit', month: '2-digit', year: 'numeric' }); }
 
   readonly form = this.#fb.group({
     nr: this.#fb.control({ value: "", disabled: true }),
@@ -143,7 +142,6 @@ export class BuletineEdsEditComponent extends BuletineEditBaseComponent implemen
       this.#gastroService.updateBuletinEds(id, payload).subscribe({
         next: () => {
           this.#toast.success("Buletin EDS a fost actualizat.");
-          this.#routeAlias.navigate("buletine-eds");
         },
         error: this.#applyApiErrors,
       });
@@ -154,7 +152,6 @@ export class BuletineEdsEditComponent extends BuletineEditBaseComponent implemen
       next: () => {
         this.#toast.success("Buletin EDS a fost creat.");
         this.form.reset();
-        this.#routeAlias.navigate("buletine-eds");
       },
       error: this.#applyApiErrors,
     });
@@ -210,6 +207,11 @@ export class BuletineEdsEditComponent extends BuletineEditBaseComponent implemen
   private lookupMedicName(medicId: number | null | undefined) {
     if (medicId == null) return undefined;
     return this.medici().find(medic => medic.id === medicId)?.medicName;
+  }
+
+  get medicDisplayName(): string {
+    const byId = this.lookupMedicName(this.form.controls.medicId.value);
+    return byId ?? this.form.controls.medic.value ?? '';
   }
 
 }

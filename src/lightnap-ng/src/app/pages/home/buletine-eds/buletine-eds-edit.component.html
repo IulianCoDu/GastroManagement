@@ -122,11 +122,120 @@
       </div>
 
       <div class="flex items-center gap-2">
-        <p-button label="Salvează" icon="pi pi-save" (onClick)="onSave()" />
+        <p-button label="Salveaza" icon="pi pi-save" (onClick)="onSave()" />
+        <p-button label="Printeaza" icon="pi pi-print" severity="secondary" (onClick)="onPrint()" />
         <a routerLink="/home/buletine-eds" class="p-button p-button-secondary">Inapoi</a>
       </div>
     </form>
 
     <ln-error-list [errors]="errors()" />
+
+    <!-- ==================== PRINT TEMPLATE ==================== -->
+    <div class="bp-page">
+      <div class="bp-header">
+        <img src="assets/images/logos/logo_UMF_200x200.png" class="bp-logo" alt="Logo" />
+        <div>
+          <div class="bp-clinic-name">CENTRUL MEDICAL GASTROENTEROLOGIE</div>
+          <div class="bp-clinic-sub">Adresa centrului &bull; Tel: 0xxx xxx xxx</div>
+        </div>
+        <div class="bp-header-date">{{ printDate }}</div>
+      </div>
+      <hr class="bp-divider" />
+
+      <h1 class="bp-title">Buletin Endoscopie Digestivă Superioară Nr. {{ form.controls.nr.value }}</h1>
+      <div class="bp-meta">Data: {{ form.value.data }} &emsp; Ora: {{ form.value.ora }}</div>
+      <hr class="bp-divider" />
+
+      <table class="bp-table-patient">
+        <tr>
+          <td class="bp-label">Pacient:</td>
+          <td class="bp-value">
+            <strong>{{ form.value.nume }} {{ form.value.prenume }}</strong>
+          </td>
+          <td class="bp-label">Vârsta:</td>
+          <td class="bp-value">{{ form.value.virsta }} ani</td>
+        </tr>
+        <tr>
+          <td class="bp-label">CNP:</td>
+          <td class="bp-value" colspan="3">{{ form.value.cnp }}</td>
+        </tr>
+        <tr>
+          <td class="bp-label">Domiciliu:</td>
+          <td class="bp-value" colspan="3">{{ form.value.domiciliu }}</td>
+        </tr>
+        <tr>
+          <td class="bp-label">Diagnostic:</td>
+          <td class="bp-value" colspan="3">{{ form.value.diagnostic }}</td>
+        </tr>
+        <tr>
+          <td class="bp-label">Sedare:</td>
+          <td class="bp-value">{{ form.value.sedareT }}</td>
+          <td class="bp-label">Medicație:</td>
+          <td class="bp-value">{{ form.value.medicatie }}</td>
+        </tr>
+      </table>
+
+      <hr class="bp-divider" />
+      <h2 class="bp-section-title">Examen Endoscopic</h2>
+
+      <div class="bp-finding">
+        <span class="bp-fl">Esofag:</span>
+        <span class="bp-fv">{{ form.value.esofag }}</span>
+      </div>
+      <div class="bp-finding">
+        <span class="bp-fl">Joncțiune esogastrică:</span>
+        <span class="bp-fv">{{ form.value.jonctiune }}</span>
+      </div>
+      <div class="bp-finding">
+        <span class="bp-fl">Stomac:</span>
+        <span class="bp-fv">{{ form.value.stomac }}</span>
+      </div>
+      <div class="bp-finding">
+        <span class="bp-fl">Pilor:</span>
+        <span class="bp-fv">{{ form.value.pilor }}</span>
+      </div>
+      <div class="bp-finding">
+        <span class="bp-fl">Bulb duodenal:</span>
+        <span class="bp-fv">{{ form.value.bulb }}</span>
+      </div>
+      <div class="bp-finding">
+        <span class="bp-fl">Duoden II:</span>
+        <span class="bp-fv">{{ form.value.duoden }}</span>
+      </div>
+
+      <hr class="bp-divider-thin" />
+      <h2 class="bp-section-title">Biopsii</h2>
+      <div class="bp-finding-row">
+        <div class="bp-finding">
+          <span class="bp-fl">Localizare:</span>
+          <span class="bp-fv">{{ form.value.biopsiiL }}</span>
+        </div>
+        <div class="bp-finding">
+          <span class="bp-fl">Nr. fragmente:</span>
+          <span class="bp-fv">{{ form.value.biopsiiN }}</span>
+        </div>
+        <div class="bp-finding">
+          <span class="bp-fl">Nr. reg. AP:</span>
+          <span class="bp-fv">{{ form.value.nrap }}</span>
+        </div>
+      </div>
+      <div class="bp-finding">
+        <span class="bp-fl">Rezultat histopatologic:</span>
+        <span class="bp-fv">{{ form.value.biopsiiR }}</span>
+      </div>
+      <hr class="bp-divider-thin" />
+      <div class="bp-finding">
+        <span class="bp-fl">Tratament / Recomandări:</span>
+        <span class="bp-fv">{{ form.value.tratament }}</span>
+      </div>
+
+      <div class="bp-footer">
+        <div class="bp-signature">
+          <div>Medic: Dr. {{ medicDisplayName }}</div>
+          <div class="bp-sig-line">Semnătură și parafă</div>
+        </div>
+      </div>
+    </div>
+    <!-- ==================== END PRINT TEMPLATE ==================== -->
   }
 </p-panel>
