@@ -67,8 +67,8 @@ export class BuletineEdsComponent extends BuletineBaseComponent<BuletinEdsDto> {
   ];
 
   printRecord(record: BuletinEdsDto) {
-    const today = new Date().toLocaleDateString('ro-RO', { day: '2-digit', month: '2-digit', year: 'numeric' });
-    const f = (v: unknown) => String(v ?? '');
+    const today = new Date().toLocaleDateString("ro-RO", { day: "2-digit", month: "2-digit", year: "numeric" });
+    const f = (v: unknown) => String(v ?? "");
     this.doPrint(`
       <div class="bp-header">
         <img src="assets/images/logos/logo_UMF_200x200.png" class="bp-logo" alt="Logo" />
@@ -119,7 +119,7 @@ export class BuletineEdsComponent extends BuletineBaseComponent<BuletinEdsDto> {
       <div class="bp-finding"><span class="bp-fl">Tratament / Recomandări:</span><span class="bp-fv">${f(record.tratament)}</span></div>
       <div class="bp-footer">
         <div class="bp-signature">
-          <div>Medic: Dr. ${f(record.medic)}</div>
+          <div>Medic: ${f(record.medic)}</div>
           <div class="bp-sig-line">Semnătură și parafă</div>
         </div>
       </div>

@@ -125,7 +125,7 @@ export class BuletineEcoComponent extends BuletineBaseComponent<BuletinEcoDto> {
       <div class="bp-finding"><span class="bp-fl">CE-US</span><span class="bp-fv">${f(record.ceus)}</span></div>
       <div class="bp-footer">
         <div class="bp-signature">
-          <div>Medic: Dr. ${f(record.medic)}</div>
+          <div>Medic: ${f(record.medic)}</div>
           <div class="bp-sig-line">Semnătură și parafă</div>
         </div>
       </div>

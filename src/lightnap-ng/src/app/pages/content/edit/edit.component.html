@@ -35,7 +35,9 @@
 
               <div class="field">
                 <label for="key" class="text-xl">Cheie</label>
-                <p class="text-sm">Aceasta este cheia folosita pentru identificarea continutului. Va fi folosita in URL-ul paginii sau cheia zonei.</p>
+                <p class="text-sm">
+                  Aceasta este cheia folosita pentru identificarea continutului. Va fi folosita in URL-ul paginii sau cheia zonei.
+                </p>
                 <input id="key" type="text" pInputText formControlName="key" class="w-full" />
               </div>
 
@@ -82,7 +84,8 @@
               <div class="field">
                 <label for="editorRoles" class="text-xl">Roluri care pot edita</label>
                 <p class="text-sm">
-                  Utilizatorii in rolurile <span class="font-bold">Administrator</span> si <span class="font-bold">Content Editor</span> pot edita mereu.
+                  Utilizatorii in rolurile <span class="font-bold">Administrator</span> si <span class="font-bold">Medic Editor</span> pot edita
+                  mereu.
                 </p>
                 <ln-roles-picker id="editorRoles" formControlName="editorRoles" class="w-full" />
               </div>
@@ -100,7 +103,8 @@
                 <div class="field">
                   <label for="readerRoles" class="text-xl">Roluri care pot citi</label>
                   <p class="text-sm">
-                    Utilizatorii in rolurile <span class="font-bold">Administrator</span> si <span class="font-bold">Content Editor</span> pot citi mereu.
+                    Utilizatorii in rolurile <span class="font-bold">Administrator</span> si <span class="font-bold">Medic Editor</span> pot citi
+                    mereu.
                   </p>
                   <ln-roles-picker id="readerRoles" formControlName="readerRoles" class="w-full" />
                 </div>
@@ -114,8 +118,8 @@
         </p-tabpanel>
         <p-tabpanel value="editors">
           <p>
-            Utilizatorii din rolurile <span class="font-bold">Administrator</span> si <span class="font-bold">Content Editor</span> pot edita mereu,
-            la fel si rolurile specificate in sectiunea <span class="font-bold">Roluri care pot edita</span> din tabul
+            Utilizatorii din rolurile <span class="font-bold">Administrator</span> si <span class="font-bold">Medic Editor</span> pot edita mereu, la
+            fel si rolurile specificate in sectiunea <span class="font-bold">Roluri care pot edita</span> din tabul
             <span class="font-bold">Setari</span>.
           </p>
           <p>
