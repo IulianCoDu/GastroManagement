@@ -1,3 +1,31 @@
+export function openPrintTab(html: string) {
+  const links = Array.from(document.head.querySelectorAll<HTMLLinkElement>('link[rel="stylesheet"]'))
+    .map(l => `<link rel="stylesheet" href="${l.href}">`)
+    .join('\n');
+
+  const fullHtml = `<!DOCTYPE html><html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <base href="${document.baseURI}">
+  ${links}
+  <style>
+    body { margin: 0; padding: 0; background: #fff; }
+    .bp-page { display: block !important; width: 100%; background: #fff; color: #000; font-family: 'Times New Roman', Times, serif; font-size: 11pt; padding: 15mm 20mm; box-sizing: border-box; }
+  </style>
+</head>
+<body>
+  <div class="bp-page">${html}</div>
+  <script>window.onload = function() { setTimeout(function() { window.print(); }, 300); };<\/script>
+</body>
+</html>`;
+
+  const blob = new Blob([fullHtml], { type: 'text/html' });
+  const url = URL.createObjectURL(blob);
+  window.open(url, '_blank');
+  setTimeout(() => URL.revokeObjectURL(url), 60_000);
+}
+
 export interface GastroFilters {
   nr: string;
   nume: string;

@@ -4,7 +4,7 @@ import { ConfirmationService } from "primeng/api";
 import { ToastService } from "@core/services/toast.service";
 import { GastroDataService } from "@core/backend-api/services/gastro-data.service";
 import { setApiErrors } from "@core";
-import { applyGastroFilters, formatGastroCell, GastroFilters } from "./gastro-table.helpers";
+import { applyGastroFilters, formatGastroCell, GastroFilters, openPrintTab } from "./gastro-table.helpers";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { startWith, Observable } from "rxjs";
 
@@ -109,6 +109,14 @@ export abstract class BuletineBaseComponent<
   }
 
   protected doPrint(html: string) {
+    if (navigator.maxTouchPoints > 0) {
+      openPrintTab(html);
+    } else {
+      this.doPrintDirect(html);
+    }
+  }
+
+  private doPrintDirect(html: string) {
     const div = document.createElement('div');
     div.className = 'bp-page';
     div.innerHTML = html;
@@ -129,4 +137,6 @@ export abstract class BuletineBaseComponent<
       trigger();
     }
   }
+
 }
+
