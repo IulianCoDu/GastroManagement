@@ -23,7 +23,7 @@ export function openPrintTab(html: string) {
   const blob = new Blob([fullHtml], { type: 'text/html' });
   const url = URL.createObjectURL(blob);
   window.open(url, '_blank');
-  setTimeout(() => URL.revokeObjectURL(url), 60_000);
+  setTimeout(() => URL.revokeObjectURL(url), 5_000);
 }
 
 export interface GastroFilters {
